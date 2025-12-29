@@ -1,0 +1,31 @@
+import { userService } from "../services/userService";
+import type { User, CreateUser } from "../types/types";
+
+export const useUser = () => {
+    // Fetch users 
+    const getUsers = async (params?: any): Promise<User[]> => {
+        try {
+            return (await userService.getUsers(params)) || [];
+        } catch (error) {
+            console.error("Error fetching users:", error);
+            throw error;
+        }
+    };
+
+    // Create user
+    const createUser = async (userData: CreateUser): Promise<User> => {
+        try {
+            return await userService.createUser(userData);
+        } catch (error) {
+            console.error("Error creating user:", error);
+            throw error;
+        }
+    };
+
+    return {
+        getUsers,
+        createUser,
+    };
+};
+
+export default useUser;

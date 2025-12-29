@@ -1,0 +1,33 @@
+/* ProductsPage.css */
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.filter-label {
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.filter-title-text {
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: #212121;
+    letter-spacing: 0.3px;
+}
+
+/* Button styling for Clear */
+.clear-btn {
+    font-size: 12px;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: #2874f0;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+}
+
+.clear-btn:hover {
+    text-decoration: underline;
+}

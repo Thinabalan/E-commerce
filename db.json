@@ -1,0 +1,253 @@
+{
+  "users": [
+    {
+      "id": "7fe3",
+      "name": "bala",
+      "email": "bala@gmail.com",
+      "password": "1A@345bc"
+    },
+    {
+      "id": "04cb",
+      "name": "bala",
+      "email": "bala2@gmail.com",
+      "password": "12345"
+    },
+    {
+      "id": "d3bd",
+      "name": "dfg",
+      "email": "sg@g.c",
+      "password": "456"
+    },
+    {
+      "id": "5bd0",
+      "name": "hfg",
+      "email": "jhk@g.c",
+      "password": "657"
+    },
+    {
+      "id": "91ed",
+      "name": "mat",
+      "email": "mat@g.c",
+      "password": "555"
+    },
+    {
+      "id": "1e87",
+      "name": "dsf",
+      "email": "w@g.c",
+      "password": "343"
+    },
+    {
+      "id": "6ee6",
+      "name": "mathan",
+      "email": "mathan@gmail.cm",
+      "password": "12345"
+    },
+    {
+      "id": "f382",
+      "name": "tgh",
+      "email": "sxgdfsyt@g.c",
+      "password": "1A@345"
+    }
+  ],
+  "categories": [
+    {
+      "id": "101",
+      "name": "Offers",
+      "icon": "fa-fire"
+    },
+    {
+      "id": "102",
+      "name": "Electronics",
+      "icon": "fa-microchip"
+    },
+    {
+      "id": "103",
+      "name": "Fashion",
+      "icon": "fa-shirt"
+    },
+    {
+      "id": "104",
+      "name": "Furniture",
+      "icon": "fa-couch"
+    },
+    {
+      "id": "105",
+      "name": "Books",
+      "icon": "fa-book"
+    },
+    {
+      "id": "1",
+      "name": "Offers",
+      "icon": "fa-fire",
+      "parentId": "101"
+    },
+    {
+      "id": "2",
+      "name": "Clothing",
+      "icon": "fa-shirt",
+      "parentId": "103",
+      "brands": [
+        "Zara",
+        "H&M",
+        "Levi's",
+        "Gap"
+      ]
+    },
+    {
+      "id": "3",
+      "name": "Bags",
+      "icon": "fa-bag-shopping",
+      "parentId": "103",
+      "brands": [
+        "Gucci",
+        "Prada",
+        "American Tourister",
+        "Wildcraft"
+      ]
+    },
+    {
+      "id": "4",
+      "name": "Shoes",
+      "icon": "fa-shoe-prints",
+      "parentId": "103",
+      "brands": [
+        "Nike",
+        "Adidas",
+        "Puma",
+        "Reebok"
+      ]
+    },
+    {
+      "id": "5",
+      "name": "Watches",
+      "icon": "fa-clock",
+      "parentId": "102",
+      "brands": [
+        "Rolex",
+        "Casio",
+        "Titan",
+        "Fossil"
+      ]
+    },
+    {
+      "id": "6",
+      "name": "Mobile",
+      "icon": "fa-mobile",
+      "parentId": "102",
+      "brands": [
+        "Apple",
+        "Samsung",
+        "Google",
+        "OnePlus"
+      ]
+    },
+    {
+      "id": "7",
+      "name": "Laptop",
+      "icon": "fa-laptop",
+      "parentId": "102",
+      "brands": [
+        "Dell",
+        "HP",
+        "Apple",
+        "Lenovo"
+      ]
+    },
+    {
+      "id": "8",
+      "name": "Furniture",
+      "icon": "fa-couch",
+      "parentId": "104",
+      "brands": [
+        "IKEA",
+        "Herman Miller",
+        "Ashley Furniture"
+      ]
+    },
+    {
+      "id": "9",
+      "name": "Books",
+      "icon": "fa-book",
+      "parentId": "105",
+      "brands": [
+        "Penguin",
+        "HarperCollins",
+        "Oxford"
+      ]
+    }
+  ],
+  "products": [
+    {
+      "id": "1",
+      "name": "Red Shoes",
+      "price": 1299,
+      "image": "src/assets/images/redshoes.webp",
+      "category": "Shoes",
+      "brand": "Nike",
+      "rating": 4.6
+    },
+    {
+      "id": "2",
+      "name": "Leather Bag",
+      "price": 2499,
+      "image": "./leatherbag.jpeg",
+      "category": "Bags",
+      "brand": "Gucci",
+      "rating": 4
+    },
+    {
+      "id": "3",
+      "name": "Smart Watch",
+      "price": 1999,
+      "image": "./sw2.webp",
+      "category": "Watches",
+      "brand": "Rolex",
+      "rating": 3.4
+    },
+    {
+      "id": "4",
+      "name": "Oversized T-Shirt",
+      "price": 799,
+      "image": "./ostshirt.webp",
+      "category": "Clothing",
+      "brand": "Zara",
+      "rating": 4.8
+    },
+    {
+      "id": "5",
+      "name": "T-Shirt",
+      "price": 999,
+      "image": "./tshirt.jpeg",
+      "category": "Clothing",
+      "brand": "Gap",
+      "rating": 3.8
+    },
+    {
+      "id": "6",
+      "name": "Track pant",
+      "price": 650,
+      "image": "./trackpant.jpeg",
+      "category": "Clothing",
+      "brand": "Gap",
+      "rating": 4
+    },
+    {
+      "id": "f223",
+      "name": "Chair",
+      "price": 550,
+      "image": "./chair.jpeg",
+      "category": "Furniture",
+      "brand": "IKEA",
+      "rating": 3.8
+    },
+    {
+      "id": "df5d",
+      "name": "table",
+      "price": 790,
+      "image": "/table.jpeg",
+      "category": "Furniture",
+      "brand": "IKEA",
+      "rating": 0
+    }
+  ]
+}

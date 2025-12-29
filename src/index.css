@@ -1,0 +1,107 @@
+/* :root {
+  --sidebar-width-collapsed: 80px;
+  --sidebar-width-expanded: 250px;
+  --header-height: 80px;
+} */
+
+/* Ensure body doesn't force center alignment from default Vite template */
+/* body {
+  display: block;
+  min-height: 100vh;
+  margin: 0;
+} */
+
+/* Sidebar Desktop Styles */
+/* .sidebar-desktop {
+  position: fixed;
+  top: var(--header-height);
+  left: 0;
+  bottom: 0;
+  width: var(--sidebar-width-collapsed);
+  transition: width 0.3s ease;
+  z-index: 1010;
+  overflow-x: hidden;
+  border-right: 1px solid rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  padding-top: 1rem;
+}
+
+.sidebar-desktop.header-dark {
+  background-color: #2b3035;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.sidebar-desktop.header-light {
+  background-color: #fff;
+  color: #000;
+}
+
+.sidebar-desktop.expanded {
+  width: var(--sidebar-width-expanded);
+  box-shadow: 4px 0 10px rgba(0, 0, 0, 0.05);
+}
+
+.sidebar-desktop .sidebar-link {
+  display: flex;
+  align-items: center;
+  padding: 1rem 1.7rem;
+  text-decoration: none;
+  white-space: nowrap;
+  color: inherit;
+  transition: background 0.2s;
+  cursor: pointer;
+}
+
+.sidebar-desktop .sidebar-link:hover {
+  background-color: rgba(128, 128, 128, 0.1);
+}
+
+.sidebar-desktop .sidebar-icon {
+  font-size: 1.4rem;
+  width: 2rem;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.sidebar-desktop .sidebar-text {
+  margin-left: 1rem;
+  opacity: 0;
+  transition: opacity 0.2s ease, visibility 0.2s;
+  visibility: hidden;
+}
+
+.sidebar-desktop.expanded .sidebar-text {
+  opacity: 1;
+  visibility: visible;
+} */
+
+/* Content Shift */
+/* .main-content {
+  margin-left: var(--sidebar-width-collapsed);
+  transition: margin-left 0.3s ease;
+  padding: 20px;
+  margin-top: var(--header-height);
+  
+}
+
+.main-content.expanded {
+  margin-left: var(--sidebar-width-expanded);
+} */
+
+/* Mobile Reset */
+/* @media (max-width: 991.98px) {
+  .sidebar-desktop {
+    display: none !important;
+  }
+
+  .main-content {
+    margin-left: 0 !important;
+    margin-top: 80px;
+  }
+
+  .main-content.expanded {
+    margin-left: 0 !important;
+  }
+} */
