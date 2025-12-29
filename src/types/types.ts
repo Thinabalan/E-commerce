@@ -66,7 +66,7 @@ export type CreateUser = Omit<User, 'id'>;
 
 export type LoginForm = Pick<User, 'email' | 'password'>;
 
-export type SellProductFormInputs = {
+export type SellProduct = {
     name: string;
     email: string;
     phone: string;

@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
 import { useEffect, useState } from "react";
 import AuthModal from "../pages/authentication/AuthModal";
-import SellProductForm from "../pages/SellProductForm";
+import SellProductForm from "../pages/sellproductform/SellProductForm";
 import { useToast } from "../context/ToastContext";
 import * as bootstrap from "bootstrap";
 

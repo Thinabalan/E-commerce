@@ -1,7 +1,7 @@
 import * as yup from "yup";
-import type { SellProductFormInputs } from "../types/types";
+import type { SellProduct } from "../types/types";
 
-export const sellProductSchema: yup.ObjectSchema<SellProductFormInputs> = yup.object({
+export const sellProductSchema: yup.ObjectSchema<SellProduct> = yup.object({
     // SELLER INFO
     name: yup
         .string()

@@ -2,23 +2,21 @@ import { useState, useEffect } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import {
-  Stepper,
-  Step,
-  StepLabel,
   Box,
   Typography,
   Grid,
 } from "@mui/material";
 
-import useProduct from "../hooks/useProduct";
-import type { Category, SellProductFormInputs } from "../types/types";
-import { ERROR_MESSAGES } from "../constants/appConstants";
-import EcomTextField from "../components/newcomponents/EcomTextField";
-import EcomDropdown from "../components/newcomponents/EcomDropdown";
-import EcomButton from "../components/newcomponents/EcomButton";
-import { sellProductSchema } from "../schema/schema";
+import useProduct from "../../hooks/useProduct";
+import type { Category, SellProduct } from "../../types/types";
+import { ERROR_MESSAGES } from "../../constants/appConstants";
+import EcomTextField from "../../components/newcomponents/EcomTextField";
+import EcomDropdown from "../../components/newcomponents/EcomDropdown";
+import EcomButton from "../../components/newcomponents/EcomButton";
+import { sellProductSchema } from "../../schema/schema";
 import "./SellProductForm.css";
 import React from "react";
+import EcomStepper from "../../components/newcomponents/EcomStepper";
 
 interface SellProductFormProps {
   open: boolean;
@@ -27,14 +25,53 @@ interface SellProductFormProps {
 
 const STEPS = ["Seller Info", "Product Info", "Payment"];
 
+const STEP_FIELDS: (keyof SellProduct)[][] = [
+  // Step 1 – Seller
+  [
+    "name",
+    "email",
+    "phone",
+    "sellerType",
+    "companyName",
+    "companyEmail",
+    "companyPhone",
+    "city",
+    "address",
+  ],
+
+  // Step 2 – Product
+  [
+    "productName",
+    "brand",
+    "price",
+    "stock",
+    "category",
+    "warranty",
+    "image",
+    "description",
+    "highlights",
+    "returnPolicy",
+  ],
+
+  // Step 3 – Payment
+  [
+    "paymentMethod",
+    "upiId",
+    "accountName",
+    "accountNumber",
+    "ifsc",
+    "bankName",
+    "paymentNotes",
+  ],
+];
+
 export default function SellProductForm({ open, onClose }: SellProductFormProps) {
   const [activeStep, setActiveStep] = useState(0);
   const [stepErrors, setStepErrors] = React.useState<boolean[]>(
-  Array(STEPS.length).fill(false)
-);
+    Array(STEPS.length).fill(false)
+  );
 
-
-  const methods = useForm<SellProductFormInputs>({
+  const methods = useForm<SellProduct>({
     resolver: yupResolver(sellProductSchema),
     mode: "onChange",
     defaultValues: {
@@ -69,7 +106,7 @@ export default function SellProductForm({ open, onClose }: SellProductFormProps)
     },
   });
 
-  const { handleSubmit, watch} = methods;
+  const { handleSubmit, watch } = methods;
 
   const sellerType = watch("sellerType");
   const paymentMethod = watch("paymentMethod");
@@ -99,42 +136,7 @@ export default function SellProductForm({ open, onClose }: SellProductFormProps)
 
   /* RESET CURRENT STEP */
   const handleStepReset = () => {
-    const stepFields: (keyof SellProductFormInputs)[][] = [
-      [
-        "name",
-        "email",
-        "phone",
-        "sellerType",
-        "companyName",
-        "companyEmail",
-        "companyPhone",
-        "city",
-        "address",
-      ],
-      [
-        "productName",
-        "brand",
-        "price",
-        "stock",
-        "category",
-        "warranty",
-        "image",
-        "description",
-        "highlights",
-        "returnPolicy",
-      ],
-      [
-        "paymentMethod",
-        "upiId",
-        "accountName",
-        "accountNumber",
-        "ifsc",
-        "bankName",
-        "paymentNotes",
-      ],
-    ];
-
-    stepFields[activeStep].forEach((field) => {
+    STEP_FIELDS[activeStep].forEach((field) => {
       methods.resetField(field);
     });
 
@@ -151,39 +153,23 @@ export default function SellProductForm({ open, onClose }: SellProductFormProps)
     }, 1000);
   };
 
-  const stepRequiredFields: (keyof SellProductFormInputs)[][] = [
-  // Step 0 – Seller
-  ["name", "email", "phone", "sellerType"],
-
-  // Step 1 – Product
-  ["productName", "brand", "price", "stock", "category", "description"],
-
-  // Step 2 – Payment
-  ["paymentMethod"],
-];
-const isStepComplete = (stepIndex: number) => {
-  return stepRequiredFields[stepIndex].every((field) => {
-    const value = methods.getValues(field);
-    return value !== undefined && value !== "";
-  });
-};
-
-
   /* NAVIGATION */
-const handleNext = () => {
-  // mark current step as error if required fields are missing
-  setStepErrors((prev) => {
-    const updated = [...prev];
-    updated[activeStep] = !isStepComplete(activeStep);
-    return updated;
-  });
+  const handleNext = async () => {
+    // Validate current step fields
+    const isStepValid = await methods.trigger(STEP_FIELDS[activeStep]);
 
-  // ALWAYS move to next step
-  if (activeStep < STEPS.length - 1) {
-    setActiveStep((prev) => prev + 1);
-  }
-};
+    // Update error state for visual feedback (red step label)
+    setStepErrors((prev) => {
+      const updated = [...prev];
+      updated[activeStep] = !isStepValid;
+      return updated;
+    });
 
+    // ALWAYS move to next step
+    if (activeStep < STEPS.length - 1) {
+      setActiveStep((prev) => prev + 1);
+    }
+  };
 
   const handleBack = () => {
     if (activeStep > 0) {
@@ -208,30 +194,11 @@ const handleNext = () => {
             </button>
           </Box>
 
-          <Stepper activeStep={activeStep} alternativeLabel>
-  {STEPS.map((label, index) => {
-    const labelProps: {
-      optional?: React.ReactNode;
-      error?: boolean;
-    } = {};
-
-    if (stepErrors[index]) {
-      labelProps.error = true;
-      labelProps.optional = (
-        <Typography variant="caption" color="error">
-          Required fields missing
-        </Typography>
-      );
-    }
-
-    return (
-      <Step key={label}>
-        <StepLabel {...labelProps}>{label}</StepLabel>
-      </Step>
-    );
-  })}
-</Stepper>
-
+          <EcomStepper
+            steps={STEPS}
+            activeStep={activeStep}
+            stepErrors={stepErrors}
+          />
         </div>
 
         {/* BODY */}
@@ -432,7 +399,7 @@ const handleNext = () => {
                   label="Save"
                   variant="contained"
                   color="success"
-                  type="submit"  
+                  type="submit"
                 />
               )}
 
