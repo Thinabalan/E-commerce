@@ -18,6 +18,7 @@ import EcomDropdown from "../components/newcomponents/EcomDropdown";
 import EcomButton from "../components/newcomponents/EcomButton";
 import { sellProductSchema } from "../schema/schema";
 import "./SellProductForm.css";
+import React from "react";
 
 interface SellProductFormProps {
   open: boolean;
@@ -28,6 +29,10 @@ const STEPS = ["Seller Info", "Product Info", "Payment"];
 
 export default function SellProductForm({ open, onClose }: SellProductFormProps) {
   const [activeStep, setActiveStep] = useState(0);
+  const [stepErrors, setStepErrors] = React.useState<boolean[]>(
+  Array(STEPS.length).fill(false)
+);
+
 
   const methods = useForm<SellProductFormInputs>({
     resolver: yupResolver(sellProductSchema),
@@ -64,7 +69,7 @@ export default function SellProductForm({ open, onClose }: SellProductFormProps)
     },
   });
 
-  const { handleSubmit, watch, trigger } = methods;
+  const { handleSubmit, watch} = methods;
 
   const sellerType = watch("sellerType");
   const paymentMethod = watch("paymentMethod");
@@ -94,47 +99,47 @@ export default function SellProductForm({ open, onClose }: SellProductFormProps)
 
   /* RESET CURRENT STEP */
   const handleStepReset = () => {
-  const stepFields: (keyof SellProductFormInputs)[][] = [
-    [
-      "name",
-      "email",
-      "phone",
-      "sellerType",
-      "companyName",
-      "companyEmail",
-      "companyPhone",
-      "city",
-      "address",
-    ],
-    [
-      "productName",
-      "brand",
-      "price",
-      "stock",
-      "category",
-      "warranty",
-      "image",
-      "description",
-      "highlights",
-      "returnPolicy",
-    ],
-    [
-      "paymentMethod",
-      "upiId",
-      "accountName",
-      "accountNumber",
-      "ifsc",
-      "bankName",
-      "paymentNotes",
-    ],
-  ];
+    const stepFields: (keyof SellProductFormInputs)[][] = [
+      [
+        "name",
+        "email",
+        "phone",
+        "sellerType",
+        "companyName",
+        "companyEmail",
+        "companyPhone",
+        "city",
+        "address",
+      ],
+      [
+        "productName",
+        "brand",
+        "price",
+        "stock",
+        "category",
+        "warranty",
+        "image",
+        "description",
+        "highlights",
+        "returnPolicy",
+      ],
+      [
+        "paymentMethod",
+        "upiId",
+        "accountName",
+        "accountNumber",
+        "ifsc",
+        "bankName",
+        "paymentNotes",
+      ],
+    ];
 
-  stepFields[activeStep].forEach((field) => {
-    methods.resetField(field);
-  });
+    stepFields[activeStep].forEach((field) => {
+      methods.resetField(field);
+    });
 
-  setError(null);
-};
+    setError(null);
+  };
 
   /* SUBMIT */
   const onSubmit = () => {
@@ -146,24 +151,39 @@ export default function SellProductForm({ open, onClose }: SellProductFormProps)
     }, 1000);
   };
 
+  const stepRequiredFields: (keyof SellProductFormInputs)[][] = [
+  // Step 0 – Seller
+  ["name", "email", "phone", "sellerType"],
+
+  // Step 1 – Product
+  ["productName", "brand", "price", "stock", "category", "description"],
+
+  // Step 2 – Payment
+  ["paymentMethod"],
+];
+const isStepComplete = (stepIndex: number) => {
+  return stepRequiredFields[stepIndex].every((field) => {
+    const value = methods.getValues(field);
+    return value !== undefined && value !== "";
+  });
+};
+
+
   /* NAVIGATION */
-  const handleNext = async () => {
-    let fieldsToValidate: (keyof SellProductFormInputs)[] = [];
+const handleNext = () => {
+  // mark current step as error if required fields are missing
+  setStepErrors((prev) => {
+    const updated = [...prev];
+    updated[activeStep] = !isStepComplete(activeStep);
+    return updated;
+  });
 
-    if (activeStep === 0) {
-      fieldsToValidate = ["name", "email", "phone", "sellerType"];
-      if (sellerType === "business") {
-        fieldsToValidate.push("companyName", "companyEmail", "companyPhone");
-      }
-    } else if (activeStep === 1) {
-      fieldsToValidate = ["productName", "brand", "price", "stock", "category", "description"];
-    }
+  // ALWAYS move to next step
+  if (activeStep < STEPS.length - 1) {
+    setActiveStep((prev) => prev + 1);
+  }
+};
 
-    const isValid = await trigger(fieldsToValidate as any);
-    if (isValid && activeStep < STEPS.length - 1) {
-      setActiveStep((prev: number) => prev + 1);
-    }
-  };
 
   const handleBack = () => {
     if (activeStep > 0) {
@@ -189,12 +209,29 @@ export default function SellProductForm({ open, onClose }: SellProductFormProps)
           </Box>
 
           <Stepper activeStep={activeStep} alternativeLabel>
-            {STEPS.map((label) => (
-              <Step key={label}>
-                <StepLabel>{label}</StepLabel>
-              </Step>
-            ))}
-          </Stepper>
+  {STEPS.map((label, index) => {
+    const labelProps: {
+      optional?: React.ReactNode;
+      error?: boolean;
+    } = {};
+
+    if (stepErrors[index]) {
+      labelProps.error = true;
+      labelProps.optional = (
+        <Typography variant="caption" color="error">
+          Required fields missing
+        </Typography>
+      );
+    }
+
+    return (
+      <Step key={label}>
+        <StepLabel {...labelProps}>{label}</StepLabel>
+      </Step>
+    );
+  })}
+</Stepper>
+
         </div>
 
         {/* BODY */}
@@ -366,15 +403,36 @@ export default function SellProductForm({ open, onClose }: SellProductFormProps)
 
         {/* FOOTER */}
         <div className="sell-form-footer">
-          <Box display="flex" justifyContent="space-between" alignItems="center">
-            <Box>
+          <Box display="flex" alignItems="center" width="100%">
+            {/* LEFT - BACK */}
+            <Box flex={1} display="flex" justifyContent="flex-start">
               {activeStep !== 0 && (
                 <EcomButton
                   label="Back"
                   variant="outlined"
                   color="secondary"
                   onClick={handleBack}
-                  sx={{ mr: 2 }}
+                />
+              )}
+            </Box>
+
+            {/* CENTER - SAVE / SUBMIT */}
+            <Box flex={1} display="flex" justifyContent="center" gap={2}>
+              {activeStep === STEPS.length - 1 ? (
+                <EcomButton
+                  label={loading ? "Submitting..." : "Submit"}
+                  variant="contained"
+                  color="success"
+                  type="submit"
+                  form="sellProductForm"
+                  disabled={loading}
+                />
+              ) : (
+                <EcomButton
+                  label="Save"
+                  variant="contained"
+                  color="success"
+                  type="submit"  
                 />
               )}
 
@@ -386,7 +444,8 @@ export default function SellProductForm({ open, onClose }: SellProductFormProps)
               />
             </Box>
 
-            <Box display="flex" gap={2}>
+            {/* RIGHT - NEXT */}
+            <Box flex={1} display="flex" justifyContent="flex-end">
               {activeStep !== STEPS.length - 1 && (
                 <EcomButton
                   label="Next"
@@ -395,18 +454,10 @@ export default function SellProductForm({ open, onClose }: SellProductFormProps)
                   onClick={handleNext}
                 />
               )}
-
-              <EcomButton
-                label={loading ? "Saving..." : "Save"}
-                variant="contained"
-                color="primary"
-                type="submit"
-                form="sellProductForm"
-                disabled={loading}
-              />
             </Box>
           </Box>
         </div>
+
       </div>
     </>
   );
