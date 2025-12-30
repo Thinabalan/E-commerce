@@ -1,5 +1,4 @@
 import { Controller, useFormContext } from "react-hook-form";
-import type { FieldValues, Path } from "react-hook-form";
 import { FormControl, InputLabel, Select, MenuItem, FormHelperText } from "@mui/material";
 
 interface Option {
@@ -7,22 +6,22 @@ interface Option {
     label: string;
 }
 
-interface EcomDropdownProps<T extends FieldValues> {
-    name: Path<T>;
+interface EcomDropdownProps{
+    name: string;
     label: string;
     options: Option[];
     fullWidth?: boolean;
     required?: boolean;
 }
 
-const EcomDropdown = <T extends FieldValues>({
+const EcomDropdown : React.FC<EcomDropdownProps> = ({
     name,
     label,
     options,
     fullWidth = true,
     required = false,
-}: EcomDropdownProps<T>) => {
-    const { control, formState: { errors } } = useFormContext<T>();
+}) => {
+    const { control, formState: { errors } } = useFormContext();
     const error = errors[name];
 
     return (

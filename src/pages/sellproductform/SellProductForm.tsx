@@ -1,22 +1,27 @@
+import React from "react";
 import { useState, useEffect } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import {
   Box,
   Typography,
-  Grid,
 } from "@mui/material";
 
 import useProduct from "../../hooks/useProduct";
 import type { Category, SellProduct } from "../../types/types";
-import { ERROR_MESSAGES } from "../../constants/appConstants";
-import EcomTextField from "../../components/newcomponents/EcomTextField";
-import EcomDropdown from "../../components/newcomponents/EcomDropdown";
+
 import EcomButton from "../../components/newcomponents/EcomButton";
-import { sellProductSchema } from "../../schema/schema";
-import "./SellProductForm.css";
-import React from "react";
 import EcomStepper from "../../components/newcomponents/EcomStepper";
+import SellerInfoStep from "./SellerInfoStep";
+import ProductInfoStep from "./ProductInfoStep";
+import PaymentStep from "./PaymentStep";
+
+import { sellProductSchema } from "../../schema/sellProductSchema";
+import { sellProductDefaultValues } from "../../default/sellProductDefaults";
+
+import "./SellProductForm.css";
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from "@mui/icons-material/Close";
 
 interface SellProductFormProps {
   open: boolean;
@@ -50,7 +55,6 @@ const STEP_FIELDS: (keyof SellProduct)[][] = [
     "image",
     "description",
     "highlights",
-    "returnPolicy",
   ],
 
   // Step 3 – Payment
@@ -74,42 +78,10 @@ export default function SellProductForm({ open, onClose }: SellProductFormProps)
   const methods = useForm<SellProduct>({
     resolver: yupResolver(sellProductSchema),
     mode: "onChange",
-    defaultValues: {
-      name: "",
-      email: "",
-      phone: "",
-      sellerType: "",
-      companyName: "",
-      companyEmail: "",
-      companyPhone: "",
-      city: "",
-      address: "",
-
-      productName: "",
-      brand: "",
-      price: 0,
-      stock: 0,
-      category: "",
-      warranty: "",
-      image: "",
-      description: "",
-      highlights: "",
-      returnPolicy: "",
-
-      paymentMethod: "",
-      upiId: "",
-      accountName: "",
-      accountNumber: "",
-      ifsc: "",
-      bankName: "",
-      paymentNotes: "",
-    },
+    defaultValues: sellProductDefaultValues,
   });
 
-  const { handleSubmit, watch } = methods;
-
-  const sellerType = watch("sellerType");
-  const paymentMethod = watch("paymentMethod");
+  const { handleSubmit, trigger, resetField, formState:{isValid}  } = methods;
 
   /* CUSTOM HOOK */
   const { getCategories } = useProduct();
@@ -137,9 +109,8 @@ export default function SellProductForm({ open, onClose }: SellProductFormProps)
   /* RESET CURRENT STEP */
   const handleStepReset = () => {
     STEP_FIELDS[activeStep].forEach((field) => {
-      methods.resetField(field);
+      resetField(field);
     });
-
     setError(null);
   };
 
@@ -148,7 +119,7 @@ export default function SellProductForm({ open, onClose }: SellProductFormProps)
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
-      alert(ERROR_MESSAGES.successMsg);
+      alert("Product submitted successfully!");
       onClose();
     }, 1000);
   };
@@ -156,9 +127,9 @@ export default function SellProductForm({ open, onClose }: SellProductFormProps)
   /* NAVIGATION */
   const handleNext = async () => {
     // Validate current step fields
-    const isStepValid = await methods.trigger(STEP_FIELDS[activeStep]);
+    const isStepValid = await trigger(STEP_FIELDS[activeStep]);
 
-    // Update error state for visual feedback (red step label)
+    // Update error state for visual feedback
     setStepErrors((prev) => {
       const updated = [...prev];
       updated[activeStep] = !isStepValid;
@@ -189,9 +160,9 @@ export default function SellProductForm({ open, onClose }: SellProductFormProps)
             <Typography variant="h5" fontWeight="bold">
               Sell Your Product
             </Typography>
-            <button className="sell-form-close" onClick={onClose}>
-              &times;
-            </button>
+            <IconButton aria-label="close" size="small" onClick={onClose}>
+              <CloseIcon fontSize="inherit" />
+            </IconButton>
           </Box>
 
           <EcomStepper
@@ -212,158 +183,13 @@ export default function SellProductForm({ open, onClose }: SellProductFormProps)
           <FormProvider {...methods}>
             <form id="sellProductForm" onSubmit={handleSubmit(onSubmit)} noValidate>
               {/* SELLER INFO */}
-              {activeStep === 0 && (
-                <Grid container spacing={3}>
-                  <Grid size={{ xs: 12, md: 6 }}>
-                    <EcomTextField name="name" label="Seller Name" required />
-                  </Grid>
-
-                  <Grid size={{ xs: 12, md: 6 }}>
-                    <EcomTextField name="email" label="Email" type="email" required />
-                  </Grid>
-
-                  <Grid size={{ xs: 12, md: 6 }}>
-                    <EcomDropdown
-                      name="sellerType"
-                      label="Seller Type"
-                      required
-                      options={[
-                        { value: "individual", label: "Individual" },
-                        { value: "business", label: "Business" },
-                      ]}
-                    />
-                  </Grid>
-
-                  {sellerType === "business" && (
-                    <>
-                      <Grid size={{ xs: 12, md: 6 }}>
-                        <EcomTextField name="companyName" label="Company Name" required />
-                      </Grid>
-
-                      <Grid size={{ xs: 12, md: 6 }}>
-                        <EcomTextField name="companyEmail" label="Company Email" type="email" required />
-                      </Grid>
-
-                      <Grid size={{ xs: 12, md: 6 }}>
-                        <EcomTextField name="companyPhone" label="Company Phone" required />
-                      </Grid>
-                    </>
-                  )}
-
-                  <Grid size={{ xs: 12, md: 6 }}>
-                    <EcomTextField name="phone" label="Phone" required />
-                  </Grid>
-
-                  <Grid size={{ xs: 12, md: 6 }}>
-                    <EcomTextField name="city" label="City" />
-                  </Grid>
-
-                  <Grid size={{ xs: 12 }}>
-                    <EcomTextField name="address" label="Address" multiline rows={2} />
-                  </Grid>
-                </Grid>
-              )}
+              {activeStep === 0 && <SellerInfoStep />}
 
               {/* PRODUCT INFO */}
-              {activeStep === 1 && (
-                <Grid container spacing={3}>
-                  <Grid size={{ xs: 12, md: 6 }}>
-                    <EcomTextField name="productName" label="Product Name" required />
-                  </Grid>
-
-                  <Grid size={{ xs: 12, md: 6 }}>
-                    <EcomTextField name="brand" label="Brand" required />
-                  </Grid>
-
-                  <Grid size={{ xs: 12, md: 6 }}>
-                    <EcomTextField name="price" label="Price" type="number" required />
-                  </Grid>
-
-                  <Grid size={{ xs: 12, md: 6 }}>
-                    <EcomTextField name="stock" label="Stock Quantity" type="number" required />
-                  </Grid>
-
-                  <Grid size={{ xs: 12, md: 6 }}>
-                    <EcomDropdown
-                      name="category"
-                      label="Category"
-                      required
-                      options={categories.map((c: Category) => ({ value: c.name, label: c.name }))}
-                    />
-                  </Grid>
-
-                  <Grid size={{ xs: 12, md: 6 }}>
-                    <EcomDropdown
-                      name="warranty"
-                      label="Warranty"
-                      options={[
-                        { value: "yes", label: "Yes" },
-                        { value: "no", label: "No" },
-                      ]}
-                    />
-                  </Grid>
-
-                  <Grid size={{ xs: 12, md: 6 }}>
-                    <EcomTextField name="image" label="Image URL" />
-                  </Grid>
-
-                  <Grid size={{ xs: 12 }}>
-                    <EcomTextField name="description" label="Description" required multiline rows={3} />
-                  </Grid>
-
-                  <Grid size={{ xs: 12 }}>
-                    <EcomTextField name="highlights" label="Highlights" multiline rows={2} />
-                  </Grid>
-                </Grid>
-              )}
+              {activeStep === 1 && (<ProductInfoStep categories={categories} />)}
 
               {/* PAYMENT INFO */}
-              {activeStep === 2 && (
-                <Grid container spacing={3}>
-                  <Grid size={{ xs: 12, md: 6 }}>
-                    <EcomDropdown
-                      name="paymentMethod"
-                      label="Payment Method"
-                      required
-                      options={[
-                        { value: "cod", label: "Cash on Delivery" },
-                        { value: "upi", label: "UPI" },
-                        { value: "bank", label: "Bank Transfer" },
-                      ]}
-                    />
-                  </Grid>
-
-                  {paymentMethod === "upi" && (
-                    <Grid size={{ xs: 12, md: 6 }}>
-                      <EcomTextField name="upiId" label="UPI ID" required />
-                    </Grid>
-                  )}
-
-                  {paymentMethod === "bank" && (
-                    <>
-                      <Grid size={{ xs: 12, md: 6 }}>
-                        <EcomTextField name="accountName" label="Account Holder Name" required />
-                      </Grid>
-
-                      <Grid size={{ xs: 12, md: 6 }}>
-                        <EcomTextField name="accountNumber" label="Account Number" required />
-                      </Grid>
-
-                      <Grid size={{ xs: 12, md: 6 }}>
-                        <EcomTextField name="ifsc" label="IFSC Code" required />
-                      </Grid>
-
-                      <Grid size={{ xs: 12, md: 6 }}>
-                        <EcomTextField name="bankName" label="Bank Name" required />
-                      </Grid>
-                    </>
-                  )}
-
-                  <Grid size={{ xs: 12 }}>
-                    <EcomTextField name="paymentNotes" label="Payment Notes" multiline rows={2} />
-                  </Grid>
-                </Grid>
-              )}
+              {activeStep === 2 && <PaymentStep />}
             </form>
           </FormProvider>
         </div>
@@ -371,19 +197,19 @@ export default function SellProductForm({ open, onClose }: SellProductFormProps)
         {/* FOOTER */}
         <div className="sell-form-footer">
           <Box display="flex" alignItems="center" width="100%">
-            {/* LEFT - BACK */}
+
+            {/* BACK */}
             <Box flex={1} display="flex" justifyContent="flex-start">
-              {activeStep !== 0 && (
-                <EcomButton
-                  label="Back"
-                  variant="outlined"
-                  color="secondary"
-                  onClick={handleBack}
-                />
-              )}
+              <EcomButton
+                label="Back"
+                variant="outlined"
+                color="secondary"
+                onClick={handleBack}
+                disabled={activeStep === 0}
+              />
             </Box>
 
-            {/* CENTER - SAVE / SUBMIT */}
+            {/* SAVE / SUBMIT */}
             <Box flex={1} display="flex" justifyContent="center" gap={2}>
               {activeStep === STEPS.length - 1 ? (
                 <EcomButton
@@ -392,7 +218,7 @@ export default function SellProductForm({ open, onClose }: SellProductFormProps)
                   color="success"
                   type="submit"
                   form="sellProductForm"
-                  disabled={loading}
+                  disabled={!isValid || loading}
                 />
               ) : (
                 <EcomButton
@@ -411,20 +237,18 @@ export default function SellProductForm({ open, onClose }: SellProductFormProps)
               />
             </Box>
 
-            {/* RIGHT - NEXT */}
+            {/* NEXT */}
             <Box flex={1} display="flex" justifyContent="flex-end">
-              {activeStep !== STEPS.length - 1 && (
-                <EcomButton
-                  label="Next"
-                  variant="contained"
-                  color="primary"
-                  onClick={handleNext}
-                />
-              )}
+              <EcomButton
+                label="Next"
+                variant="contained"
+                color="primary"
+                onClick={handleNext}
+                disabled={activeStep === STEPS.length - 1}
+              />
             </Box>
           </Box>
         </div>
-
       </div>
     </>
   );

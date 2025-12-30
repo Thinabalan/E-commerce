@@ -86,7 +86,6 @@ export type SellProduct = {
     image?: string;
     description: string;
     highlights?: string;
-    returnPolicy?: string;
 
     paymentMethod: "cod" | "upi" | "bank" | "";
     upiId?: string;

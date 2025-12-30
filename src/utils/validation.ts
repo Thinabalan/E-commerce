@@ -1,4 +1,4 @@
-import { ERROR_MESSAGES } from "../constants/appConstants";
+import { ERROR_MESSAGES } from "../constants/errorMessages";
 
 // Validators
 export const isName = (name: string) => /^[A-Za-z ]{1,30}$/.test(name);
@@ -12,7 +12,7 @@ export const isPhone = (phone: string) => /^\d{10}$/.test(phone);
 
 // Field Validation Helpers
 export const validateNameField = (name: string): string => {
-    if (!name.trim()) return ERROR_MESSAGES.nameRequired;
+    if (!name.trim()) return "Name is required";
     if (!isName(name.trim())) {
         if (name.trim().length > 30) return ERROR_MESSAGES.nameTooLong;
         return ERROR_MESSAGES.nameInvalid;
@@ -27,14 +27,14 @@ export const validateEmailField = (email: string): string => {
 };
 
 export const validatePasswordField = (password: string): string => {
-    if (!password) return ERROR_MESSAGES.passwordRequired;
-    if (!isStrongPassword(password)) return ERROR_MESSAGES.passwordWeak;
+    if (!password) return "Password is required";
+    if (!isStrongPassword(password)) return "Password is weak";
     return "";
 };
 
 export const validateConfirmPasswordField = (password: string, confirm: string): string => {
-    if (!confirm) return ERROR_MESSAGES.confirmPasswordRequired;
-    if (password !== confirm) return ERROR_MESSAGES.passwordMismatch;
+    if (!confirm) return "Confirm Password is required";
+    if (password !== confirm) return "Password doesn't match";
     return "";
 };
 

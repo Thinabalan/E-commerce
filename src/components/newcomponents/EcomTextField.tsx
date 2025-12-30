@@ -1,9 +1,8 @@
 import { Controller, useFormContext } from "react-hook-form";
-import type { FieldValues, Path } from "react-hook-form";
 import { TextField } from "@mui/material";
 
-interface EcomTextFieldProps<T extends FieldValues> {
-    name: Path<T>;
+interface EcomTextFieldProps {
+    name: string;
     label: string;
     type?: React.InputHTMLAttributes<HTMLInputElement>["type"];
     fullWidth?: boolean;
@@ -12,7 +11,7 @@ interface EcomTextFieldProps<T extends FieldValues> {
     rows?: number;
 }
 
-const EcomTextField = <T extends FieldValues>({
+const EcomTextField: React.FC<EcomTextFieldProps> = ({
     name,
     label,
     type = "text",
@@ -20,8 +19,8 @@ const EcomTextField = <T extends FieldValues>({
     required = false,
     multiline = false,
     rows = 1,
-}: EcomTextFieldProps<T>) => {
-    const { control, formState: { errors } } = useFormContext<T>();
+}) => {
+    const { control, formState: { errors } } = useFormContext();
     const error = errors[name];
 
     return (
