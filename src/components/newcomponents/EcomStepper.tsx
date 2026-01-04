@@ -1,22 +1,34 @@
 import { Stepper, Step, StepLabel } from "@mui/material";
-import React from "react";
 
 interface EcomStepperProps {
   steps: string[];
   activeStep: number;
-  stepErrors?: boolean[];
+  stepErrors: boolean[];
+  completedSteps: boolean[];
+  onStepClick: (step: number) => void;
 }
 
-const EcomStepper: React.FC<EcomStepperProps> = ({
+const EcomStepper = ({
   steps,
   activeStep,
-  stepErrors = [],
-}) => {
+  stepErrors,
+  completedSteps,
+  onStepClick,
+}: EcomStepperProps) => {
   return (
     <Stepper activeStep={activeStep} alternativeLabel>
       {steps.map((label, index) => (
-        <Step key={label}>
-          <StepLabel error={stepErrors[index]}>
+        <Step
+          key={label}
+          completed={completedSteps[index]}
+        >
+          <StepLabel
+            error={stepErrors[index]}
+            onClick={() => onStepClick(index)}
+            sx={{
+              cursor: "pointer",
+            }}
+          >
             {label}
           </StepLabel>
         </Step>

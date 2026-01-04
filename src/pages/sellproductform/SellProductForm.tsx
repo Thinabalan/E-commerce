@@ -1,11 +1,12 @@
-import React from "react";
 import { useState, useEffect } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import {
   Box,
   Typography,
+  IconButton,
 } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 
 import useProduct from "../../hooks/useProduct";
 import type { Category, SellProduct } from "../../types/types";
@@ -19,9 +20,11 @@ import PaymentStep from "./PaymentStep";
 import { sellProductSchema } from "../../schema/sellProductSchema";
 import { sellProductDefaultValues } from "../../default/sellProductDefaults";
 
+import { useFormHandlers } from "../../hooks/useFormHandlers";
+import EcomSnackbar from "../../components/newcomponents/EcomSnackbar";
+import EcomDialog from "../../components/newcomponents/EcomDialog";
+
 import "./SellProductForm.css";
-import IconButton from '@mui/material/IconButton';
-import CloseIcon from "@mui/icons-material/Close";
 
 interface SellProductFormProps {
   open: boolean;
@@ -31,7 +34,6 @@ interface SellProductFormProps {
 const STEPS = ["Seller Info", "Product Info", "Payment"];
 
 const STEP_FIELDS: (keyof SellProduct)[][] = [
-  // Step 1 – Seller
   [
     "name",
     "email",
@@ -43,8 +45,6 @@ const STEP_FIELDS: (keyof SellProduct)[][] = [
     "city",
     "address",
   ],
-
-  // Step 2 – Product
   [
     "productName",
     "brand",
@@ -56,8 +56,6 @@ const STEP_FIELDS: (keyof SellProduct)[][] = [
     "description",
     "highlights",
   ],
-
-  // Step 3 – Payment
   [
     "paymentMethod",
     "upiId",
@@ -71,26 +69,42 @@ const STEP_FIELDS: (keyof SellProduct)[][] = [
 
 export default function SellProductForm({ open, onClose }: SellProductFormProps) {
   const [activeStep, setActiveStep] = useState(0);
-  const [stepErrors, setStepErrors] = React.useState<boolean[]>(
+  const [stepErrors, setStepErrors] = useState<boolean[]>(
     Array(STEPS.length).fill(false)
   );
+  const [completedSteps, setCompletedSteps] = useState<boolean[]>(
+    Array(STEPS.length).fill(false)
+  );
+
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [openResetDialog, setOpenResetDialog] = useState(false);
+
+  /* LOAD SAVED DRAFT */
+  const getSavedValues = (): SellProduct => {
+    try {
+      const saved = localStorage.getItem("sellProductDraft");
+      return saved ? JSON.parse(saved) : sellProductDefaultValues;
+    } catch {
+      return sellProductDefaultValues;
+    }
+  };
 
   const methods = useForm<SellProduct>({
     resolver: yupResolver(sellProductSchema),
     mode: "onChange",
-    defaultValues: sellProductDefaultValues,
+    defaultValues: getSavedValues(),
   });
 
-  const { handleSubmit, trigger, resetField, formState:{isValid}  } = methods;
+  const {
+    handleSubmit,
+    formState: { isValid },
+  } = methods;
 
-  /* CUSTOM HOOK */
+  /* FETCH CATEGORIES  */
   const { getCategories } = useProduct();
 
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-
-  /* FETCH CATEGORIES */
   useEffect(() => {
     if (!open) return;
 
@@ -106,47 +120,24 @@ export default function SellProductForm({ open, onClose }: SellProductFormProps)
     fetchCategories();
   }, [open, getCategories]);
 
-  /* RESET CURRENT STEP */
-  const handleStepReset = () => {
-    STEP_FIELDS[activeStep].forEach((field) => {
-      resetField(field);
-    });
-    setError(null);
-  };
-
-  /* SUBMIT */
-  const onSubmit = () => {
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      alert("Product submitted successfully!");
-      onClose();
-    }, 1000);
-  };
-
-  /* NAVIGATION */
-  const handleNext = async () => {
-    // Validate current step fields
-    const isStepValid = await trigger(STEP_FIELDS[activeStep]);
-
-    // Update error state for visual feedback
-    setStepErrors((prev) => {
-      const updated = [...prev];
-      updated[activeStep] = !isStepValid;
-      return updated;
-    });
-
-    // ALWAYS move to next step
-    if (activeStep < STEPS.length - 1) {
-      setActiveStep((prev) => prev + 1);
-    }
-  };
-
-  const handleBack = () => {
-    if (activeStep > 0) {
-      setActiveStep((prev: number) => prev - 1);
-    }
-  };
+  /* FORM HANDLERS */
+  const {
+    loading,
+    handleNext,
+    handleBack,
+    handleStepClick,
+    handleReset,
+    handleSave,
+    handleSubmitFinal,
+  } = useFormHandlers({
+    form: methods,
+    activeStep,
+    setActiveStep,
+    stepsLength: STEPS.length,
+    stepFields: STEP_FIELDS,
+    setStepErrors,
+    setCompletedSteps,
+  });
 
   if (!open) return null;
 
@@ -160,7 +151,7 @@ export default function SellProductForm({ open, onClose }: SellProductFormProps)
             <Typography variant="h5" fontWeight="bold">
               Sell Your Product
             </Typography>
-            <IconButton aria-label="close" size="small" onClick={onClose}>
+            <IconButton size="small" onClick={onClose}>
               <CloseIcon fontSize="inherit" />
             </IconButton>
           </Box>
@@ -169,6 +160,8 @@ export default function SellProductForm({ open, onClose }: SellProductFormProps)
             steps={STEPS}
             activeStep={activeStep}
             stepErrors={stepErrors}
+            completedSteps={completedSteps}
+            onStepClick={handleStepClick}
           />
         </div>
 
@@ -181,14 +174,17 @@ export default function SellProductForm({ open, onClose }: SellProductFormProps)
           )}
 
           <FormProvider {...methods}>
-            <form id="sellProductForm" onSubmit={handleSubmit(onSubmit)} noValidate>
-              {/* SELLER INFO */}
+            <form
+              id="sellProductForm"
+              onSubmit={handleSubmit((data) =>
+                handleSubmitFinal(data, onClose)
+              )}
+              noValidate
+            >
               {activeStep === 0 && <SellerInfoStep />}
-
-              {/* PRODUCT INFO */}
-              {activeStep === 1 && (<ProductInfoStep categories={categories} />)}
-
-              {/* PAYMENT INFO */}
+              {activeStep === 1 && (
+                <ProductInfoStep categories={categories} />
+              )}
               {activeStep === 2 && <PaymentStep />}
             </form>
           </FormProvider>
@@ -197,43 +193,66 @@ export default function SellProductForm({ open, onClose }: SellProductFormProps)
         {/* FOOTER */}
         <div className="sell-form-footer">
           <Box display="flex" alignItems="center" width="100%">
-
             {/* BACK */}
-            <Box flex={1} display="flex" justifyContent="flex-start">
+            <Box flex={1}>
               <EcomButton
                 label="Back"
                 variant="outlined"
-                color="secondary"
                 onClick={handleBack}
                 disabled={activeStep === 0}
               />
             </Box>
 
-            {/* SAVE / SUBMIT */}
+            {/* ACTIONS */}
             <Box flex={1} display="flex" justifyContent="center" gap={2}>
-              {activeStep === STEPS.length - 1 ? (
+              {activeStep !== STEPS.length - 1 && (
+                <>
+                  <EcomButton
+                    label="Save"
+                    variant="contained"
+                    color="success"
+                    onClick={() => {
+                      handleSave(methods.getValues());
+                      setSnackbarOpen(true);
+                    }}
+                  />
+                  {/* SNACKBAR */}
+                  <EcomSnackbar
+                    open={snackbarOpen}
+                    message="Saved successfully"
+                    severity="success"
+                    onClose={() => setSnackbarOpen(false)}
+                  />
+                </>
+              )}
+
+              {activeStep === STEPS.length - 1 && (
                 <EcomButton
                   label={loading ? "Submitting..." : "Submit"}
+                  type="submit"
                   variant="contained"
                   color="success"
-                  type="submit"
-                  form="sellProductForm"
                   disabled={!isValid || loading}
-                />
-              ) : (
-                <EcomButton
-                  label="Save"
-                  variant="contained"
-                  color="success"
-                  type="submit"
+                  form="sellProductForm"
                 />
               )}
 
               <EcomButton
                 label="Reset"
                 variant="outlined"
-                color="inherit"
-                onClick={handleStepReset}
+                onClick={() => setOpenResetDialog(true)}
+              />
+              {/* RESET DIALOG  */}
+              <EcomDialog
+                open={openResetDialog}
+                title="Reset Form?"
+                description="All entered data for this step will be cleared."
+                confirmText="Reset"
+                onClose={() => setOpenResetDialog(false)}
+                onConfirm={() => {
+                  handleReset();
+                  setOpenResetDialog(false);
+                }}
               />
             </Box>
 
@@ -242,7 +261,6 @@ export default function SellProductForm({ open, onClose }: SellProductFormProps)
               <EcomButton
                 label="Next"
                 variant="contained"
-                color="primary"
                 onClick={handleNext}
                 disabled={activeStep === STEPS.length - 1}
               />

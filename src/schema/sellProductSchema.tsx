@@ -1,124 +1,126 @@
-import * as yup from "yup";
-import type { SellProduct } from "../types/types";
-import { ERROR_MESSAGES } from "../constants/errorMessages";
-import { REGEX } from "../constants/regex";
+    import * as yup from "yup";
+    import type { SellProduct } from "../types/types";
+    import { ERROR_MESSAGES, requiredMsg } from "../constants/errorMessages";
+    import { REGEX } from "../constants/regex";
 
-export const sellProductSchema: yup.ObjectSchema<SellProduct> = yup.object({
-    // SELLER INFO
-    name: yup
-        .string()
-        .matches(REGEX.name, ERROR_MESSAGES.nameInvalid)
-        .max(30, ERROR_MESSAGES.nameTooLong)
-        .required(`Name ${ERROR_MESSAGES.Required}`),
+    export const sellProductSchema: yup.ObjectSchema<SellProduct> = yup.object({
+        // SELLER INFO
+        name: yup
+            .string()
+            .required(requiredMsg("Name"))
+            .matches(REGEX.name, ERROR_MESSAGES.nameInvalid)
+            .max(30, ERROR_MESSAGES.nameTooLong),
 
-    email: yup
-        .string()
-        .email(ERROR_MESSAGES.emailInvalid)
-        .required(ERROR_MESSAGES.emailRequired),
+        email: yup
+            .string()
+            .email(ERROR_MESSAGES.emailInvalid)
+            .required(requiredMsg("Email")),
 
-    phone: yup
-        .string()
-        .matches(REGEX.phone, ERROR_MESSAGES.phoneInvalid)
-        .required(ERROR_MESSAGES.phoneRequired),
+        phone: yup
+            .string()
+            .required(requiredMsg("Phone number"))
+            .matches(REGEX.phone, ERROR_MESSAGES.phoneInvalid,),
 
-    sellerType: yup
-        .string()
-        .oneOf(["individual", "business", ""] as const)
-        .required(ERROR_MESSAGES.sellerTypeRequired),
+        sellerType: yup
+            .string()
+            .oneOf(["individual", "business", ""] as const)
+            .required(requiredMsg("Seller type")),
 
-    // BUSINESS INFO (conditional)
-    companyName: yup.string().when("sellerType", {
-        is: "business",
-        then: (schema) => schema.required(ERROR_MESSAGES.companyNameRequired),
-        otherwise: (schema) => schema.optional(),
-    }),
+        // BUSINESS INFO (conditional)
+        companyName: yup.string().when("sellerType", {
+            is: "business",
+            then: (schema) => schema
+                .required(requiredMsg("Name"))
+                .matches(REGEX.name, ERROR_MESSAGES.nameInvalid)
+                .max(30, ERROR_MESSAGES.nameTooLong),
+            otherwise: (schema) => schema.optional(),
+        }),
 
-    companyEmail: yup.string().when("sellerType", {
-        is: "business",
-        then: (schema) =>
-            schema
-                .email(ERROR_MESSAGES.companyEmailInvalid)
-                .required(ERROR_MESSAGES.companyEmailRequired),
-        otherwise: (schema) => schema.optional(),
-    }),
+        companyEmail: yup.string().when("sellerType", {
+            is: "business",
+            then: (schema) =>
+                schema
+                    .email(ERROR_MESSAGES.emailInvalid)
+                    .required(requiredMsg("Email")),
+            otherwise: (schema) => schema.optional(),
+        }),
 
-    companyPhone: yup.string().when("sellerType", {
-        is: "business",
-        then: (schema) =>
-            schema
-                .matches(REGEX.phone, ERROR_MESSAGES.companyPhoneInvalid)
-                .required(ERROR_MESSAGES.companyPhoneRequired),
-        otherwise: (schema) => schema.optional(),
-    }),
+        companyPhone: yup.string().when("sellerType", {
+            is: "business",
+            then: (schema) =>
+                schema
+                    .required(requiredMsg("Phone number"))
+                    .matches(REGEX.phone, ERROR_MESSAGES.phoneInvalid,),
+            otherwise: (schema) => schema.optional(),
+        }),
 
-    city: yup.string().optional(),
-    address: yup.string().optional(),
+        city: yup.string().optional(),
+        address: yup.string().optional(),
 
-    // PRODUCT INFO
-    productName: yup.string().required(ERROR_MESSAGES.productNameRequired),
-    brand: yup.string().required(ERROR_MESSAGES.brandRequired),
+        // PRODUCT INFO
+        productName: yup.string().required(requiredMsg("Product name")),
+        brand: yup.string().required(requiredMsg("Brand name")),
 
-    price: yup
-        .number()
-        .typeError(ERROR_MESSAGES.priceInvalid)
-        .positive("Price must be positive")
-        .required(ERROR_MESSAGES.priceRequired),
+        price: yup
+            .number()
+            .typeError(ERROR_MESSAGES.priceInvalid)
+            .positive("Price must be positive")
+            .required(requiredMsg("Price")),
 
-    stock: yup
-        .number()
-        .typeError(ERROR_MESSAGES.stockInvalid)
-        .integer("Stock must be an integer")
-        .min(0, "Stock cannot be negative")
-        .required(ERROR_MESSAGES.stockRequired),
+        stock: yup
+            .number()
+            .typeError(ERROR_MESSAGES.stockInvalid)
+            .positive("Stock must be positive")
+            .required(requiredMsg("Stock")),
 
-    category: yup.string().required(ERROR_MESSAGES.categoryRequired),
+        category: yup.string().required(requiredMsg("Category")),
 
-    warranty: yup.string().optional(),
-    image: yup
-        .string()
-        .trim()
-        .url(ERROR_MESSAGES.imageUrlInvalid)
-        .optional(),
+        warranty: yup.string().optional(),
+        image: yup
+            .string()
+            .trim()
+            .url(ERROR_MESSAGES.imageUrlInvalid)
+            .optional(),
 
-    highlights: yup.string().optional(),
-    description: yup.string().required(ERROR_MESSAGES.descriptionRequired),
+        highlights: yup.string().optional(),
+        description: yup.string().required(requiredMsg("Description")),
 
-    // PAYMENT INFO
-    paymentMethod: yup
-        .string()
-        .oneOf(["cod", "upi", "bank", ""] as const)
-        .required(ERROR_MESSAGES.paymentMethodRequired),
+        // PAYMENT INFO
+        paymentMethod: yup
+            .string()
+            .oneOf(["cod", "upi", "bank", ""] as const)
+            .required(requiredMsg("Payment method")),
 
-    upiId: yup.string().when("paymentMethod", {
-        is: "upi",
-        then: (schema) => schema.required(ERROR_MESSAGES.upiRequired),
-        otherwise: (schema) => schema.optional(),
-    }),
+        upiId: yup.string().when("paymentMethod", {
+            is: "upi",
+            then: (schema) => schema.required(requiredMsg("UPI ID")),
+            otherwise: (schema) => schema.optional(),
+        }),
 
-    accountName: yup.string().when("paymentMethod", {
-        is: "bank",
-        then: (schema) => schema.required(ERROR_MESSAGES.accountNameRequired),
-        otherwise: (schema) => schema.optional(),
-    }),
+        accountName: yup.string().when("paymentMethod", {
+            is: "bank",
+            then: (schema) => schema.required(requiredMsg("Account name")),
+            otherwise: (schema) => schema.optional(),
+        }),
 
-    accountNumber: yup.string().when("paymentMethod", {
-        is: "bank",
-        then: (schema) => schema.required(ERROR_MESSAGES.accountNumberRequired),
-        otherwise: (schema) => schema.optional(),
-    }),
+        accountNumber: yup.string().when("paymentMethod", {
+            is: "bank",
+            then: (schema) => schema.required(requiredMsg("Account number")),
+            otherwise: (schema) => schema.optional(),
+        }),
 
-    ifsc: yup.string().when("paymentMethod", {
-        is: "bank",
-        then: (schema) => schema.required(ERROR_MESSAGES.ifscRequired),
-        otherwise: (schema) => schema.optional(),
-    }),
+        ifsc: yup.string().when("paymentMethod", {
+            is: "bank",
+            then: (schema) => schema.required(requiredMsg("IFSC code")),
+            otherwise: (schema) => schema.optional(),
+        }),
 
-    bankName: yup.string().when("paymentMethod", {
-        is: "bank",
-        then: (schema) => schema.required(ERROR_MESSAGES.bankNameRequired),
-        otherwise: (schema) => schema.optional(),
-    }),
+        bankName: yup.string().when("paymentMethod", {
+            is: "bank",
+            then: (schema) => schema.required(requiredMsg("Bank name")),
+            otherwise: (schema) => schema.optional(),
+        }),
 
-    paymentNotes: yup.string().optional(),
+        paymentNotes: yup.string().optional(),
 
-});
+    });
