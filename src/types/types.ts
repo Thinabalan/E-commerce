@@ -82,8 +82,10 @@ export type SellProduct = {
     price: number;
     stock: number;
     category: string;
+    condition?: "new" | "used" | "";
     warranty?: string;
     image?: string;
+    productFeatures?: string[];
     description: string;
     highlights?: string;
 

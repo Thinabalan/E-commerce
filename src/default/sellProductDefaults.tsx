@@ -18,8 +18,10 @@ export const sellProductDefaultValues: SellProduct = {
   price: 0,
   stock: 0,
   category: "",
+  condition: "",
   warranty: "",
   image: "",
+  productFeatures: [],
   description: "",
   highlights: "",
 

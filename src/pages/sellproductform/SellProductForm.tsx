@@ -4,68 +4,39 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import {
   Box,
   Typography,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
   IconButton,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
 import useProduct from "../../hooks/useProduct";
-import type { Category, SellProduct } from "../../types/types";
 
 import EcomButton from "../../components/newcomponents/EcomButton";
 import EcomStepper from "../../components/newcomponents/EcomStepper";
+import EcomSnackbar from "../../components/newcomponents/EcomSnackbar";
+import EcomDialog from "../../components/newcomponents/EcomDialog";
+
 import SellerInfoStep from "./SellerInfoStep";
 import ProductInfoStep from "./ProductInfoStep";
 import PaymentStep from "./PaymentStep";
 
 import { sellProductSchema } from "../../schema/sellProductSchema";
 import { sellProductDefaultValues } from "../../default/sellProductDefaults";
+import type { Category, SellProduct } from "../../types/types";
 
 import { useFormHandlers } from "../../hooks/useFormHandlers";
-import EcomSnackbar from "../../components/newcomponents/EcomSnackbar";
-import EcomDialog from "../../components/newcomponents/EcomDialog";
 
-import "./SellProductForm.css";
+import { STEPS, STEP_FIELDS } from "../../config/const";
+
+// import "./SellProductForm.css";
+
 
 interface SellProductFormProps {
   open: boolean;
   onClose: () => void;
 }
-
-const STEPS = ["Seller Info", "Product Info", "Payment"];
-
-const STEP_FIELDS: (keyof SellProduct)[][] = [
-  [
-    "name",
-    "email",
-    "phone",
-    "sellerType",
-    "companyName",
-    "companyEmail",
-    "companyPhone",
-    "city",
-    "address",
-  ],
-  [
-    "productName",
-    "brand",
-    "price",
-    "stock",
-    "category",
-    "warranty",
-    "image",
-    "description",
-    "highlights",
-  ],
-  [
-    "paymentMethod",
-    "upiId",
-    "accountName",
-    "accountNumber",
-    "ifsc",
-    "bankName",
-    "paymentNotes",
-  ],
-];
 
 export default function SellProductForm({ open, onClose }: SellProductFormProps) {
   const [activeStep, setActiveStep] = useState(0);
@@ -106,7 +77,7 @@ export default function SellProductForm({ open, onClose }: SellProductFormProps)
   const { getCategories } = useProduct();
 
   useEffect(() => {
-    if (!open) return;
+    // if (!open) return;
 
     const fetchCategories = async () => {
       try {
@@ -143,19 +114,35 @@ export default function SellProductForm({ open, onClose }: SellProductFormProps)
 
   return (
     <>
-      <div className="sell-form-backdrop" onClick={onClose} />
-      <div className="sell-form-modal">
+      <EcomDialog
+        open={open}
+        onClose={onClose}
+        maxWidth="md"
+        fullWidth
+        backdropBlur={true}
+        paperSx={{
+          width: "800px",
+          height: "720px",
+          maxWidth: "95vw",
+          maxHeight: "90vh",
+          borderRadius: "12px",
+        }}
+      >
         {/* HEADER */}
-        <div className="sell-form-header">
-          <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-            <Typography variant="h5" fontWeight="bold">
+        <Box px={2} py={1} borderBottom="1px solid rgba(0,0,0,0.1)">
+          <Box
+            display="flex"
+            alignItems="center"
+            justifyContent="space-between"
+            mb={2}
+          >
+            <DialogTitle sx={{ p: 0, fontWeight: "bold" }}>
               Sell Your Product
-            </Typography>
-            <IconButton size="small" onClick={onClose}>
-              <CloseIcon fontSize="inherit" />
+            </DialogTitle>
+            <IconButton onClick={onClose} size="small">
+              <CloseIcon />
             </IconButton>
           </Box>
-
           <EcomStepper
             steps={STEPS}
             activeStep={activeStep}
@@ -163,10 +150,10 @@ export default function SellProductForm({ open, onClose }: SellProductFormProps)
             completedSteps={completedSteps}
             onStepClick={handleStepClick}
           />
-        </div>
+        </Box>
 
-        {/* BODY */}
-        <div className="sell-form-body">
+        {/* CONTENT */}
+        <DialogContent sx={{ p: 3 }}>
           {error && (
             <Typography color="error" textAlign="center" mb={2}>
               {error}
@@ -182,16 +169,21 @@ export default function SellProductForm({ open, onClose }: SellProductFormProps)
               noValidate
             >
               {activeStep === 0 && <SellerInfoStep />}
-              {activeStep === 1 && (
-                <ProductInfoStep categories={categories} />
-              )}
+              {activeStep === 1 && <ProductInfoStep categories={categories} />}
               {activeStep === 2 && <PaymentStep />}
             </form>
           </FormProvider>
-        </div>
+        </DialogContent>
 
-        {/* FOOTER */}
-        <div className="sell-form-footer">
+        {/* ACTIONS */}
+        <DialogActions
+          sx={{
+            px: 3,
+            py: 2,
+            borderTop: "1px solid rgba(0,0,0,0.1)",
+            bgcolor: "rgba(0,0,0,0.02)",
+          }}
+        >
           <Box display="flex" alignItems="center" width="100%">
             {/* BACK */}
             <Box flex={1}>
@@ -216,7 +208,6 @@ export default function SellProductForm({ open, onClose }: SellProductFormProps)
                       setSnackbarOpen(true);
                     }}
                   />
-                  {/* SNACKBAR */}
                   <EcomSnackbar
                     open={snackbarOpen}
                     message="Saved successfully"
@@ -242,7 +233,6 @@ export default function SellProductForm({ open, onClose }: SellProductFormProps)
                 variant="outlined"
                 onClick={() => setOpenResetDialog(true)}
               />
-              {/* RESET DIALOG  */}
               <EcomDialog
                 open={openResetDialog}
                 title="Reset Form?"
@@ -266,8 +256,8 @@ export default function SellProductForm({ open, onClose }: SellProductFormProps)
               />
             </Box>
           </Box>
-        </div>
-      </div>
+        </DialogActions>
+      </EcomDialog>
     </>
   );
 }
