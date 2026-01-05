@@ -1,4 +1,4 @@
-import { ERROR_MESSAGES } from "../constants/errorMessages";
+import { ERROR_MESSAGES } from "../constants/ErrorMessages";
 
 // Validators
 export const isName = (name: string) => /^[A-Za-z ]{1,30}$/.test(name);

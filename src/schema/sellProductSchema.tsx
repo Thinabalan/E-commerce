@@ -1,6 +1,6 @@
 import * as yup from "yup";
 import type { SellProduct } from "../types/types";
-import { ERROR_MESSAGES, requiredMsg } from "../constants/errorMessages";
+import { ERROR_MESSAGES, requiredMsg } from "../constants/ErrorMessages";
 import { REGEX } from "../constants/regex";
 
 export const sellProductSchema: yup.ObjectSchema<SellProduct> = yup.object({
