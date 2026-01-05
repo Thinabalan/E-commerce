@@ -19,8 +19,29 @@ export default function Header() {
   const [user, setUser] = useState<User | null>(null);
   const [showAuth, setShowAuth] = useState(false);
 
-
   const [showSellModal, setShowSellModal] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+
+  // Close dropdown on click outside
+  useEffect(() => {
+    const handleClickOutside = () => {
+      setDropdownOpen(false);
+    };
+
+    if (dropdownOpen) {
+      window.addEventListener("click", handleClickOutside);
+    }
+
+    return () => {
+      window.removeEventListener("click", handleClickOutside);
+    };
+  }, [dropdownOpen]);
+
+  const toggleDropdown = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent immediate closing by the window listener
+    setDropdownOpen(!dropdownOpen);
+  };
+
 
   useEffect(() => {
     const loadUser = () => {
@@ -148,14 +169,26 @@ export default function Header() {
               /* PROFILE DROPDOWN */
               <div className="dropdown">
                 <button
-                  className={`btn dropdown-toggle ${isDark ? "btn-dark-mode" : "btn-light-mode"
+                  className={`btn dropdown-toggle ${isDark ? "btn-dark-mode" : "btn-light-mode"} ${dropdownOpen ? "show" : ""
                     }`}
-                  data-bs-toggle="dropdown"
+                  type="button"
+                  id="profileDropdown"
+                  onClick={toggleDropdown}
+                  aria-expanded={dropdownOpen}
                 >
                   <i className="fa-solid fa-user me-1"></i> {user?.name}
                 </button>
 
-                <ul className="dropdown-menu dropdown-menu-end">
+                <ul
+                  className={`dropdown-menu dropdown-menu-end ${dropdownOpen ? "show" : ""}`}
+                  aria-labelledby="profileDropdown"
+                  style={{
+                    position: "absolute",
+                    inset: "0px 0px auto auto",
+                    margin: "0px",
+                    transform: "translate(0px, 42px)",
+                  }}
+                >
                   <li>
                     <Link className="dropdown-item" to="/profile">
                       My Profile
