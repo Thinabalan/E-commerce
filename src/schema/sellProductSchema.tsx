@@ -1,7 +1,7 @@
 import * as yup from "yup";
 import type { SellProduct } from "../types/types";
 import { ERROR_MESSAGES, requiredMsg } from "../constants/ErrorMessages";
-import { REGEX } from "../constants/regex";
+import { REGEX } from "../constants/Regex";
 
 export const sellProductSchema: yup.ObjectSchema<SellProduct> = yup.object({
     // SELLER INFO
