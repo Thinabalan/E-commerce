@@ -62,7 +62,7 @@ export default function Home() {
           {topPicks.map((prod: Product) => (
             <div className="col-6 col-md-3" key={prod.id}>
               <EcomCard
-                name={prod.name}
+                name={prod.productName}
                 price={prod.price}
                 image={prod.image}
               />
@@ -79,7 +79,7 @@ export default function Home() {
           {latestTrends.map((prod: Product) => (
             <div className="col-6 col-md-3" key={prod.id}>
               <EcomCard
-                name={prod.name}
+                name={prod.productName}
                 price={prod.price}
                 image={prod.image}
               />

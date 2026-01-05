@@ -10,8 +10,8 @@ interface ProductProps {
 const EcomCard = ({ name, price, image }: ProductProps) => {
   return (
     <div className="product-card">
-      <img src={image} className="product-img" />
-
+      {/* {image && <img src={image} className="product-img" alt="product-image" />} */}
+      <img src={image} className="product-img" alt="product-image" />
       <h5 className="product-title">{name}</h5>
       <p className="product-price">₹{price}</p>
 

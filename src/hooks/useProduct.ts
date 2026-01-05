@@ -1,5 +1,5 @@
 import { productService } from "../services/productService"
-import type { Product, Category, CreateProduct } from "../types/types";
+import type { Product, Category, SellProduct } from "../types/types";
 
 export default function useProduct() {
   // Get all products
@@ -23,7 +23,7 @@ export default function useProduct() {
   };
 
   // Add product
-  const addProduct = async (productData: CreateProduct): Promise<Product> => {
+  const addProduct = async (productData: SellProduct): Promise<Product> => {
     try {
       return await productService.createProduct(productData);
     } catch (error) {

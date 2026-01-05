@@ -12,7 +12,7 @@ const SellerInfoStep = () => {
     <Grid container spacing={3}>
       <Grid size={{ xs: 12, md: 6 }}>
         <EcomTextField
-          name="name"
+          name="sellerName"
           label="Seller Name"
           required
         />

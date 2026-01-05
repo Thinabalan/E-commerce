@@ -179,7 +179,7 @@
   "products": [
     {
       "id": "1",
-      "name": "Red Shoes",
+      "productName": "Red Shoes",
       "price": 1299,
       "image": "src/assets/images/redshoes.webp",
       "category": "Shoes",
@@ -188,7 +188,7 @@
     },
     {
       "id": "2",
-      "name": "Leather Bag",
+      "productName": "Leather Bag",
       "price": 2499,
       "image": "./leatherbag.jpeg",
       "category": "Bags",
@@ -197,7 +197,7 @@
     },
     {
       "id": "3",
-      "name": "Smart Watch",
+      "productName": "Smart Watch",
       "price": 1999,
       "image": "./sw2.webp",
       "category": "Watches",
@@ -206,7 +206,7 @@
     },
     {
       "id": "4",
-      "name": "Oversized T-Shirt",
+      "productName": "Oversized T-Shirt",
       "price": 799,
       "image": "./ostshirt.webp",
       "category": "Clothing",
@@ -215,7 +215,7 @@
     },
     {
       "id": "5",
-      "name": "T-Shirt",
+      "productName": "T-Shirt",
       "price": 999,
       "image": "./tshirt.jpeg",
       "category": "Clothing",
@@ -224,7 +224,7 @@
     },
     {
       "id": "6",
-      "name": "Track pant",
+      "productName": "Track pant",
       "price": 650,
       "image": "./trackpant.jpeg",
       "category": "Clothing",
@@ -233,7 +233,7 @@
     },
     {
       "id": "f223",
-      "name": "Chair",
+      "productName": "Chair",
       "price": 550,
       "image": "./chair.jpeg",
       "category": "Furniture",
@@ -242,12 +242,80 @@
     },
     {
       "id": "df5d",
-      "name": "table",
+      "productName": "table",
       "price": 790,
       "image": "/table.jpeg",
       "category": "Furniture",
       "brand": "IKEA",
       "rating": 0
+    },
+    {
+      "id": "0ca2",
+      "paymentNotes": "ABCD",
+      "paymentMethod": "cod",
+      "bankName": "",
+      "ifsc": "",
+      "accountNumber": "",
+      "accountName": "",
+      "upiId": "",
+      "description": "NICE BAG",
+      "highlights": "ABCD",
+      "productFeatures": [
+        "Free Delivery",
+        "Return Available"
+      ],
+      "image": "",
+      "warranty": "yes",
+      "condition": "new",
+      "category": "Bags",
+      "stock": 500,
+      "price": 250,
+      "brand": "mat",
+      "productName": "bag",
+      "address": "",
+      "city": "",
+      "sellerType": "individual",
+      "companyPhone": "",
+      "companyEmail": "",
+      "companyName": "",
+      "phone": "9876543210",
+      "email": "mathan@gmail.com",
+      "sellerName": "Mathan"
+    },
+    {
+      "id": "db93",
+      "paymentNotes": "ABCD",
+      "paymentMethod": "cod",
+      "bankName": "",
+      "ifsc": "",
+      "accountNumber": "",
+      "accountName": "",
+      "upiId": "",
+      "description": "NICE SHOE",
+      "highlights": "",
+      "productFeatures": [
+        "Free Delivery",
+        "Return Available",
+        "Cash on Delivery",
+        "Warranty"
+      ],
+      "image": "",
+      "warranty": "yes",
+      "condition": "new",
+      "category": "Shoes",
+      "stock": 250,
+      "price": 500,
+      "brand": "adidas",
+      "productName": "shoe",
+      "address": "",
+      "city": "",
+      "sellerType": "individual",
+      "companyPhone": "",
+      "companyEmail": "",
+      "companyName": "",
+      "phone": "9756565678",
+      "email": "bala@gmail.com",
+      "sellerName": "bala"
     }
   ]
 }

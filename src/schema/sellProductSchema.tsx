@@ -5,7 +5,7 @@ import { REGEX } from "../constants/regex";
 
 export const sellProductSchema: yup.ObjectSchema<SellProduct> = yup.object({
     // SELLER INFO
-    name: yup
+    sellerName: yup
         .string()
         .required(requiredMsg("Name"))
         .matches(REGEX.name, ERROR_MESSAGES.nameInvalid)
@@ -77,7 +77,7 @@ export const sellProductSchema: yup.ObjectSchema<SellProduct> = yup.object({
 
     condition: yup
         .string()
-        .oneOf(["new", "used", ""] as const)
+        .oneOf(["new", "used", ""])
         .optional(),
 
     warranty: yup.string().optional(),

@@ -2,7 +2,7 @@ import type { SellProduct } from "../types/types";
 
 export const sellProductDefaultValues: SellProduct = {
   // Seller Info
-  name: "",
+  sellerName: "",
   email: "",
   phone: "",
   sellerType: "",

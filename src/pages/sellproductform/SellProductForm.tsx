@@ -30,9 +30,6 @@ import { useFormHandlers } from "../../hooks/useFormHandlers";
 
 import { STEPS, STEP_FIELDS } from "../../config/const";
 
-// import "./SellProductForm.css";
-
-
 interface SellProductFormProps {
   open: boolean;
   onClose: () => void;
@@ -90,6 +87,11 @@ export default function SellProductForm({ open, onClose }: SellProductFormProps)
 
     fetchCategories();
   }, [open, getCategories]);
+
+  const canSaveCurrentStep = async () => {
+    const fields = STEP_FIELDS[activeStep];
+    return await methods.trigger(fields);
+  };
 
   /* FORM HANDLERS */
   const {
@@ -203,11 +205,15 @@ export default function SellProductForm({ open, onClose }: SellProductFormProps)
                     label="Save"
                     variant="contained"
                     color="success"
-                    onClick={() => {
+                    onClick={async () => {
+                      const ok = await canSaveCurrentStep();
+                      if (!ok) return;
+
                       handleSave(methods.getValues());
                       setSnackbarOpen(true);
                     }}
                   />
+
                   <EcomSnackbar
                     open={snackbarOpen}
                     message="Saved successfully"

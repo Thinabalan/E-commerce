@@ -1,5 +1,5 @@
 import { apiService } from "./apiService";
-import type { Product, Category, CreateProduct } from "../types/types";
+import type { Product, Category, SellProduct } from "../types/types";
 
 export const productService = {
     // Get all products
@@ -13,7 +13,7 @@ export const productService = {
     },
 
     // Create product
-    createProduct: async (data: CreateProduct): Promise<Product> => {
+    createProduct: async (data: SellProduct): Promise<Product> => {
         return apiService.post("products", data);
     },
 };

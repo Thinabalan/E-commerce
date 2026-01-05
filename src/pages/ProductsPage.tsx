@@ -71,7 +71,7 @@ export default function ProductsPage() {
   const filteredProducts = useMemo(() => {
     return products.filter((product) => {
       // 1. Category Filter (Matches either main category or its subcategories)
-      const isInCategory = 
+      const isInCategory =
         urlCategory === "All" ||
         product.category === urlCategory ||
         availableSubcategories.some(s => s.name === product.category);
@@ -92,14 +92,14 @@ export default function ProductsPage() {
           const targetBrand = brand.toLowerCase();
 
           return (productBrand === targetBrand) ||
-            (product.name.toLowerCase().includes(targetBrand));
+            (product.productName.toLowerCase().includes(targetBrand));
         });
 
         if (!matchesBrand) return false;
       }
 
       // 4. Search Query
-      if (searchQuery && !product.name.toLowerCase().includes(searchQuery.toLowerCase())) {
+      if (searchQuery && !product.productName.toLowerCase().includes(searchQuery.toLowerCase())) {
         return false;
       }
 
@@ -295,7 +295,7 @@ export default function ProductsPage() {
             {filteredProducts.map((prod) => (
               <div className="col-6 col-md-4" key={prod.id}>
                 <EcomCard
-                  name={prod.name}
+                  name={prod.productName}
                   price={prod.price}
                   image={prod.image}
                 />

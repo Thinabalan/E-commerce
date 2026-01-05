@@ -6,7 +6,7 @@ interface Option {
     label: string;
 }
 
-interface EcomDropdownProps{
+interface EcomDropdownProps {
     name: string;
     label: string;
     options: Option[];
@@ -14,7 +14,7 @@ interface EcomDropdownProps{
     required?: boolean;
 }
 
-const EcomDropdown : React.FC<EcomDropdownProps> = ({
+const EcomDropdown: React.FC<EcomDropdownProps> = ({
     name,
     label,
     options,
@@ -36,11 +36,15 @@ const EcomDropdown : React.FC<EcomDropdownProps> = ({
                         label={label}
                         MenuProps={{ style: { zIndex: 3000 } }}
                     >
-                        {options.map((opt) => (
-                            <MenuItem key={opt.value} value={opt.value}>
+                        {options.map((opt, index) => (
+                            <MenuItem
+                                key={`${name}-${opt.value}-${index}`}
+                                value={opt.value}
+                            >
                                 {opt.label}
                             </MenuItem>
                         ))}
+
                     </Select>
                     {error && <FormHelperText>{error.message as string}</FormHelperText>}
                 </FormControl>

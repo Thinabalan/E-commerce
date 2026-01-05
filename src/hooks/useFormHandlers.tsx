@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { SellProduct } from "../types/types";
 import { sellProductDefaultValues } from "../default/sellProductDefaults";
 import type { UseFormReturn } from "react-hook-form";
+import useProduct from "./useProduct";
 
 interface UseFormHandlersProps {
   form: UseFormReturn<SellProduct>;
@@ -28,6 +29,7 @@ export function useFormHandlers({
   const { trigger, resetField } = form;
 
   const [loading, setLoading] = useState(false);
+  const { addProduct } = useProduct();
 
   /* VALIDATE CURRENT STEP */
   const validateStep = async () => {
@@ -117,11 +119,14 @@ export function useFormHandlers({
 
     try {
       console.log("Submitting data:", data);
+      await addProduct(data);
 
-      setTimeout(() => {
-        alert("Product submitted successfully!");
-        onClose();
-      }, 1000);
+      localStorage.removeItem("sellProductDraft");
+      alert("Product submitted successfully!");
+      onClose();
+    } catch (error) {
+      console.error("Submission error:", error);
+      alert("Failed to submit product. Please try again.");
     } finally {
       setLoading(false);
     }

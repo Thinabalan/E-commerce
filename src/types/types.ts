@@ -1,6 +1,6 @@
 export interface Product {
     id: number | string;
-    name: string;
+    productName: string;
     price: number;
     category: string;
     subcategory?: string;
@@ -13,14 +13,16 @@ export interface Product {
     warranty?: string;
     highlights?: string;
     returnPolicy?: string;
-    productName?: string;
+
+    condition?: "new" | "used" | "";
+    productFeatures?: string[];
 }
 
 export interface SellerInfo {
-    name?: string;
+    sellerName?: string;
     email?: string;
     phone?: string;
-    sellerType?: string;
+    sellerType?: "individual" | "business" | "";
     companyName?: string;
     companyEmail?: string;
     companyPhone?: string;
@@ -38,12 +40,6 @@ export interface PaymentInfo {
     paymentNotes?: string;
 }
 
-export interface ProductListing {
-    product: CreateProduct;
-    seller: SellerInfo;
-    payment: PaymentInfo;
-}
-
 export interface Category {
     id: number | string;
     name: string;
@@ -52,7 +48,7 @@ export interface Category {
     brands?: string[];
 }
 
-export type CreateProduct = Omit<Product, 'id'>;
+// export type CreateProduct = Omit<Product, 'id'>;
 
 export interface User {
     id: number | string;
@@ -67,7 +63,7 @@ export type CreateUser = Omit<User, 'id'>;
 export type LoginForm = Pick<User, 'email' | 'password'>;
 
 export type SellProduct = {
-    name: string;
+    sellerName: string;
     email: string;
     phone: string;
     sellerType: "individual" | "business" | "";
