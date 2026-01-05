@@ -46,7 +46,7 @@ const EcomDropdown: React.FC<EcomDropdownProps> = ({
                         ))}
 
                     </Select>
-                    {error && <FormHelperText>{error.message as string}</FormHelperText>}
+                    {error && <FormHelperText sx={{ ml: 0 }}>{error.message as string}</FormHelperText>}
                 </FormControl>
             )}
         />

@@ -4,6 +4,8 @@ import {
   FormControlLabel,
   FormGroup,
   FormLabel,
+  FormControl,
+  FormHelperText,
 } from "@mui/material";
 
 interface Option {
@@ -28,7 +30,7 @@ const EcomCheckbox = ({
     <Controller
       name={name}
       control={control}
-      render={({ field }) => {
+      render={({ field, fieldState }) => {
         const selectedValues: string[] = field.value || [];
 
         const handleChange = (value: string) => {
@@ -40,7 +42,7 @@ const EcomCheckbox = ({
         };
 
         return (
-          <>
+          <FormControl error={Boolean(fieldState.error)} component="fieldset">
             <FormLabel>{label}</FormLabel>
             <FormGroup row>
               {options.map((opt) => (
@@ -57,7 +59,10 @@ const EcomCheckbox = ({
                 />
               ))}
             </FormGroup>
-          </>
+            {fieldState.error && (
+              <FormHelperText sx={{ ml: 0 }}>{fieldState.error.message}</FormHelperText>
+            )}
+          </FormControl>
         );
       }}
     />

@@ -38,6 +38,15 @@ const EcomTextField: React.FC<EcomTextFieldProps> = ({
                     rows={rows}
                     error={!!error}
                     helperText={error?.message as string}
+                    slotProps={{
+                        formHelperText: {
+                            sx: {
+                                ml: 0,
+                                pl: 0,
+                            },
+                        },
+                    }}
+
                 />
             )}
         />

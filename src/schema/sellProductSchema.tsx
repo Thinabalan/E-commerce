@@ -78,7 +78,7 @@ export const sellProductSchema: yup.ObjectSchema<SellProduct> = yup.object({
     condition: yup
         .string()
         .oneOf(["new", "used", ""])
-        .optional(),
+        .required(requiredMsg("Condition")),
 
     warranty: yup.string().optional(),
     image: yup
@@ -90,7 +90,7 @@ export const sellProductSchema: yup.ObjectSchema<SellProduct> = yup.object({
     productFeatures: yup
         .array()
         .of(yup.string().required())
-        .optional(),
+        .min(1, "At least one feature must be selected"),
 
     highlights: yup.string().optional(),
     description: yup.string().required(requiredMsg("Description")),

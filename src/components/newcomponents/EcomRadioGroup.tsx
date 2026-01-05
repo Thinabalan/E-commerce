@@ -4,6 +4,8 @@ import {
   RadioGroup,
   FormControlLabel,
   FormLabel,
+  FormControl,
+  FormHelperText,
 } from "@mui/material";
 
 interface Option {
@@ -25,12 +27,12 @@ const EcomRadioGroup = ({
   const { control } = useFormContext();
 
   return (
-    <>
-      <FormLabel>{label}</FormLabel>
-      <Controller
-        name={name}
-        control={control}
-        render={({ field }) => (
+    <Controller
+      name={name}
+      control={control}
+      render={({ field, fieldState }) => (
+        <FormControl error={Boolean(fieldState.error)} component="fieldset">
+          <FormLabel>{label}</FormLabel>
           <RadioGroup {...field} row>
             {options.map((opt) => (
               <FormControlLabel
@@ -38,13 +40,15 @@ const EcomRadioGroup = ({
                 value={opt.value}
                 control={<Radio size="small" sx={{ transform: "scale(0.9)" }} />}
                 label={opt.label}
-                
               />
             ))}
           </RadioGroup>
-        )}
-      />
-    </>
+          {fieldState.error && (
+            <FormHelperText sx={{ ml: 0 }}>{fieldState.error.message}</FormHelperText>
+          )}
+        </FormControl>
+      )}
+    />
   );
 }
 
