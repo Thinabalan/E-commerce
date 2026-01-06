@@ -317,7 +317,7 @@ export default function Header() {
         </div>
       </div>
       {showAuth && <AuthModal open={showAuth} onClose={() => setShowAuth(false)} />}
-      {showSellModal && <SellProductForm open={showSellModal} onClose={() => setShowSellModal(false)} />}
+      <SellProductForm open={showSellModal} onClose={() => setShowSellModal(false)} />
     </>
   );
 }
