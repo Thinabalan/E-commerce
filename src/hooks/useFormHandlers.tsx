@@ -1,8 +1,8 @@
 import { useState } from "react";
-import type { SellProduct } from "../types/types";
-import { sellProductDefaultValues } from "../default/sellProductDefaults";
 import type { UseFormReturn } from "react-hook-form";
 import useProduct from "./useProduct";
+import type { Product, SellProduct } from "../types/types";
+import { sellProductDefaultValues } from "../default/sellProductDefaults";
 
 interface UseFormHandlersProps {
   form: UseFormReturn<SellProduct>;
@@ -15,6 +15,7 @@ interface UseFormHandlersProps {
 
   setStepErrors: React.Dispatch<React.SetStateAction<boolean[]>>;
   setCompletedSteps: React.Dispatch<React.SetStateAction<boolean[]>>;
+  editData?: Product;
 }
 
 export function useFormHandlers({
@@ -25,11 +26,12 @@ export function useFormHandlers({
   stepFields,
   setStepErrors,
   setCompletedSteps,
+  editData,
 }: UseFormHandlersProps) {
   const { trigger, resetField } = form;
 
   const [loading, setLoading] = useState(false);
-  const { addProduct } = useProduct();
+  const { addProduct, updateProduct } = useProduct();
 
   /* VALIDATE CURRENT STEP */
   const validateStep = async () => {
@@ -119,10 +121,20 @@ export function useFormHandlers({
 
     try {
       console.log("Submitting data:", data);
-      await addProduct(data);
+
+      const now = new Date().toISOString();
+
+      if (editData?.id) {
+        const updateData = { ...data, updatedAt: now };
+        await updateProduct(editData.id, updateData);
+        alert("Product updated successfully!");
+      } else {
+        const newData = { ...data, createdAt: now, updatedAt: now };
+        await addProduct(newData);
+        alert("Product submitted successfully!");
+      }
 
       localStorage.removeItem("sellProductDraft");
-      alert("Product submitted successfully!");
       onClose();
     } catch (error) {
       console.error("Submission error:", error);

@@ -15,7 +15,7 @@ import type { SxProps, Theme } from "@mui/material";
 interface DialogProps {
   open: boolean;
   onClose: () => void;
-  title?: string; 
+  title?: string;
   description?: string;
   confirmText?: string;
   cancelText?: string;
@@ -26,6 +26,7 @@ interface DialogProps {
   fullWidth?: boolean;
   paperSx?: SxProps<Theme>;
   backdropBlur?: boolean;
+  headerSx?: SxProps<Theme>;
 }
 
 const EcomDialog = ({
@@ -42,6 +43,7 @@ const EcomDialog = ({
   fullWidth = false,
   paperSx,
   backdropBlur = false,
+  headerSx,
 }: DialogProps) => {
   return (
     <Dialog
@@ -62,31 +64,27 @@ const EcomDialog = ({
             : {},
         },
       }}
-      sx={{ zIndex: 2000,}}>
-      {/* 
-         If children are provided, we assume the consumer is handling 
-         the entire layout (Composition).
-         
-         If NO children (or mixed usage), we render the "Simple Mode" 
-         (Header + ContentText + Default Actions).
-      */}
+      sx={{ zIndex: 2000, }}>
+        
+      {/* HEADER */}
+      {title && (
+        <Box px={2} py={1} sx={headerSx}>
+          <Box display="flex" alignItems="center" justifyContent="space-between">
+            <DialogTitle sx={{ p: 0, fontWeight: "bold" }}>
+              {title}
+            </DialogTitle>
+            <IconButton onClick={onClose} size="small">
+              <CloseIcon />
+            </IconButton>
+          </Box>
+        </Box>
+      )}
 
+      {/* BODY */}
       {children ? (
         children
       ) : (
         <>
-          {/* HEADER */}
-          {title && (
-            <Box px={2} py={1} borderBottom="1px solid rgba(0,0,0,0.1)">
-              <Box display="flex" alignItems="center" justifyContent="space-between">
-                <DialogTitle sx={{ p: 0, fontWeight: "bold" }}>{title}</DialogTitle>
-                <IconButton onClick={onClose} size="small">
-                  <CloseIcon />
-                </IconButton>
-              </Box>
-            </Box>
-          )}
-
           {/* CONTENT */}
           <DialogContent sx={{ p: 3 }}>
             {description && (

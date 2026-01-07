@@ -12,6 +12,8 @@ interface EcomDropdownProps {
     options: Option[];
     fullWidth?: boolean;
     required?: boolean;
+    disabled?: boolean;
+    displayEmpty?: boolean;
 }
 
 const EcomDropdown: React.FC<EcomDropdownProps> = ({
@@ -20,6 +22,8 @@ const EcomDropdown: React.FC<EcomDropdownProps> = ({
     options,
     fullWidth = true,
     required = false,
+    disabled = false,
+    displayEmpty = false,
 }) => {
     const { control, formState: { errors } } = useFormContext();
     const error = errors[name];
@@ -29,11 +33,12 @@ const EcomDropdown: React.FC<EcomDropdownProps> = ({
             name={name}
             control={control}
             render={({ field }) => (
-                <FormControl fullWidth={fullWidth} required={required} error={!!error}>
-                    <InputLabel>{label}</InputLabel>
+                <FormControl fullWidth={fullWidth} required={required} error={!!error} disabled={disabled}>
+                    <InputLabel shrink={displayEmpty ? true : undefined}>{label}</InputLabel>
                     <Select
                         {...field}
                         label={label}
+                        displayEmpty={displayEmpty}
                         MenuProps={{ style: { zIndex: 3000 } }}
                     >
                         {options.map((opt, index) => (

@@ -1,4 +1,4 @@
-export interface Product {
+export interface Product extends Partial<SellProduct> {
     id: number | string;
     productName: string;
     price: number;
@@ -8,14 +8,14 @@ export interface Product {
     image: string;
     rating: number;
     description?: string;
-
     stock?: number;
     warranty?: string;
     highlights?: string;
     returnPolicy?: string;
-
     condition?: "new" | "used" | "";
     productFeatures?: string[];
+    createdAt?: string;
+    updatedAt?: string;
 }
 
 export interface SellerInfo {

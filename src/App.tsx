@@ -6,6 +6,7 @@ import ProductsPage from "./pages/ProductsPage";
 import Signup from "./pages/authentication/Signup";
 import Login from "./pages/authentication/Login";
 import AddProductForm from "./pages/Rough/AddProductForm";
+import SellProductTable from "./pages/sellproductform/SellProductTable";
 
 function App() {
 
@@ -19,6 +20,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/newproduct" element={<AddProductForm />} />
+          <Route path="/producttable" element={<SellProductTable />} />
         </Routes>
       </div>
       <Footer />

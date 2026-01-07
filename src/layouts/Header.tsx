@@ -272,10 +272,18 @@ export default function Header() {
               setTimeout(() => setShowSellModal(true), 300);
             }}
           >
-
             <i className="sidebar-icon fa-solid fa-store"></i>
             <span>Become a Seller</span>
           </div>
+          {/* Product Table */}
+          <Link
+            className="sidebar-link"
+            to="/producttable"
+            onClick={handleClose}
+          >
+            <i className="sidebar-icon fa-solid fa-table"></i>
+            <span>Product Table</span>
+          </Link>
 
           {/* FAVOURITES – mobile only */}
           <Link

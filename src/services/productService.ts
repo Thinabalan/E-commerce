@@ -16,4 +16,14 @@ export const productService = {
     createProduct: async (data: SellProduct): Promise<Product> => {
         return apiService.post("products", data);
     },
+
+    // Update product
+    updateProduct: async (id: string | number, data: SellProduct): Promise<Product> => {
+        return apiService.put(`products/${id}`, data);
+    },
+
+    // Delete product
+    deleteProduct: async (id: string | number): Promise<void> => {
+        return apiService.delete(`products/${id}`);
+    },
 };

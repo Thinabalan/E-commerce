@@ -4,12 +4,10 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import {
   Box,
   Typography,
-  DialogTitle,
   DialogContent,
   DialogActions,
-  IconButton,
 } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
+
 
 import useProduct from "../../hooks/useProduct";
 
@@ -24,7 +22,7 @@ import PaymentStep from "./PaymentStep";
 
 import { sellProductSchema } from "../../schema/sellProductSchema";
 import { sellProductDefaultValues } from "../../default/sellProductDefaults";
-import type { Category, SellProduct } from "../../types/types";
+import type { Category, Product, SellProduct } from "../../types/types";
 
 import { useFormHandlers } from "../../hooks/useFormHandlers";
 
@@ -33,9 +31,10 @@ import { STEPS, STEP_FIELDS } from "../../config/const";
 interface SellProductFormProps {
   open: boolean;
   onClose: () => void;
+  editData?: Product | null;
 }
 
-export default function SellProductForm({ open, onClose }: SellProductFormProps) {
+export default function SellProductForm({ open, onClose, editData }: SellProductFormProps) {
   const [activeStep, setActiveStep] = useState(0);
   const [stepErrors, setStepErrors] = useState<boolean[]>(
     Array(STEPS.length).fill(false)
@@ -62,19 +61,31 @@ export default function SellProductForm({ open, onClose }: SellProductFormProps)
   const methods = useForm<SellProduct>({
     resolver: yupResolver(sellProductSchema),
     mode: "onChange",
-    defaultValues: getSavedValues(),
+    defaultValues: editData || getSavedValues(),
   });
 
   const {
     handleSubmit,
+    reset,
     formState: { isValid },
   } = methods;
+
+  // Reset form when editData changes or modal opens
+  useEffect(() => {
+    if (open) {
+      if (editData) {
+        reset(editData);
+      } else {
+        reset(getSavedValues());
+      }
+    }
+  }, [open, editData, reset]);
 
   /* FETCH CATEGORIES  */
   const { getCategories } = useProduct();
 
   useEffect(() => {
-    // if (!open) return;
+    if (!open) return;
 
     const fetchCategories = async () => {
       try {
@@ -110,15 +121,15 @@ export default function SellProductForm({ open, onClose }: SellProductFormProps)
     stepFields: STEP_FIELDS,
     setStepErrors,
     setCompletedSteps,
+    editData: editData || undefined,
   });
-
-  if (!open) return null;
 
   return (
     <>
       <EcomDialog
         open={open}
         onClose={onClose}
+        title={editData ? "Edit Product" : "Sell Your Product"}
         maxWidth="md"
         fullWidth
         backdropBlur={true}
@@ -130,30 +141,13 @@ export default function SellProductForm({ open, onClose }: SellProductFormProps)
           borderRadius: "12px",
         }}
       >
-        {/* HEADER */}
-        <Box px={2} py={1} borderBottom="1px solid rgba(0,0,0,0.1)">
-          <Box
-            display="flex"
-            alignItems="center"
-            justifyContent="space-between"
-            mb={2}
-          >
-            <DialogTitle sx={{ p: 0, fontWeight: "bold" }}>
-              Sell Your Product
-            </DialogTitle>
-            <IconButton onClick={onClose} size="small">
-              <CloseIcon />
-            </IconButton>
-          </Box>
-          <EcomStepper
-            steps={STEPS}
-            activeStep={activeStep}
-            stepErrors={stepErrors}
-            completedSteps={completedSteps}
-            onStepClick={handleStepClick}
-          />
-        </Box>
-
+        <EcomStepper
+          steps={STEPS}
+          activeStep={activeStep}
+          stepErrors={stepErrors}
+          completedSteps={completedSteps}
+          onStepClick={handleStepClick}
+        />
         {/* CONTENT */}
         <DialogContent sx={{ p: 3 }}>
           {error && (
@@ -248,6 +242,9 @@ export default function SellProductForm({ open, onClose }: SellProductFormProps)
                 onConfirm={() => {
                   handleReset();
                   setOpenResetDialog(false);
+                }}
+                headerSx={{
+                  borderBottom: "1px solid rgba(0,0,0,0.12)",
                 }}
               />
             </Box>

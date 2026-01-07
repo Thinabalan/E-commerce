@@ -43,3 +43,12 @@ export const PRODUCT_FEATURES = [
   { label: "Cash on Delivery", value: "Cash on Delivery" },
   { label: "Warranty", value: "Warranty" },
 ];
+
+export const CREATED_AT_RANGE = [
+  { label: "All", value: "" },
+  { label: "Today", value: "today" },
+  { label: "Last 7 Days", value: "last7" },
+  { label: "Last 30 Days", value: "last30" },
+  { label: "This Month", value: "thisMonth" },
+  { label: "Last Month", value: "lastMonth" },
+]
