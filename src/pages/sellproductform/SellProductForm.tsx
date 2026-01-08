@@ -78,6 +78,11 @@ export default function SellProductForm({ open, onClose, editData }: SellProduct
       } else {
         reset(getSavedValues());
       }
+
+      // Reset UI state to initial values
+      setActiveStep(0);
+      setStepErrors(Array(STEPS.length).fill(false));
+      setCompletedSteps(Array(STEPS.length).fill(false));
     }
   }, [open, editData, reset]);
 
@@ -219,7 +224,15 @@ export default function SellProductForm({ open, onClose, editData }: SellProduct
 
               {activeStep === STEPS.length - 1 && (
                 <EcomButton
-                  label={loading ? "Submitting..." : "Submit"}
+                  label={
+                    loading
+                      ? editData
+                        ? "Updating..."
+                        : "Submitting..."
+                      : editData
+                        ? "Update Product"
+                        : "Submit"
+                  }
                   type="submit"
                   variant="contained"
                   color="success"

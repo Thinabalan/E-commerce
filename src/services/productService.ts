@@ -14,7 +14,13 @@ export const productService = {
 
     // Create product
     createProduct: async (data: SellProduct): Promise<Product> => {
-        return apiService.post("products", data);
+        const productData = { ...data, status: data.status || "active" };
+        return apiService.post("products", productData);
+    },
+
+    // Update product status
+    updateProductStatus: async (id: string | number, status: "active" | "inactive"): Promise<Product> => {
+        return apiService.patch(`products/${id}`, { status });
     },
 
     // Update product

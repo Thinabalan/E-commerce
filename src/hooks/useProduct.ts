@@ -53,11 +53,23 @@ export default function useProduct() {
     }
   }, []);
 
+  /* TOGGLE STATUS (Soft Delete / Reactivate) */
+  const toggleProductStatus = useCallback(async (id: string | number, currentStatus: "active" | "inactive") => {
+    try {
+      const newStatus = currentStatus === "active" ? "inactive" : "active";
+      return await productService.updateProductStatus(id, newStatus);
+    } catch (error) {
+      console.error("Error toggling product status:", error);
+      throw error;
+    }
+  }, []);
+
   return {
     getProducts,
     getCategories,
     addProduct,
     updateProduct,
-    deleteProduct
+    deleteProduct,
+    toggleProductStatus
   };
 }

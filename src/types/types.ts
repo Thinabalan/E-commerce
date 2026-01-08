@@ -92,4 +92,5 @@ export type SellProduct = {
     ifsc?: string;
     bankName?: string;
     paymentNotes?: string;
+    status?: "active" | "inactive";
 }

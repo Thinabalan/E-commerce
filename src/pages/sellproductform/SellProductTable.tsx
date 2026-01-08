@@ -1,23 +1,21 @@
 import { useEffect, useState, useMemo } from "react";
 import {
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
+
   IconButton,
   Box,
   Typography,
-  TableContainer,
-  Tooltip,
+
   Grid,
+  Tooltip,
 } from "@mui/material";
 import { useForm, FormProvider } from "react-hook-form";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import RestoreIcon from "@mui/icons-material/Restore";
 import AddIcon from "@mui/icons-material/Add";
 import SearchIcon from "@mui/icons-material/Search";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
+import { Chip } from "@mui/material";
 
 import useProduct from "../../hooks/useProduct";
 import SellProductForm from "./SellProductForm";
@@ -27,6 +25,9 @@ import EcomTextField from "../../components/newcomponents/EcomTextField";
 import EcomDropdown from "../../components/newcomponents/EcomDropdown";
 import type { Product } from "../../types/types";
 import { CREATED_AT_RANGE } from "../../config/const";
+import type { Column } from "../../components/newcomponents/EcomTable";
+import EcomTable from "../../components/newcomponents/EcomTable";
+import { formatDateOnly } from "../../utils/formatDate";
 
 /* FILTER TYPES */
 interface ProductFilters {
@@ -47,9 +48,8 @@ const Filters: ProductFilters = {
   createdAtRange: "",
 };
 
-
 export default function SellProductTable() {
-  const { getProducts, deleteProduct } = useProduct();
+  const { getProducts, toggleProductStatus } = useProduct();
 
   const [rows, setRows] = useState<Product[]>([]);
   const [appliedFilters, setAppliedFilters] =
@@ -57,7 +57,7 @@ export default function SellProductTable() {
 
   const [openForm, setOpenForm] = useState(false);
   const [editData, setEditData] = useState<Product | null>(null);
-  const [deleteId, setDeleteId] = useState<string | number | null>(null);
+  const [confirmToggle, setConfirmToggle] = useState<{ id: string | number, status: "active" | "inactive" } | null>(null);
 
   const methods = useForm<ProductFilters>({
     defaultValues: Filters,
@@ -178,14 +178,86 @@ export default function SellProductTable() {
     );
   });
 
-  /* DELETE */
-  const handleDeleteConfirm = async () => {
-    if (deleteId) {
-      await deleteProduct(deleteId);
-      setDeleteId(null);
+  /* TOGGLE STATUS */
+  const handleToggleConfirm = async () => {
+    if (confirmToggle) {
+      await toggleProductStatus(confirmToggle.id, confirmToggle.status);
+      setConfirmToggle(null);
       loadProducts();
     }
   };
+
+  const columns: Column<Product>[] = [
+    { id: "sellerName", label: "Seller Name", align: "left" },
+    { id: "email", label: "Email", align: "left" },
+    { id: "phone", label: "Phone", align: "center" },
+    { id: "productName", label: "Product", align: "left" },
+    { id: "category", label: "Category", align: "left" },
+    { id: "brand", label: "Brand", align: "left" },
+    {
+      id: "price",
+      label: "Price",
+      align: "left",
+      render: (row) => (
+        <Typography fontWeight="bold" color="success.main">₹{row.price}</Typography>
+      )
+    },
+    {
+      id: "stock", label: "Stock", align: "left",
+      render: (row) => row.stock ?? "—",
+    },
+    {
+      id: "createdAt",
+      label: "Created At",
+      align: "center",
+      render: (row) =>
+        row.createdAt ? formatDateOnly(row.createdAt) : "—",
+    },
+    {
+      id: "status",
+      label: "Status",
+      align: "center",
+      sortable: false,
+      render: (row) => (
+        <Chip
+          label={row.status === "inactive" ? "Inactive" : "Active"}
+          color={row.status === "inactive" ? "default" : "success"}
+          size="small"
+          variant="outlined"
+        />
+      ),
+    },
+    {
+      id: "id",
+      label: "Actions",
+      align: "center",
+      sortable: false,
+      render: (row) => (
+        <>
+          <Tooltip title={row.status === "inactive" ? "Cannot edit inactive product" : "Edit"}>
+            <span>
+              <IconButton
+                color="primary"
+                disabled={row.status === "inactive"}
+                onClick={() => {
+                  setEditData(row);
+                  setOpenForm(true);
+                }}>
+                <EditIcon />
+              </IconButton>
+            </span>
+          </Tooltip>
+          <Tooltip title={row.status === "inactive" ? "Reactivate" : "Deactivate"}>
+            <IconButton
+              color={row.status === "inactive" ? "info" : "error"}
+              onClick={() => setConfirmToggle({ id: row.id, status: row.status || "active" })}>
+              {row.status === "inactive" ? <RestoreIcon /> : <DeleteIcon />}
+            </IconButton>
+          </Tooltip>
+        </>
+      ),
+    },
+  ];
 
   return (
     <Box p={3}>
@@ -257,7 +329,7 @@ export default function SellProductTable() {
                 name="createdAtRange"
                 label="Created At"
                 displayEmpty
-                options={ CREATED_AT_RANGE }
+                options={CREATED_AT_RANGE}
               />
             </Grid>
           </Grid>
@@ -280,92 +352,11 @@ export default function SellProductTable() {
       </Box>
 
       {/* TABLE */}
-      <Box
-        sx={{
-          height: 500,
-          width: "100%",
-          bgcolor: "background.paper",
-          borderRadius: 2,
-          boxShadow: 3,
-          overflow: "hidden",
-        }}
-      >
-        <TableContainer sx={{ maxHeight: 500 }}>
-          <Table stickyHeader sx={{ minWidth: 1200 }}>
-            <TableHead>
-              <TableRow>
-                <TableCell>Seller Name</TableCell>
-                <TableCell>Email</TableCell>
-                <TableCell>Phone</TableCell>
-                <TableCell>Product</TableCell>
-                <TableCell>Category</TableCell>
-                <TableCell>Brand</TableCell>
-                <TableCell>Price</TableCell>
-                <TableCell>Stock</TableCell>
-                <TableCell>Created At</TableCell>
-                <TableCell align="right">Actions</TableCell>
-              </TableRow>
-            </TableHead>
-
-            <TableBody>
-              {filteredRows.length > 0 ? (
-                filteredRows.map((row) => (
-                  <TableRow key={row.id} hover>
-                    <TableCell>{row.sellerName || "—"}</TableCell>
-                    <TableCell>{row.email || "—"}</TableCell>
-                    <TableCell>{row.phone || "—"}</TableCell>
-                    <TableCell>{row.productName || "—"}</TableCell>
-                     {/* <Typography variant="caption">
-                        Category: {row.category}
-                      </Typography> */}
-                    <TableCell>{row.category || "—"}</TableCell>
-                    <TableCell>{row.brand || "—"}</TableCell>
-                    <TableCell sx={{ fontWeight: "bold", color: "success.main" }}>
-                      ₹{row.price}
-                    </TableCell>
-                    <TableCell>{row.stock ?? "—"}</TableCell>
-                    <TableCell>
-                      {row.createdAt
-                        ? new Date(row.createdAt).toLocaleDateString()
-                        : "—"}
-                    </TableCell>
-                    <TableCell align="right">
-                      <Tooltip title="Edit">
-                        <IconButton
-                          color="primary"
-                          onClick={() => {
-                            setEditData(row);
-                            setOpenForm(true);
-                          }}
-                        >
-                          <EditIcon />
-                        </IconButton>
-                      </Tooltip>
-
-                      <Tooltip title="Delete">
-                        <IconButton
-                          color="error"
-                          onClick={() => setDeleteId(row.id)}
-                        >
-                          <DeleteIcon />
-                        </IconButton>
-                      </Tooltip>
-                    </TableCell>
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={9} align="center" sx={{ py: 10 }}>
-                    <Typography color="textSecondary">
-                      No products found matching the filters.
-                    </Typography>
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Box>
+      <EcomTable
+        rows={filteredRows}
+        columns={columns}
+        emptyMessage="No products found matching the filters."
+      />
 
       {/* MODALS */}
       <SellProductForm
@@ -379,12 +370,19 @@ export default function SellProductTable() {
       />
 
       <EcomDialog
-        open={Boolean(deleteId)}
-        title="Confirm Deletion"
-        description="Are you sure you want to delete this product?"
-        confirmText="Delete"
-        onClose={() => setDeleteId(null)}
-        onConfirm={handleDeleteConfirm}
+        open={Boolean(confirmToggle)}
+        title={confirmToggle?.status === "active" ? "Confirm Deactivation" : "Confirm Reactivation"}
+        description={
+          confirmToggle?.status === "active"
+            ? "Are you sure you want to deactivate this product?"
+            : "Are you sure you want to reactivate this product?"
+        }
+        confirmText={confirmToggle?.status === "active" ? "Deactivate" : "Reactivate"}
+        onClose={() => setConfirmToggle(null)}
+        onConfirm={handleToggleConfirm}
+        headerSx={{
+          borderBottom: "1px solid rgba(0,0,0,0.12)",
+        }}
       />
     </Box>
   );

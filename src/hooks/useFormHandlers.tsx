@@ -120,8 +120,6 @@ export function useFormHandlers({
     setLoading(true);
 
     try {
-      console.log("Submitting data:", data);
-
       const now = new Date().toISOString();
 
       if (editData?.id) {
@@ -129,7 +127,12 @@ export function useFormHandlers({
         await updateProduct(editData.id, updateData);
         alert("Product updated successfully!");
       } else {
-        const newData = { ...data, createdAt: now, updatedAt: now };
+        const newData = {
+          ...data,
+          rating: 0,
+          createdAt: now,
+          updatedAt: now,
+        };
         await addProduct(newData);
         alert("Product submitted successfully!");
       }
