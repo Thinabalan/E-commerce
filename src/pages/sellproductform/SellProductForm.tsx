@@ -8,7 +8,6 @@ import {
   DialogActions,
 } from "@mui/material";
 
-
 import useProduct from "../../hooks/useProduct";
 
 import EcomButton from "../../components/newcomponents/EcomButton";
@@ -34,7 +33,7 @@ interface SellProductFormProps {
   editData?: Product | null;
 }
 
-export default function SellProductForm({ open, onClose, editData }: SellProductFormProps) {
+const SellProductForm = ({ open, onClose, editData }: SellProductFormProps) => {
   const [activeStep, setActiveStep] = useState(0);
   const [stepErrors, setStepErrors] = useState<boolean[]>(
     Array(STEPS.length).fill(false)
@@ -277,3 +276,5 @@ export default function SellProductForm({ open, onClose, editData }: SellProduct
     </>
   );
 }
+
+export default SellProductForm;

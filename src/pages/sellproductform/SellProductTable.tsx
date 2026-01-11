@@ -4,40 +4,38 @@ import {
   IconButton,
   Box,
   Typography,
-
-  Grid,
   Tooltip,
 } from "@mui/material";
-import { useForm, FormProvider } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import RestoreIcon from "@mui/icons-material/Restore";
 import AddIcon from "@mui/icons-material/Add";
-import SearchIcon from "@mui/icons-material/Search";
-import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import { Chip } from "@mui/material";
 
 import useProduct from "../../hooks/useProduct";
 import SellProductForm from "./SellProductForm";
 import EcomDialog from "../../components/newcomponents/EcomDialog";
 import EcomButton from "../../components/newcomponents/EcomButton";
-import EcomTextField from "../../components/newcomponents/EcomTextField";
-import EcomDropdown from "../../components/newcomponents/EcomDropdown";
+// import EcomTextField from "../../components/newcomponents/EcomTextField";
+// import EcomDropdown from "../../components/newcomponents/EcomDropdown";
 import type { Product } from "../../types/types";
-import { CREATED_AT_RANGE } from "../../config/const";
 import type { Column } from "../../components/newcomponents/EcomTable";
 import EcomTable from "../../components/newcomponents/EcomTable";
+import EcomTab from "../../components/newcomponents/EcomTab";
 import { formatDateOnly } from "../../utils/formatDate";
+import SellProductFilter, { type ProductFilters } from "./SellProductFilter";
 
 /* FILTER TYPES */
-interface ProductFilters {
-  productName: string;
-  sellerName: string;
-  email: string;
-  category: string;
-  brand: string;
-  createdAtRange: string;
-}
+/* FILTER TYPES */
+// interface ProductFilters {
+//   productName: string;
+//   sellerName: string;
+//   email: string;
+//   category: string;
+//   brand: string;
+//   createdAtRange: string;
+// }
 
 const Filters: ProductFilters = {
   productName: "",
@@ -48,7 +46,7 @@ const Filters: ProductFilters = {
   createdAtRange: "",
 };
 
-export default function SellProductTable() {
+const SellProductTable = () => {
   const { getProducts, toggleProductStatus } = useProduct();
 
   const [rows, setRows] = useState<Product[]>([]);
@@ -58,14 +56,15 @@ export default function SellProductTable() {
   const [openForm, setOpenForm] = useState(false);
   const [editData, setEditData] = useState<Product | null>(null);
   const [confirmToggle, setConfirmToggle] = useState<{ id: string | number, status: "active" | "inactive" } | null>(null);
+  const [activeTab, setActiveTab] = useState<"active" | "inactive">("active");
+  const [selectedIds, setSelectedIds] = useState<(string | number)[]>([]);
+  const [bulkConfirmOpen, setBulkConfirmOpen] = useState(false);
 
   const methods = useForm<ProductFilters>({
     defaultValues: Filters,
   });
 
-  const { watch, reset, getValues } = methods;
-  const selectedCategory = watch("category");
-
+  const { reset, getValues } = methods;
   /* LOAD PRODUCTS */
   const loadProducts = async () => {
     try {
@@ -147,7 +146,22 @@ export default function SellProductTable() {
   };
 
   /* FILTER */
-  const filteredRows = rows.filter((p) => {
+  const filteredByStatus = useMemo(() => {
+    return rows.filter((p) => {
+      if (activeTab === "active") {
+        return p.status !== "inactive";
+      }
+      return p.status === "inactive";
+    });
+  }, [rows, activeTab]);
+
+  const counts = useMemo(() => {
+    const active = rows.filter(p => p.status === "active" || !p.status).length;
+    const inactive = rows.filter(p => p.status === "inactive").length;
+    return { active, inactive };
+  }, [rows]);
+
+  const filteredRows = filteredByStatus.filter((p) => {
     const createdDate = p.createdAt ? new Date(p.createdAt) : null;
 
     return (
@@ -186,6 +200,42 @@ export default function SellProductTable() {
       loadProducts();
     }
   };
+
+  /* BULK ACTIONS */
+  const handleBulkToggle = () => {
+    if (selectedIds.length === 0) return;
+    setBulkConfirmOpen(true);
+  };
+
+  const confirmBulkAction = async () => {
+    const targetStatus = activeTab === "active" ? "active" : "inactive";
+
+    for (const id of selectedIds) {
+      await toggleProductStatus(id, targetStatus);
+    }
+
+    setSelectedIds([]);
+    setBulkConfirmOpen(false);
+    loadProducts();
+  };
+
+  const bulkActions = (
+    <>
+      {activeTab === "active" ? (
+        <Tooltip title={`Deactivate Selected (${selectedIds.length})`}>
+          <IconButton color="error" onClick={handleBulkToggle}>
+            <DeleteIcon />
+          </IconButton>
+        </Tooltip>
+      ) : (
+        <Tooltip title={`Reactivate Selected (${selectedIds.length})`}>
+          <IconButton color="info" onClick={handleBulkToggle}>
+            <RestoreIcon />
+          </IconButton>
+        </Tooltip>
+      )}
+    </>
+  );
 
   const columns: Column<Product>[] = [
     { id: "sellerName", label: "Seller Name", align: "left" },
@@ -234,26 +284,35 @@ export default function SellProductTable() {
       sortable: false,
       render: (row) => (
         <>
-          <Tooltip title={row.status === "inactive" ? "Cannot edit inactive product" : "Edit"}>
-            <span>
+          {activeTab === "active" ? (
+            <>
+              <Tooltip title="Edit">
+                <IconButton
+                  color="primary"
+                  onClick={() => {
+                    setEditData(row);
+                    setOpenForm(true);
+                  }}>
+                  <EditIcon />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Deactivate">
+                <IconButton
+                  color="error"
+                  onClick={() => setConfirmToggle({ id: row.id, status: row.status || "active" })}>
+                  <DeleteIcon />
+                </IconButton>
+              </Tooltip>
+            </>
+          ) : (
+            <Tooltip title="Reactivate">
               <IconButton
-                color="primary"
-                disabled={row.status === "inactive"}
-                onClick={() => {
-                  setEditData(row);
-                  setOpenForm(true);
-                }}>
-                <EditIcon />
+                color="info"
+                onClick={() => setConfirmToggle({ id: row.id, status: row.status || "active" })}>
+                <RestoreIcon />
               </IconButton>
-            </span>
-          </Tooltip>
-          <Tooltip title={row.status === "inactive" ? "Reactivate" : "Deactivate"}>
-            <IconButton
-              color={row.status === "inactive" ? "info" : "error"}
-              onClick={() => setConfirmToggle({ id: row.id, status: row.status || "active" })}>
-              {row.status === "inactive" ? <RestoreIcon /> : <DeleteIcon />}
-            </IconButton>
-          </Tooltip>
+            </Tooltip>
+          )}
         </>
       ),
     },
@@ -279,83 +338,37 @@ export default function SellProductTable() {
       </Box>
 
       {/* FILTER SECTION */}
-      <Box mb={3} p={2} borderRadius={2} bgcolor="background.paper" boxShadow={2}>
-        <FormProvider {...methods}>
-          <Grid container spacing={2}>
-            <Grid size={{ xs: 12, md: 4 }}>
-              <EcomTextField name="productName" label="Product Name" />
-            </Grid>
+      <SellProductFilter
+        methods={methods}
+        categories={categories}
+        brandsByCategory={brandsByCategory}
+        onSearch={handleSearch}
+        onReset={handleReset}
+      />
 
-            <Grid size={{ xs: 12, md: 4 }}>
-              <EcomTextField name="sellerName" label="Seller Name" />
-            </Grid>
-
-            <Grid size={{ xs: 12, md: 4 }}>
-              <EcomTextField name="email" label="Email" />
-            </Grid>
-
-            <Grid size={{ xs: 12, md: 4 }}>
-              <EcomDropdown
-                name="category"
-                label="Category"
-                displayEmpty
-                options={[
-                  { value: "", label: "All" },
-                  ...categories.map((c) => ({ value: c || "", label: c || "—" })),
-                ]}
-              />
-            </Grid>
-
-            <Grid size={{ xs: 12, md: 4 }}>
-              <EcomDropdown
-                name="brand"
-                label="Brand"
-                displayEmpty
-                disabled={!selectedCategory}
-                options={[
-                  { value: "", label: "All" },
-                  ...(selectedCategory
-                    ? brandsByCategory(selectedCategory).map((b) => ({
-                      value: b || "",
-                      label: b || "—",
-                    }))
-                    : []),
-                ]}
-              />
-            </Grid>
-
-            <Grid size={{ xs: 12, md: 4 }}>
-              <EcomDropdown
-                name="createdAtRange"
-                label="Created At"
-                displayEmpty
-                options={CREATED_AT_RANGE}
-              />
-            </Grid>
-          </Grid>
-        </FormProvider>
-
-        <Box mt={2} display="flex" justifyContent="flex-end" gap={2}>
-          <EcomButton
-            variant="outlined"
-            label="Reset"
-            startIcon={<RestartAltIcon />}
-            onClick={handleReset}
-          />
-          <EcomButton
-            variant="contained"
-            label="Search"
-            startIcon={<SearchIcon />}
-            onClick={handleSearch}
-          />
-        </Box>
-      </Box>
+      {/* TABS */}
+      <EcomTab
+        value={activeTab}
+        onChange={(val) => {
+          setActiveTab(val as "active" | "inactive");
+          setSelectedIds([]); // Clear selection when switching tabs
+        }}
+        tabs={[
+          { label: "Active", value: "active", count: counts.active, color: "success" },
+          { label: "Inactive", value: "inactive", count: counts.inactive, color: "error" },
+        ]}
+      />
 
       {/* TABLE */}
       <EcomTable
         rows={filteredRows}
         columns={columns}
         emptyMessage="No products found matching the filters."
+        enableSelection
+        selected={selectedIds}
+        onSelectionChange={setSelectedIds}
+        selectedAction={bulkActions}
+
       />
 
       {/* MODALS */}
@@ -384,6 +397,25 @@ export default function SellProductTable() {
           borderBottom: "1px solid rgba(0,0,0,0.12)",
         }}
       />
+
+      {/* BULK CONFIRM DIALOG */}
+      <EcomDialog
+        open={bulkConfirmOpen}
+        title={activeTab === "active" ? "Confirm Bulk Deactivation" : "Confirm Bulk Reactivation"}
+        description={
+          activeTab === "active"
+            ? `Are you sure you want to deactivate ${selectedIds.length} selected products?`
+            : `Are you sure you want to reactivate ${selectedIds.length} selected products?`
+        }
+        confirmText={activeTab === "active" ? "Deactivate All" : "Reactivate All"}
+        onClose={() => setBulkConfirmOpen(false)}
+        onConfirm={confirmBulkAction}
+        headerSx={{
+          borderBottom: "1px solid rgba(0,0,0,0.12)",
+        }}
+      />
     </Box>
   );
 }
+
+export default SellProductTable;
