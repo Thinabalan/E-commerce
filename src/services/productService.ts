@@ -14,7 +14,7 @@ export const productService = {
 
     // Create product
     createProduct: async (data: SellProduct): Promise<Product> => {
-        const productData = { ...data, status: data.status || "active" };
+        const productData = { ...data, status: "active" };
         return apiService.post("products", productData);
     },
 
@@ -25,7 +25,7 @@ export const productService = {
 
     // Update product
     updateProduct: async (id: string | number, data: SellProduct): Promise<Product> => {
-        return apiService.put(`products/${id}`, data);
+        return apiService.patch(`products/${id}`, data);
     },
 
     // Delete product

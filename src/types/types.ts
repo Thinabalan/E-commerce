@@ -16,6 +16,7 @@ export interface Product extends Partial<SellProduct> {
     productFeatures?: string[];
     createdAt?: string;
     updatedAt?: string;
+    status?: "active" | "inactive";
 }
 
 export interface SellerInfo {
@@ -92,5 +93,4 @@ export type SellProduct = {
     ifsc?: string;
     bankName?: string;
     paymentNotes?: string;
-    status?: "active" | "inactive";
 }

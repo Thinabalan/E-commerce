@@ -858,7 +858,7 @@
       "rating": 4.8,
       "createdAt": "2026-01-08T01:00:00.000Z",
       "updatedAt": "2026-01-08T01:00:00.000Z",
-      "status": "inactive"
+      "status": "active"
     },
     {
       "id": "p206",
@@ -895,7 +895,7 @@
       "rating": 4.4,
       "createdAt": "2026-01-06T12:00:00.000Z",
       "updatedAt": "2026-01-06T12:00:00.000Z",
-      "status": "active"
+      "status": "inactive"
     },
     {
       "id": "p207",
@@ -1881,7 +1881,7 @@
       ],
       "sellerName": "Office Gear",
       "email": "office@gear.in",
-      "phone": "9876501010",
+      "phone": "5634532457",
       "sellerType": "individual",
       "address": "Sector 62",
       "city": "Gurgaon",
@@ -1894,7 +1894,7 @@
       "paymentNotes": "",
       "rating": 4,
       "createdAt": "2026-01-06T20:35:00.000Z",
-      "updatedAt": "2026-01-06T20:35:00.000Z",
+      "updatedAt": "2026-01-10T17:23:48.569Z",
       "status": "inactive"
     },
     {
@@ -1932,7 +1932,7 @@
       "rating": 4.4,
       "createdAt": "2026-01-06T20:40:00.000Z",
       "updatedAt": "2026-01-06T20:40:00.000Z",
-      "status": "inactive"
+      "status": "active"
     }
   ]
 }

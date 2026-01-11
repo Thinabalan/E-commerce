@@ -133,9 +133,4 @@ export const sellProductSchema: yup.ObjectSchema<SellProduct> = yup.object({
 
     paymentNotes: yup.string().optional(),
 
-    status: yup
-        .mixed<"active" | "inactive">()
-        .oneOf(["active", "inactive"])
-        .optional(),
-
 });
