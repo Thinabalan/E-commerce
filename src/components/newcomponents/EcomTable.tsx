@@ -15,6 +15,7 @@ import {
   Toolbar,
   alpha,
   IconButton,
+  Tooltip,
 } from "@mui/material";
 import { useTheme } from '@mui/material/styles';
 import FirstPageIcon from '@mui/icons-material/FirstPage';
@@ -242,7 +243,7 @@ export default function EcomTable<T>({
         </Toolbar>
       )}
       <TableContainer sx={{ overflowX: "auto", maxHeight: 500 }}>
-        <Table stickyHeader sx={{ minWidth: 1200 }}>
+        <Table stickyHeader>
           <TableHead>
             <TableRow>
               {enableSelection && (
@@ -259,12 +260,6 @@ export default function EcomTable<T>({
                 <TableCell
                   key={String(c.id)}
                   align={c.headerAlign || "center"}
-                  sx={{
-                    fontWeight: "bold",
-                    whiteSpace: "nowrap",
-                    backgroundColor: "#fafafa",
-                    zIndex: 1,
-                  }}
                 >
                   {c.sortable !== false ? (
                     <TableSortLabel
@@ -312,9 +307,20 @@ export default function EcomTable<T>({
                       <TableCell
                         key={String(c.id)}
                         align={c.align || "center"}
-                        sx={{ whiteSpace: "nowrap" }}
+                        sx={{
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          maxWidth: 120,
+                        }}
                       >
-                        {c.render ? c.render(row) : (row as any)[c.id]}
+                        {c.render ? (
+                          c.render(row)
+                        ) : (
+                          <Tooltip title={(row as any)[c.id] || ""}>
+                            <span>{(row as any)[c.id]}</span>
+                          </Tooltip>
+                        )}
                       </TableCell>
                     ))}
                   </TableRow>
@@ -345,16 +351,6 @@ export default function EcomTable<T>({
             setPage(0);
           }}
           rowsPerPageOptions={rowsPerPageOptions}
-          sx={{
-            "& .MuiToolbar-root": {
-              minHeight: 60,
-              paddingY: 0,
-            },
-            "& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows": {
-              margin: 0,
-            },
-          }}
-
           ActionsComponent={TablePaginationActions}
         />
       </Box>

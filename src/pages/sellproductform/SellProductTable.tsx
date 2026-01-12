@@ -25,6 +25,8 @@ import EcomTable from "../../components/newcomponents/EcomTable";
 import EcomTab from "../../components/newcomponents/EcomTab";
 import { formatDateOnly } from "../../utils/formatDate";
 import SellProductFilter, { type ProductFilters } from "./SellProductFilter";
+import { useSellProductHandlers, type ConfirmDialogState } from "./useSellProductHandlers";
+import { isWithinDateRange } from "../../utils/dateRange";
 
 /* FILTER TYPES */
 /* FILTER TYPES */
@@ -55,25 +57,36 @@ const SellProductTable = () => {
 
   const [openForm, setOpenForm] = useState(false);
   const [editData, setEditData] = useState<Product | null>(null);
-  const [confirmToggle, setConfirmToggle] = useState<{ id: string | number, status: "active" | "inactive" } | null>(null);
+  /* DIALOG STATE */
+  const [confirmDialog, setConfirmDialog] = useState<ConfirmDialogState | null>(null);
   const [activeTab, setActiveTab] = useState<"active" | "inactive">("active");
   const [selectedIds, setSelectedIds] = useState<(string | number)[]>([]);
-  const [bulkConfirmOpen, setBulkConfirmOpen] = useState(false);
 
   const methods = useForm<ProductFilters>({
     defaultValues: Filters,
   });
 
   const { reset, getValues } = methods;
-  /* LOAD PRODUCTS */
-  const loadProducts = async () => {
-    try {
-      const data = await getProducts();
-      setRows(data);
-    } catch (error) {
-      console.error("Failed to load products:", error);
-    }
-  };
+  const {
+    loadProducts,
+    handleSearch,
+    handleReset,
+    handleBulkToggle,
+    handleConfirm,
+  } = useSellProductHandlers({
+    setRows,
+    setAppliedFilters,
+    setConfirmDialog,
+    setSelectedIds,
+    getValues,
+    reset,
+    confirmDialog,
+    selectedIds,
+    activeTab,
+    getProducts,
+    toggleProductStatus,
+    Filters,
+  });
 
   useEffect(() => {
     loadProducts();
@@ -96,54 +109,6 @@ const SellProductTable = () => {
     ),
     [rows]
   );
-
-  /* SEARCH HANDLERS */
-  const handleSearch = () => {
-    setAppliedFilters(getValues());
-  };
-
-  const handleReset = () => {
-    reset(Filters);
-    setAppliedFilters(Filters);
-  };
-
-  const isWithinDateRange = (date: Date, range: string) => {
-    const now = new Date();
-
-    switch (range) {
-      case "today": {
-        const start = new Date();
-        start.setHours(0, 0, 0, 0);
-        return date >= start;
-      }
-
-      case "last7": {
-        const start = new Date();
-        start.setDate(now.getDate() - 7);
-        return date >= start;
-      }
-
-      case "last30": {
-        const start = new Date();
-        start.setDate(now.getDate() - 30);
-        return date >= start;
-      }
-
-      case "thisMonth": {
-        const start = new Date(now.getFullYear(), now.getMonth(), 1);
-        return date >= start;
-      }
-
-      case "lastMonth": {
-        const start = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-        const end = new Date(now.getFullYear(), now.getMonth(), 0);
-        return date >= start && date <= end;
-      }
-
-      default:
-        return true;
-    }
-  };
 
   /* FILTER */
   const filteredByStatus = useMemo(() => {
@@ -191,33 +156,6 @@ const SellProductTable = () => {
           isWithinDateRange(createdDate, appliedFilters.createdAtRange)))
     );
   });
-
-  /* TOGGLE STATUS */
-  const handleToggleConfirm = async () => {
-    if (confirmToggle) {
-      await toggleProductStatus(confirmToggle.id, confirmToggle.status);
-      setConfirmToggle(null);
-      loadProducts();
-    }
-  };
-
-  /* BULK ACTIONS */
-  const handleBulkToggle = () => {
-    if (selectedIds.length === 0) return;
-    setBulkConfirmOpen(true);
-  };
-
-  const confirmBulkAction = async () => {
-    const targetStatus = activeTab === "active" ? "active" : "inactive";
-
-    for (const id of selectedIds) {
-      await toggleProductStatus(id, targetStatus);
-    }
-
-    setSelectedIds([]);
-    setBulkConfirmOpen(false);
-    loadProducts();
-  };
 
   const bulkActions = (
     <>
@@ -299,7 +237,7 @@ const SellProductTable = () => {
               <Tooltip title="Deactivate">
                 <IconButton
                   color="error"
-                  onClick={() => setConfirmToggle({ id: row.id, status: row.status || "active" })}>
+                  onClick={() => setConfirmDialog({ type: "single", id: row.id, status: row.status || "active" })}>
                   <DeleteIcon />
                 </IconButton>
               </Tooltip>
@@ -308,7 +246,7 @@ const SellProductTable = () => {
             <Tooltip title="Reactivate">
               <IconButton
                 color="info"
-                onClick={() => setConfirmToggle({ id: row.id, status: row.status || "active" })}>
+                onClick={() => setConfirmDialog({ type: "single", id: row.id, status: row.status || "active" })}>
                 <RestoreIcon />
               </IconButton>
             </Tooltip>
@@ -383,36 +321,37 @@ const SellProductTable = () => {
       />
 
       <EcomDialog
-        open={Boolean(confirmToggle)}
-        title={confirmToggle?.status === "active" ? "Confirm Deactivation" : "Confirm Reactivation"}
-        description={
-          confirmToggle?.status === "active"
-            ? "Are you sure you want to deactivate this product?"
-            : "Are you sure you want to reactivate this product?"
+        open={Boolean(confirmDialog)}
+        title={
+          confirmDialog?.type === "single"
+            ? confirmDialog.status === "active"
+              ? "Confirm Deactivation"
+              : "Confirm Reactivation"
+            : activeTab === "active"
+              ? "Confirm Bulk Deactivation"
+              : "Confirm Bulk Reactivation"
         }
-        confirmText={confirmToggle?.status === "active" ? "Deactivate" : "Reactivate"}
-        onClose={() => setConfirmToggle(null)}
-        onConfirm={handleToggleConfirm}
-        headerSx={{
-          borderBottom: "1px solid rgba(0,0,0,0.12)",
-        }}
-      />
+        description={
+          confirmDialog?.type === "single"
+            ? confirmDialog.status === "active"
+              ? "Are you sure you want to deactivate this product?"
+              : "Are you sure you want to reactivate this product?"
+            : activeTab === "active"
+              ? `Are you sure you want to deactivate ${selectedIds.length} selected products?`
+              : `Are you sure you want to reactivate ${selectedIds.length} selected products?`
+        }
+        confirmText={
+          confirmDialog?.type === "single"
+            ? confirmDialog.status === "active"
+              ? "Deactivate"
+              : "Reactivate"
+            : activeTab === "active"
+              ? "Deactivate All"
+              : "Reactivate All"
+        }
+        onClose={() => setConfirmDialog(null)}
+        onConfirm={handleConfirm}
 
-      {/* BULK CONFIRM DIALOG */}
-      <EcomDialog
-        open={bulkConfirmOpen}
-        title={activeTab === "active" ? "Confirm Bulk Deactivation" : "Confirm Bulk Reactivation"}
-        description={
-          activeTab === "active"
-            ? `Are you sure you want to deactivate ${selectedIds.length} selected products?`
-            : `Are you sure you want to reactivate ${selectedIds.length} selected products?`
-        }
-        confirmText={activeTab === "active" ? "Deactivate All" : "Reactivate All"}
-        onClose={() => setBulkConfirmOpen(false)}
-        onConfirm={confirmBulkAction}
-        headerSx={{
-          borderBottom: "1px solid rgba(0,0,0,0.12)",
-        }}
       />
     </Box>
   );

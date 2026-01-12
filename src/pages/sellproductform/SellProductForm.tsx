@@ -180,8 +180,6 @@ const SellProductForm = ({ open, onClose, editData }: SellProductFormProps) => {
           sx={{
             px: 3,
             py: 2,
-            borderTop: "1px solid rgba(0,0,0,0.1)",
-            bgcolor: "rgba(0,0,0,0.02)",
           }}
         >
           <Box display="flex" alignItems="center" width="100%">
@@ -254,9 +252,6 @@ const SellProductForm = ({ open, onClose, editData }: SellProductFormProps) => {
                 onConfirm={() => {
                   handleReset();
                   setOpenResetDialog(false);
-                }}
-                headerSx={{
-                  borderBottom: "1px solid rgba(0,0,0,0.12)",
                 }}
               />
             </Box>

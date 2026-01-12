@@ -1,37 +1,29 @@
 import { Tabs, Tab, Box } from "@mui/material";
 
-export interface TabItem<T = string> {
+export interface TabItem {
   label: string;
-  value: T;
+  value: string;
   count?: number;
   color?: "default" | "success" | "error" | "warning" | "info";
 }
 
-interface TabProps<T = string> {
-  value: T;
-  tabs: TabItem<T>[];
-  onChange: (value: T) => void;
+interface TabProps {
+  value: string;
+  tabs: TabItem[];
+  onChange: (value: string) => void;
 }
 
-export default function EcomTab<T = string>({
+export default function EcomTab({
   value,
   tabs,
   onChange,
-}: TabProps<T>) {
+}: TabProps) {
   return (
     <Box mb={2}>
       <Tabs
         value={value}
         onChange={(_, newValue) => onChange(newValue)}
-        variant="fullWidth"
-        sx={{
-          "& .MuiTab-root": {
-            textTransform: "none",
-            fontWeight: 600,
-            borderBottom: 1,
-            borderColor: "divider",
-          },
-        }}
+        variant="standard"
       >
         {tabs.map((tab) => (
           <Tab
@@ -47,8 +39,8 @@ export default function EcomTab<T = string>({
                 tab.color === "success"
                   ? "success.main"
                   : tab.color === "error"
-                  ? "error.main"
-                  : "text.secondary",
+                    ? "error.main"
+                    : "text.secondary",
               "&.Mui-selected": {
                 bgcolor: "whitesmoke",
               },

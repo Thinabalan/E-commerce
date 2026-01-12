@@ -8,6 +8,7 @@ import App from './App';
 import { BrowserRouter } from 'react-router-dom';
 import './styles/global.css';
 import { ThemeProvider } from './context/ThemeContext';
+import { MuiThemeProvider } from './context/MuiThemeProvider';
 import { ToastProvider } from './context/ToastContext';
 
 
@@ -15,9 +16,11 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <>
     <BrowserRouter>
       <ThemeProvider>
-        <ToastProvider>
-          <App />
-        </ToastProvider>
+        <MuiThemeProvider>
+          <ToastProvider>
+            <App />
+          </ToastProvider>
+        </MuiThemeProvider>
       </ThemeProvider>
     </BrowserRouter>
   </>
