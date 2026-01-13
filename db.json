@@ -1934,5 +1934,42 @@
       "updatedAt": "2026-01-06T20:40:00.000Z",
       "status": "inactive"
     }
+  ],
+  "drafts": [
+    {
+      "id": "draft-1768267154814",
+      "sellerName": "",
+      "email": "abc@g.c",
+      "phone": "9876543210",
+      "sellerType": "individual",
+      "companyName": "",
+      "companyEmail": "",
+      "companyPhone": "",
+      "city": "",
+      "address": "",
+      "productName": "fgh",
+      "brand": "dfzg",
+      "price": "056",
+      "stock": "067",
+      "category": "Books",
+      "condition": "new",
+      "warranty": "yes",
+      "image": "",
+      "productFeatures": [
+        "Return Available"
+      ],
+      "description": "hfgh",
+      "highlights": "",
+      "paymentMethod": "cod",
+      "upiId": "",
+      "accountName": "",
+      "accountNumber": "",
+      "ifsc": "",
+      "bankName": "",
+      "paymentNotes": "",
+      "status": "draft",
+      "rating": 0,
+      "updatedAt": "2026-01-13T01:23:38.135Z"
+    }
   ]
 }

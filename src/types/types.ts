@@ -16,7 +16,11 @@ export interface Product extends Partial<SellProduct> {
     productFeatures?: string[];
     createdAt?: string;
     updatedAt?: string;
-    status?: "active" | "inactive";
+    status?: "active" | "inactive" | "draft";
+}
+
+export interface DraftProduct extends Omit<Product, "id"> {
+    id?: string | number;
 }
 
 export interface SellerInfo {

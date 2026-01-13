@@ -49,7 +49,7 @@ const Filters: ProductFilters = {
 };
 
 const SellProductTable = () => {
-  const { getProducts, toggleProductStatus } = useProduct();
+  const { getProducts, toggleProductStatus, getDrafts, deleteDraft } = useProduct();
 
   const [rows, setRows] = useState<Product[]>([]);
   const [appliedFilters, setAppliedFilters] =
@@ -59,7 +59,7 @@ const SellProductTable = () => {
   const [editData, setEditData] = useState<Product | null>(null);
   /* DIALOG STATE */
   const [confirmDialog, setConfirmDialog] = useState<ConfirmDialogState | null>(null);
-  const [activeTab, setActiveTab] = useState<"active" | "inactive">("active");
+  const [activeTab, setActiveTab] = useState<"active" | "inactive" | "draft">("active");
   const [selectedIds, setSelectedIds] = useState<(string | number)[]>([]);
 
   const methods = useForm<ProductFilters>({
@@ -84,6 +84,8 @@ const SellProductTable = () => {
     selectedIds,
     activeTab,
     getProducts,
+    getDrafts,
+    deleteDraft,
     toggleProductStatus,
     Filters,
   });
@@ -113,8 +115,11 @@ const SellProductTable = () => {
   /* FILTER */
   const filteredByStatus = useMemo(() => {
     return rows.filter((p) => {
+      if (activeTab === "draft") {
+        return p.status === "draft";
+      }
       if (activeTab === "active") {
-        return p.status !== "inactive";
+        return p.status === "active" || !p.status;
       }
       return p.status === "inactive";
     });
@@ -123,7 +128,8 @@ const SellProductTable = () => {
   const counts = useMemo(() => {
     const active = rows.filter(p => p.status === "active" || !p.status).length;
     const inactive = rows.filter(p => p.status === "inactive").length;
-    return { active, inactive };
+    const draft = rows.filter(p => p.status === "draft").length;
+    return { active, inactive, draft };
   }, [rows]);
 
   const filteredRows = filteredByStatus.filter((p) => {
@@ -208,8 +214,20 @@ const SellProductTable = () => {
       sortable: false,
       render: (row) => (
         <Chip
-          label={row.status === "inactive" ? "Inactive" : "Active"}
-          color={row.status === "inactive" ? "default" : "success"}
+          label={
+            row.status === "draft"
+              ? "Draft"
+              : row.status === "inactive"
+                ? "Inactive"
+                : "Active"
+          }
+          color={
+            row.status === "draft"
+              ? "warning"
+              : row.status === "inactive"
+                ? "default"
+                : "success"
+          }
           size="small"
           variant="outlined"
         />
@@ -222,7 +240,7 @@ const SellProductTable = () => {
       sortable: false,
       render: (row) => (
         <>
-          {activeTab === "active" ? (
+          {activeTab === "active" || activeTab === "draft" ? (
             <>
               <Tooltip title="Edit">
                 <IconButton
@@ -234,7 +252,7 @@ const SellProductTable = () => {
                   <EditIcon />
                 </IconButton>
               </Tooltip>
-              <Tooltip title="Deactivate">
+              <Tooltip title={activeTab === "draft" ? "Delete Draft" : "Deactivate"}>
                 <IconButton
                   color="error"
                   onClick={() => setConfirmDialog({ type: "single", id: row.id, status: row.status || "active" })}>
@@ -288,12 +306,13 @@ const SellProductTable = () => {
       <EcomTab
         value={activeTab}
         onChange={(val) => {
-          setActiveTab(val as "active" | "inactive");
+          setActiveTab(val as "active" | "inactive" | "draft");
           setSelectedIds([]); // Clear selection when switching tabs
         }}
         tabs={[
           { label: "Active", value: "active", count: counts.active, color: "success" },
           { label: "Inactive", value: "inactive", count: counts.inactive, color: "error" },
+          { label: "Drafts", value: "draft", count: counts.draft, color: "warning" },
         ]}
       />
 
@@ -302,10 +321,10 @@ const SellProductTable = () => {
         rows={filteredRows}
         columns={columns}
         emptyMessage="No products found matching the filters."
-        enableSelection
+        enableSelection={activeTab !== "draft"}
         selected={selectedIds}
         onSelectionChange={setSelectedIds}
-        selectedAction={bulkActions}
+        selectedAction={activeTab !== "draft" ? bulkActions : undefined}
 
       />
 
@@ -326,28 +345,40 @@ const SellProductTable = () => {
           confirmDialog?.type === "single"
             ? confirmDialog.status === "active"
               ? "Confirm Deactivation"
-              : "Confirm Reactivation"
+              : confirmDialog.status === "draft"
+                ? "Confirm Deletion"
+                : "Confirm Reactivation"
             : activeTab === "active"
               ? "Confirm Bulk Deactivation"
-              : "Confirm Bulk Reactivation"
+              : activeTab === "inactive"
+                ? "Confirm Bulk Reactivation"
+                : "Confirm Bulk Deletion"
         }
         description={
           confirmDialog?.type === "single"
             ? confirmDialog.status === "active"
               ? "Are you sure you want to deactivate this product?"
-              : "Are you sure you want to reactivate this product?"
+              : confirmDialog.status === "draft"
+                ? "Are you sure you want to permanently delete this draft?"
+                : "Are you sure you want to reactivate this product?"
             : activeTab === "active"
               ? `Are you sure you want to deactivate ${selectedIds.length} selected products?`
-              : `Are you sure you want to reactivate ${selectedIds.length} selected products?`
+              : activeTab === "inactive"
+                ? `Are you sure you want to reactivate ${selectedIds.length} selected products?`
+                : `Are you sure you want to delete ${selectedIds.length} selected drafts?`
         }
         confirmText={
           confirmDialog?.type === "single"
             ? confirmDialog.status === "active"
               ? "Deactivate"
-              : "Reactivate"
+              : confirmDialog.status === "draft"
+                ? "Delete"
+                : "Reactivate"
             : activeTab === "active"
               ? "Deactivate All"
-              : "Reactivate All"
+              : activeTab === "inactive"
+                ? "Reactivate All"
+                : "Delete All"
         }
         onClose={() => setConfirmDialog(null)}
         onConfirm={handleConfirm}

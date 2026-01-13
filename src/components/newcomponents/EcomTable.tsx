@@ -308,17 +308,17 @@ export default function EcomTable<T>({
                         key={String(c.id)}
                         align={c.align || "center"}
                         sx={{
-                          whiteSpace: "nowrap",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
+                          whiteSpace: "normal",
+                          wordBreak: "break-word",
                           maxWidth: 120,
                         }}
+
                       >
                         {c.render ? (
                           c.render(row)
                         ) : (
                           <Tooltip title={(row as any)[c.id] || ""}>
-                            <span>{(row as any)[c.id]}</span>
+                            <span>{(row as any)[c.id] || "—"}</span>
                           </Tooltip>
                         )}
                       </TableCell>

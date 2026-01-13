@@ -4,7 +4,7 @@ import type { ProductFilters } from "./SellProductFilter";
 
 /* DIALOG STATE TYPE */
 export type ConfirmDialogState =
-    | { type: "single"; id: string | number; status: "active" | "inactive" }
+    | { type: "single"; id: string | number; status: "active" | "inactive" | "draft" }
     | { type: "bulk" };
 
 interface UseSellProductHandlersProps {
@@ -16,8 +16,10 @@ interface UseSellProductHandlersProps {
     reset: UseFormReturn<ProductFilters>["reset"];
     confirmDialog: ConfirmDialogState | null;
     selectedIds: (string | number)[];
-    activeTab: "active" | "inactive";
+    activeTab: "active" | "inactive" | "draft";
     getProducts: () => Promise<Product[]>;
+    getDrafts: () => Promise<Product[]>;
+    deleteDraft: (id: string | number) => void;
     toggleProductStatus: (id: string | number, status: "active" | "inactive") => Promise<any>;
     Filters: ProductFilters; // Default filters
 }
@@ -33,14 +35,16 @@ export const useSellProductHandlers = ({
     selectedIds,
     activeTab,
     getProducts,
+    getDrafts,
+    deleteDraft,
     toggleProductStatus,
     Filters,
 }: UseSellProductHandlersProps) => {
-    /* LOAD PRODUCTS */
     const loadProducts = async () => {
         try {
-            const data = await getProducts();
-            setRows(data);
+            const apiProducts = await getProducts();
+            const localDrafts = await getDrafts();
+            setRows([...apiProducts, ...localDrafts]);
         } catch (error) {
             console.error("Failed to load products:", error);
         }
@@ -56,10 +60,14 @@ export const useSellProductHandlers = ({
         setAppliedFilters(Filters);
     };
 
-    /* TOGGLE STATUS */
+    /* TOGGLE STATUS / DELETE DRAFT */
     const handleToggleConfirm = async () => {
         if (confirmDialog?.type === "single") {
-            await toggleProductStatus(confirmDialog.id, confirmDialog.status);
+            if (confirmDialog.status === "draft") {
+                deleteDraft(confirmDialog.id);
+            } else {
+                await toggleProductStatus(confirmDialog.id, confirmDialog.status);
+            }
             setConfirmDialog(null);
             loadProducts();
         }

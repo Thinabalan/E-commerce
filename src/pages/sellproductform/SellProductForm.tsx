@@ -47,20 +47,10 @@ const SellProductForm = ({ open, onClose, editData }: SellProductFormProps) => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [openResetDialog, setOpenResetDialog] = useState(false);
 
-  /* LOAD SAVED DRAFT */
-  const getSavedValues = (): SellProduct => {
-    try {
-      const saved = localStorage.getItem("sellProductDraft");
-      return saved ? JSON.parse(saved) : sellProductDefaultValues;
-    } catch {
-      return sellProductDefaultValues;
-    }
-  };
-
   const methods = useForm<SellProduct>({
     resolver: yupResolver(sellProductSchema),
     mode: "onChange",
-    defaultValues: editData || getSavedValues(),
+    defaultValues: editData || sellProductDefaultValues,
   });
 
   const {
@@ -75,7 +65,7 @@ const SellProductForm = ({ open, onClose, editData }: SellProductFormProps) => {
       if (editData) {
         reset(editData);
       } else {
-        reset(getSavedValues());
+        reset(sellProductDefaultValues);
       }
 
       // Reset UI state to initial values

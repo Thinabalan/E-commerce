@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { UseFormReturn } from "react-hook-form";
 import useProduct from "./useProduct";
-import type { Product, SellProduct } from "../types/types";
+import type { Product, SellProduct, DraftProduct } from "../types/types";
 import { sellProductDefaultValues } from "../default/sellProductDefaults";
 
 interface UseFormHandlersProps {
@@ -31,7 +31,7 @@ export function useFormHandlers({
   const { trigger, resetField } = form;
 
   const [loading, setLoading] = useState(false);
-  const { addProduct, updateProduct } = useProduct();
+  const { addProduct, updateProduct, saveDraft, deleteDraft } = useProduct();
 
   /* VALIDATE CURRENT STEP */
   const validateStep = async () => {
@@ -103,10 +103,17 @@ export function useFormHandlers({
   };
 
   /* SAVE DRAFT */
-  const handleSave = (data: SellProduct) => {
+  const handleSave = async (data: SellProduct) => {
     try {
-      localStorage.setItem("sellProductDraft", JSON.stringify(data));
-      console.log("Draft saved:", data);
+      const draftData: DraftProduct = {
+        ...data,
+        id: editData?.id,
+        status: "draft",
+        rating: 0,
+        image: data.image || ""
+      };
+      await saveDraft(draftData);
+      console.log("Draft saved:", draftData);
     } catch (error) {
       console.error("Failed to save draft", error);
     }
@@ -122,7 +129,7 @@ export function useFormHandlers({
     try {
       const now = new Date().toISOString();
 
-      if (editData?.id) {
+      if (editData?.id && editData?.status !== "draft") {
         const updateData = { ...data, updatedAt: now };
         await updateProduct(editData.id, updateData);
         alert("Product updated successfully!");
@@ -137,7 +144,9 @@ export function useFormHandlers({
         alert("Product submitted successfully!");
       }
 
-      localStorage.removeItem("sellProductDraft");
+      if (editData?.status === "draft" && editData?.id) {
+        await deleteDraft(editData.id);
+      }
       onClose();
     } catch (error) {
       console.error("Submission error:", error);

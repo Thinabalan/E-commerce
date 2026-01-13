@@ -1,5 +1,5 @@
 import { apiService } from "./apiService";
-import type { Product, Category, SellProduct } from "../types/types";
+import type { Product, Category, SellProduct, DraftProduct } from "../types/types";
 
 export const productService = {
     // Get all products
@@ -31,5 +31,22 @@ export const productService = {
     // Delete product
     deleteProduct: async (id: string | number): Promise<void> => {
         return apiService.delete(`products/${id}`);
+    },
+
+    /* DRAFTS */
+    getDrafts: async (): Promise<Product[]> => {
+        return apiService.get("drafts");
+    },
+
+    createDraft: async (data: DraftProduct): Promise<Product> => {
+        return apiService.post("drafts", data);
+    },
+
+    updateDraft: async (id: string | number, data: DraftProduct): Promise<Product> => {
+        return apiService.patch(`drafts/${id}`, data);
+    },
+
+    deleteDraft: async (id: string | number): Promise<void> => {
+        return apiService.delete(`drafts/${id}`);
     },
 };
