@@ -20,12 +20,12 @@ import ProductInfoStep from "./ProductInfoStep";
 import PaymentStep from "./PaymentStep";
 
 import { sellProductSchema } from "../../schema/sellProductSchema";
-import { sellProductDefaultValues } from "../../default/sellProductDefaults";
+import { sellProductDefaultValues } from "./data/sellProductDefaults";
 import type { Category, Product, SellProduct } from "../../types/types";
 
-import { useFormHandlers } from "../../hooks/useFormHandlers";
+import { useFormHandlers } from "../../hooks/sellproductform/useFormHandlers";
 
-import { STEPS, STEP_FIELDS } from "../../config/const";
+import { STEPS, STEP_FIELDS } from "../../constants/sellProductConstants";
 
 interface SellProductFormProps {
   open: boolean;

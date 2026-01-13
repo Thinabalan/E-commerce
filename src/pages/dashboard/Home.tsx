@@ -1,10 +1,10 @@
 import CategoriesSection from "./CategoriesSection";
-import EcomCard from "../components/card/EcomCard";
+import EcomCard from "../../components/card/EcomCard";
 
 import { useEffect, useState } from "react";
 
-import useProduct from "../hooks/useProduct";
-import type { Product } from "../types/types";
+import useProduct from "../../hooks/useProduct";
+import type { Product } from "../../types/types";
 
 export default function Home() {
   const { getProducts } = useProduct();

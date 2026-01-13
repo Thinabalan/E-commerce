@@ -11,7 +11,7 @@ interface EcomTextFieldProps {
     rows?: number;
 }
 
-const EcomTextField: React.FC<EcomTextFieldProps> = ({
+const EcomTextField = ({
     name,
     label,
     type = "text",
@@ -19,7 +19,7 @@ const EcomTextField: React.FC<EcomTextFieldProps> = ({
     required = false,
     multiline = false,
     rows = 1,
-}) => {
+}:EcomTextFieldProps) => {
     const { control, formState: { errors } } = useFormContext();
     const error = errors[name];
 

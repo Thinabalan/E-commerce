@@ -22,51 +22,6 @@ export interface Product extends Partial<SellProduct> {
 export interface DraftProduct extends Omit<Product, "id"> {
     id?: string | number;
 }
-
-export interface SellerInfo {
-    sellerName?: string;
-    email?: string;
-    phone?: string;
-    sellerType?: "individual" | "business" | "";
-    companyName?: string;
-    companyEmail?: string;
-    companyPhone?: string;
-    city?: string;
-    address?: string;
-}
-
-export interface PaymentInfo {
-    paymentMethod?: string;
-    upiId?: string;
-    accountName?: string;
-    accountNumber?: string;
-    ifsc?: string;
-    bankName?: string;
-    paymentNotes?: string;
-}
-
-export interface Category {
-    id: number | string;
-    name: string;
-    icon?: string;
-    parentId?: string;
-    brands?: string[];
-}
-
-// export type CreateProduct = Omit<Product, 'id'>;
-
-export interface User {
-    id: number | string;
-    name: string;
-    email: string;
-    password: string;
-    confirmPassword?: string;
-}
-
-export type CreateUser = Omit<User, 'id'>;
-
-export type LoginForm = Pick<User, 'email' | 'password'>;
-
 export type SellProduct = {
     sellerName: string;
     email: string;
@@ -98,3 +53,49 @@ export type SellProduct = {
     bankName?: string;
     paymentNotes?: string;
 }
+
+// export interface SellerInfo {
+//     sellerName?: string;
+//     email?: string;
+//     phone?: string;
+//     sellerType?: "individual" | "business" | "";
+//     companyName?: string;
+//     companyEmail?: string;
+//     companyPhone?: string;
+//     city?: string;
+//     address?: string;
+// }
+
+// export interface PaymentInfo {
+//     paymentMethod?: string;
+//     upiId?: string;
+//     accountName?: string;
+//     accountNumber?: string;
+//     ifsc?: string;
+//     bankName?: string;
+//     paymentNotes?: string;
+// }
+
+export interface Category {
+    id: number | string;
+    name: string;
+    icon?: string;
+    parentId?: string;
+    brands?: string[];
+}
+
+// export type CreateProduct = Omit<Product, 'id'>;
+
+export interface User {
+    id: number | string;
+    name: string;
+    email: string;
+    password: string;
+    confirmPassword?: string;
+}
+
+export type CreateUser = Omit<User, 'id'>;
+
+export type LoginForm = Pick<User, 'email' | 'password'>;
+
+

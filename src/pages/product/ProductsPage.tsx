@@ -1,10 +1,10 @@
 import { useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
-import EcomCard from "../components/card/EcomCard";
-import useProduct from "../hooks/useProduct";
-import type { Product, Category } from "../types/types";
+import EcomCard from "../../components/card/EcomCard";
+import useProduct from "../../hooks/useProduct";
+import type { Product, Category } from "../../types/types";
 import "./ProductsPage.css";
-import EcomFilter from "../components/filter/EcomFilter";
+import EcomFilter from "../../components/filter/EcomFilter";
 
 export default function ProductsPage() {
   const [searchParams, setSearchParams] = useSearchParams();

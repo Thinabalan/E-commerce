@@ -13,11 +13,11 @@ interface TabProps {
   onChange: (value: string) => void;
 }
 
-export default function EcomTab({
+const EcomTab = ({
   value,
   tabs,
   onChange,
-}: TabProps) {
+}: TabProps) => {
   return (
     <Box mb={2} sx={{ borderBottom: 2, borderColor: 'divider' }}>
       <Tabs
@@ -51,3 +51,5 @@ export default function EcomTab({
     </Box>
   );
 }
+
+export default EcomTab;

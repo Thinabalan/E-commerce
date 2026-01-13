@@ -16,7 +16,7 @@ interface EcomDropdownProps {
     displayEmpty?: boolean;
 }
 
-const EcomDropdown: React.FC<EcomDropdownProps> = ({
+const EcomDropdown = ({
     name,
     label,
     options,
@@ -24,7 +24,7 @@ const EcomDropdown: React.FC<EcomDropdownProps> = ({
     required = false,
     disabled = false,
     displayEmpty = false,
-}) => {
+}:EcomDropdownProps) => {
     const { control, formState: { errors } } = useFormContext();
     const error = errors[name];
 

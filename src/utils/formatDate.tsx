@@ -1,4 +1,4 @@
-export const formatDateOnly = (dateTime: string) => {
+export const formatDate = (dateTime: string) => {
   if (!dateTime) return "—";
 
   // If it's already DD/MM/YYYY format, just return it

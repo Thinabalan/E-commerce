@@ -5,7 +5,7 @@ import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import EcomButton from "../../components/newcomponents/EcomButton";
 import EcomTextField from "../../components/newcomponents/EcomTextField";
 import EcomDropdown from "../../components/newcomponents/EcomDropdown";
-import { CREATED_AT_RANGE } from "../../config/const";
+import { CREATED_AT_RANGE } from "../../constants/sellProductConstants";
 
 export interface ProductFilters {
     productName: string;

@@ -4,7 +4,7 @@ import EcomDropdown from "../../components/newcomponents/EcomDropdown";
 import type { Category } from "../../types/types";
 import EcomRadioGroup from "../../components/newcomponents/EcomRadioGroup";
 import EcomCheckbox from "../../components/newcomponents/EcomCheckbox";
-import { PRODUCT_FEATURES } from "../../config/const";
+import { PRODUCT_FEATURES } from "../../constants/sellProductConstants";
 
 interface ProductInfoStepProps {
   categories: Category[];

@@ -21,7 +21,7 @@ export const validateNameField = (name: string): string => {
 };
 
 export const validateEmailField = (email: string): string => {
-    if (!email.trim()) return ERROR_MESSAGES.emailRequired;
+    if (!email.trim()) return "Email is required";
     if (!isEmail(email.trim())) return ERROR_MESSAGES.emailInvalid;
     return "";
 };
@@ -39,7 +39,7 @@ export const validateConfirmPasswordField = (password: string, confirm: string):
 };
 
 export const validatePhoneField = (phone: string): string => {
-    if (!phone?.trim()) return ERROR_MESSAGES.phoneRequired;
+    if (!phone?.trim()) return "Phone number is required";
     if (!isPhone(phone.trim())) return ERROR_MESSAGES.phoneInvalid;
     return "";
 };

@@ -1,8 +1,8 @@
 import { Routes, Route } from "react-router-dom";
 import Footer from './layouts/Footer'
 import Header from './layouts/Header'
-import Home from "./pages/Home";
-import ProductsPage from "./pages/ProductsPage";
+import Home from "./pages/dashboard/Home";
+import ProductsPage from "./pages/product/ProductsPage";
 import Signup from "./pages/authentication/Signup";
 import Login from "./pages/authentication/Login";
 import AddProductForm from "./pages/Rough/AddProductForm";

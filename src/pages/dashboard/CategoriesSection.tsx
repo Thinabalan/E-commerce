@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useTheme } from "../context/ThemeContext";
+import { useTheme } from "../../context/ThemeContext";
 
-import useProduct from "../hooks/useProduct";
-import type { Category } from "../types/types";
+import useProduct from "../../hooks/useProduct";
+import type { Category } from "../../types/types";
 
 export default function CategoriesSection() {
   const { isDark } = useTheme();

@@ -1,4 +1,4 @@
-import type { SellProduct } from "../types/types";
+import type { SellProduct } from "../../../types/types";
 
 export const sellProductDefaultValues: SellProduct = {
   // Seller Info

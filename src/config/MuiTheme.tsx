@@ -1,6 +1,6 @@
 import { createTheme, type PaletteMode } from "@mui/material";
 
-export const getAppTheme = (mode: PaletteMode) => {
+export const MuiTheme = (mode: PaletteMode) => {
     return createTheme({
         palette: {
             mode,

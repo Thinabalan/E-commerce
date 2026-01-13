@@ -23,10 +23,10 @@ import type { Product } from "../../types/types";
 import type { Column } from "../../components/newcomponents/EcomTable";
 import EcomTable from "../../components/newcomponents/EcomTable";
 import EcomTab from "../../components/newcomponents/EcomTab";
-import { formatDateOnly } from "../../utils/formatDate";
+import { formatDate } from "../../utils/formatDate";
 import SellProductFilter, { type ProductFilters } from "./SellProductFilter";
-import { useSellProductHandlers, type ConfirmDialogState } from "./useSellProductHandlers";
-import { isWithinDateRange } from "../../utils/dateRange";
+import { useSellProductHandlers, type ConfirmDialogState } from "../../hooks/sellproductform/useSellProductHandlers";
+import { dateRange } from "../../utils/dateRange";
 
 /* FILTER TYPES */
 /* FILTER TYPES */
@@ -159,7 +159,7 @@ const SellProductTable = () => {
 
       (!appliedFilters.createdAtRange ||
         (createdDate &&
-          isWithinDateRange(createdDate, appliedFilters.createdAtRange)))
+          dateRange(createdDate, appliedFilters.createdAtRange)))
     );
   });
 
@@ -205,7 +205,7 @@ const SellProductTable = () => {
       label: "Created At",
       align: "center",
       render: (row) =>
-        row.createdAt ? formatDateOnly(row.createdAt) : "—",
+        row.createdAt ? formatDate(row.createdAt) : "—",
     },
     {
       id: "status",

@@ -1,4 +1,4 @@
-export const isWithinDateRange = (date: Date, range: string) => {
+export const dateRange = (date: Date, range: string) => {
     const now = new Date();
 
     switch (range) {

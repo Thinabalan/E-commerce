@@ -1,6 +1,6 @@
 import type { UseFormReturn } from "react-hook-form";
 import type { Product } from "../../types/types";
-import type { ProductFilters } from "./SellProductFilter";
+import type { ProductFilters } from "../../pages/sellproductform/SellProductFilter";
 
 /* DIALOG STATE TYPE */
 export type ConfirmDialogState =
