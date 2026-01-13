@@ -19,7 +19,7 @@ export default function EcomTab({
   onChange,
 }: TabProps) {
   return (
-    <Box mb={2}>
+    <Box mb={2} sx={{ borderBottom: 2, borderColor: 'divider' }}>
       <Tabs
         value={value}
         onChange={(_, newValue) => onChange(newValue)}

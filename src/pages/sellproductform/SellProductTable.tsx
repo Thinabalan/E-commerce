@@ -310,9 +310,9 @@ const SellProductTable = () => {
           setSelectedIds([]); // Clear selection when switching tabs
         }}
         tabs={[
-          { label: "Active", value: "active", count: counts.active, color: "success" },
-          { label: "Inactive", value: "inactive", count: counts.inactive, color: "error" },
-          { label: "Drafts", value: "draft", count: counts.draft, color: "warning" },
+          { label: "Active", value: "active", count: counts.active},
+          { label: "Inactive", value: "inactive", count: counts.inactive},
+          { label: "Drafts", value: "draft", count: counts.draft},
         ]}
       />
 

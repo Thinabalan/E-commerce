@@ -69,6 +69,7 @@ export const useSellProductHandlers = ({
                 await toggleProductStatus(confirmDialog.id, confirmDialog.status);
             }
             setConfirmDialog(null);
+            setSelectedIds([]); 
             loadProducts();
         }
     };

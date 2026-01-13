@@ -247,7 +247,7 @@ export default function EcomTable<T>({
           <TableHead>
             <TableRow>
               {enableSelection && (
-                <TableCell padding="checkbox" sx={{ backgroundColor: "#fafafa", zIndex: 1 }}>
+                <TableCell padding="checkbox" sx={{ backgroundColor: "#fafafa", zIndex: 2 }}>
                   <Checkbox
                     color="primary"
                     indeterminate={selected.length > 0 && selected.length < rows.length}
