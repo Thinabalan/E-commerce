@@ -1,4 +1,5 @@
 import type { SellProduct } from "../../../types/types";
+import type { ProductFilters } from "../../../types/types";
 
 export const sellProductDefaultValues: SellProduct = {
   // Seller Info
@@ -33,4 +34,13 @@ export const sellProductDefaultValues: SellProduct = {
   ifsc: "",
   bankName: "",
   paymentNotes: "",
+};
+
+export const Filters: ProductFilters = {
+  productName: "",
+  sellerName: "",
+  email: "",
+  category: "",
+  brand: "",
+  createdAtRange: "",
 };

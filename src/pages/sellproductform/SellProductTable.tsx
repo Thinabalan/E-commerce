@@ -24,29 +24,11 @@ import type { Column } from "../../components/newcomponents/EcomTable";
 import EcomTable from "../../components/newcomponents/EcomTable";
 import EcomTab from "../../components/newcomponents/EcomTab";
 import { formatDate } from "../../utils/formatDate";
-import SellProductFilter, { type ProductFilters } from "./SellProductFilter";
+import SellProductFilter from "./SellProductFilter";
 import { useSellProductHandlers, type ConfirmDialogState } from "../../hooks/sellproductform/useSellProductHandlers";
 import { dateRange } from "../../utils/dateRange";
-
-/* FILTER TYPES */
-/* FILTER TYPES */
-// interface ProductFilters {
-//   productName: string;
-//   sellerName: string;
-//   email: string;
-//   category: string;
-//   brand: string;
-//   createdAtRange: string;
-// }
-
-const Filters: ProductFilters = {
-  productName: "",
-  sellerName: "",
-  email: "",
-  category: "",
-  brand: "",
-  createdAtRange: "",
-};
+import type { ProductFilters } from "../../types/types";
+import { Filters } from "./data/sellProductDefaults";
 
 const SellProductTable = () => {
   const { getProducts, toggleProductStatus, getDrafts, deleteDraft } = useProduct();

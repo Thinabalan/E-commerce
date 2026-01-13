@@ -53,6 +53,14 @@ export type SellProduct = {
     bankName?: string;
     paymentNotes?: string;
 }
+export interface ProductFilters {
+    productName: string;
+    sellerName: string;
+    email: string;
+    category: string;
+    brand: string;
+    createdAtRange: string;
+}
 
 // export interface SellerInfo {
 //     sellerName?: string;
