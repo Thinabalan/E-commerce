@@ -16,6 +16,8 @@ import {
   alpha,
   IconButton,
   Tooltip,
+  FormControlLabel,
+  Switch,
 } from "@mui/material";
 import { useTheme } from '@mui/material/styles';
 import FirstPageIcon from '@mui/icons-material/FirstPage';
@@ -125,6 +127,8 @@ interface TableProps<T> {
   selected?: (string | number)[];
   onSelectionChange?: (selected: (string | number)[]) => void;
   selectedAction?: React.ReactNode;
+  dense?: boolean;
+  onDenseChange?: (dense: boolean) => void;
 }
 
 export default function EcomTable<T>({
@@ -138,6 +142,8 @@ export default function EcomTable<T>({
   selected = [],
   onSelectionChange,
   selectedAction,
+  dense = false,
+  onDenseChange,
 }: TableProps<T>) {
   const [orderBy, setOrderBy] = useState<keyof T | "">("");
   const [order, setOrder] = useState<Order>("asc");
@@ -243,7 +249,7 @@ export default function EcomTable<T>({
         </Toolbar>
       )}
       <TableContainer sx={{ overflowX: "auto", maxHeight: 500 }}>
-        <Table stickyHeader>
+        <Table stickyHeader size={dense ? "small" : "medium"}>
           <TableHead>
             <TableRow>
               {enableSelection && (
@@ -339,7 +345,15 @@ export default function EcomTable<T>({
         </Table>
       </TableContainer>
 
-      <Box sx={{ display: "flex", justifyContent: "flex-end", borderTop: "1px solid rgba(224, 224, 224, 0.12)" }}>
+      <Box sx={{ display: "flex", alignItems: "center", borderTop: "1px solid rgba(224, 224, 224, 0.12)" }}>
+        {onDenseChange && (
+          <FormControlLabel
+            control={<Switch checked={dense} onChange={(e) => onDenseChange(e.target.checked)} />}
+            label="Dense padding"
+            sx={{ ml: 2 }}
+          />
+        )}
+        <Box sx={{ ml: "auto" }}>
         <TablePagination
           component="div"
           count={rows.length}
@@ -353,6 +367,7 @@ export default function EcomTable<T>({
           rowsPerPageOptions={rowsPerPageOptions}
           ActionsComponent={TablePaginationActions}
         />
+        </Box>
       </Box>
     </Paper>
   );

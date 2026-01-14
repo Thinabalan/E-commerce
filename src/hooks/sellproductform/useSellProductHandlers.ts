@@ -16,7 +16,7 @@ interface UseSellProductHandlersProps {
     reset: UseFormReturn<ProductFilters>["reset"];
     confirmDialog: ConfirmDialogState | null;
     selectedIds: (string | number)[];
-    activeTab: "active" | "inactive" | "draft";
+    activeTab: "active" | "inactive" | "draft" | "all";
     getProducts: () => Promise<Product[]>;
     getDrafts: () => Promise<Product[]>;
     deleteDraft: (id: string | number) => void;
@@ -69,7 +69,7 @@ export const useSellProductHandlers = ({
                 await toggleProductStatus(confirmDialog.id, confirmDialog.status);
             }
             setConfirmDialog(null);
-            setSelectedIds([]); 
+            setSelectedIds([]);
             loadProducts();
         }
     };

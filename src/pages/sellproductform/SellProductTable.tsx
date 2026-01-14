@@ -41,8 +41,9 @@ const SellProductTable = () => {
   const [editData, setEditData] = useState<Product | null>(null);
   /* DIALOG STATE */
   const [confirmDialog, setConfirmDialog] = useState<ConfirmDialogState | null>(null);
-  const [activeTab, setActiveTab] = useState<"active" | "inactive" | "draft">("active");
+  const [activeTab, setActiveTab] = useState<"active" | "inactive" | "draft" | "all">("all");
   const [selectedIds, setSelectedIds] = useState<(string | number)[]>([]);
+  const [dense, setDense] = useState(false);
 
   const methods = useForm<ProductFilters>({
     defaultValues: Filters,
@@ -97,21 +98,26 @@ const SellProductTable = () => {
   /* FILTER */
   const filteredByStatus = useMemo(() => {
     return rows.filter((p) => {
+      if (activeTab === "all") return true;
       if (activeTab === "draft") {
         return p.status === "draft";
       }
       if (activeTab === "active") {
-        return p.status === "active" || !p.status;
+        return p.status === "active" || (!p.status && p.category);
       }
       return p.status === "inactive";
     });
   }, [rows, activeTab]);
 
   const counts = useMemo(() => {
-    const active = rows.filter(p => p.status === "active" || !p.status).length;
+    const active = rows.filter(p => {
+      const s = p.status;
+      return s === "active" || (!s && p.category);
+    }).length;
     const inactive = rows.filter(p => p.status === "inactive").length;
     const draft = rows.filter(p => p.status === "draft").length;
-    return { active, inactive, draft };
+    const all = rows.length;
+    return { active, inactive, draft, all };
   }, [rows]);
 
   const filteredRows = filteredByStatus.filter((p) => {
@@ -207,7 +213,7 @@ const SellProductTable = () => {
             row.status === "draft"
               ? "warning"
               : row.status === "inactive"
-                ? "default"
+                ? "error"
                 : "success"
           }
           size="small"
@@ -220,39 +226,45 @@ const SellProductTable = () => {
       label: "Actions",
       align: "center",
       sortable: false,
-      render: (row) => (
-        <>
-          {activeTab === "active" || activeTab === "draft" ? (
-            <>
-              <Tooltip title="Edit">
+      render: (row) => {
+        const status = row.status || "active";
+        const isDraft = status === "draft";
+        const isActive = status === "active";
+
+        return (
+          <>
+            {isActive || isDraft ? (
+              <>
+                <Tooltip title="Edit">
+                  <IconButton
+                    color="primary"
+                    onClick={() => {
+                      setEditData(row);
+                      setOpenForm(true);
+                    }}>
+                    <EditIcon />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title={isDraft ? "Delete Draft" : "Deactivate"}>
+                  <IconButton
+                    color="error"
+                    onClick={() => setConfirmDialog({ type: "single", id: row.id, status: status })}>
+                    <DeleteIcon />
+                  </IconButton>
+                </Tooltip>
+              </>
+            ) : (
+              <Tooltip title="Reactivate">
                 <IconButton
-                  color="primary"
-                  onClick={() => {
-                    setEditData(row);
-                    setOpenForm(true);
-                  }}>
-                  <EditIcon />
+                  color="info"
+                  onClick={() => setConfirmDialog({ type: "single", id: row.id, status: status })}>
+                  <RestoreIcon />
                 </IconButton>
               </Tooltip>
-              <Tooltip title={activeTab === "draft" ? "Delete Draft" : "Deactivate"}>
-                <IconButton
-                  color="error"
-                  onClick={() => setConfirmDialog({ type: "single", id: row.id, status: row.status || "active" })}>
-                  <DeleteIcon />
-                </IconButton>
-              </Tooltip>
-            </>
-          ) : (
-            <Tooltip title="Reactivate">
-              <IconButton
-                color="info"
-                onClick={() => setConfirmDialog({ type: "single", id: row.id, status: row.status || "active" })}>
-                <RestoreIcon />
-              </IconButton>
-            </Tooltip>
-          )}
-        </>
-      ),
+            )}
+          </>
+        );
+      },
     },
   ];
 
@@ -285,29 +297,33 @@ const SellProductTable = () => {
       />
 
       {/* TABS */}
-      <EcomTab
-        value={activeTab}
-        onChange={(val) => {
-          setActiveTab(val as "active" | "inactive" | "draft");
-          setSelectedIds([]); // Clear selection when switching tabs
-        }}
-        tabs={[
-          { label: "Active", value: "active", count: counts.active},
-          { label: "Inactive", value: "inactive", count: counts.inactive},
-          { label: "Drafts", value: "draft", count: counts.draft},
-        ]}
-      />
+      <Box mt={2}>
+        <EcomTab
+          value={activeTab}
+          onChange={(val) => {
+            setActiveTab(val as "active" | "inactive" | "draft" | "all");
+            setSelectedIds([]); // Clear selection when switching tabs
+          }}
+          tabs={[
+            { label: "All", value: "all", count: counts.all },
+            { label: "Active", value: "active", count: counts.active },
+            { label: "Inactive", value: "inactive", count: counts.inactive },
+            { label: "Drafts", value: "draft", count: counts.draft },
+          ]}
+        />
+      </Box>
 
       {/* TABLE */}
       <EcomTable
         rows={filteredRows}
         columns={columns}
         emptyMessage="No products found matching the filters."
-        enableSelection={activeTab !== "draft"}
+        enableSelection={activeTab !== "draft" && activeTab !== "all"}
         selected={selectedIds}
         onSelectionChange={setSelectedIds}
-        selectedAction={activeTab !== "draft" ? bulkActions : undefined}
-
+        selectedAction={activeTab !== "draft" && activeTab !== "all" ? bulkActions : undefined}
+        dense={dense}
+        onDenseChange={setDense}
       />
 
       {/* MODALS */}
