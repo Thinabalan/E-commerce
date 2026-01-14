@@ -18,12 +18,15 @@ import {
   Tooltip,
   FormControlLabel,
   Switch,
+  Collapse,
 } from "@mui/material";
 import { useTheme } from '@mui/material/styles';
 import FirstPageIcon from '@mui/icons-material/FirstPage';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import LastPageIcon from '@mui/icons-material/LastPage';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 
 type Order = "asc" | "desc";
 
@@ -114,6 +117,7 @@ export interface Column<T> {
   align?: "left" | "center" | "right";
   render?: (row: T) => React.ReactNode;
   sortable?: boolean;
+  groupLabel?: string;
 }
 
 interface TableProps<T> {
@@ -129,6 +133,7 @@ interface TableProps<T> {
   selectedAction?: React.ReactNode;
   dense?: boolean;
   onDenseChange?: (dense: boolean) => void;
+  renderRowDetails?: (row: T) => React.ReactNode;
 }
 
 export default function EcomTable<T>({
@@ -144,11 +149,18 @@ export default function EcomTable<T>({
   selectedAction,
   dense = false,
   onDenseChange,
+  renderRowDetails,
 }: TableProps<T>) {
   const [orderBy, setOrderBy] = useState<keyof T | "">("");
   const [order, setOrder] = useState<Order>("asc");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(defaultRowsPerPage);
+  const [openStates, setOpenStates] = useState<Record<string | number, boolean>>({});
+  const hasRowDetails = typeof renderRowDetails === "function";
+
+  const toggleRow = (id: string | number) => {
+    setOpenStates((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
 
   /* AUTOMATIC PAGE RESET */
   useEffect(() => {
@@ -251,7 +263,47 @@ export default function EcomTable<T>({
       <TableContainer sx={{ overflowX: "auto", maxHeight: 500 }}>
         <Table stickyHeader size={dense ? "small" : "medium"}>
           <TableHead>
+            {/* GROUP HEADERS (Only if at least one groupLabel exists) */}
+            {columns.some(c => c.groupLabel) && (
+              <TableRow>
+                {hasRowDetails && <TableCell sx={{ backgroundColor: "#fafafa" }} />}
+                {enableSelection && <TableCell sx={{ backgroundColor: "#fafafa" }} />}
+                {(() => {
+                  const groups: { label: string | undefined; count: number }[] = [];
+                  columns.forEach((col, i) => {
+                    if (i > 0 && col.groupLabel === columns[i - 1].groupLabel) {
+                      groups[groups.length - 1].count++;
+                    } else {
+                      groups.push({ label: col.groupLabel, count: 1 });
+                    }
+                  });
+                  return groups.map((g, i) => (
+                    <TableCell
+                      key={i}
+                      colSpan={g.count}
+                      align="center"
+                      sx={{
+                        backgroundColor: "#fafafa",
+                        fontWeight: "bold",
+                        borderBottom: "none",
+                        fontSize: "0.75rem",
+                        color: "text.secondary",
+                        lineHeight: 1,
+                        pt: 2,
+                        pb: 0
+                      }}
+                    >
+                      {g.label?.toUpperCase()}
+                    </TableCell>
+                  ));
+                })()}
+              </TableRow>
+            )}
+
             <TableRow>
+              {hasRowDetails && (
+                <TableCell sx={{ backgroundColor: "#fafafa", zIndex: 2, width: 40 }} />
+              )}
               {enableSelection && (
                 <TableCell padding="checkbox" sx={{ backgroundColor: "#fafafa", zIndex: 2 }}>
                   <Checkbox
@@ -266,6 +318,7 @@ export default function EcomTable<T>({
                 <TableCell
                   key={String(c.id)}
                   align={c.headerAlign || "center"}
+                  sx={columns.some(col => col.groupLabel) ? { borderTop: "none" } : {}}
                 >
                   {c.sortable !== false ? (
                     <TableSortLabel
@@ -290,51 +343,71 @@ export default function EcomTable<T>({
                 const isItemSelected = isSelected(rowId);
 
                 return (
-                  <TableRow
-                    key={String(rowId || index)}
-                    hover
-                    role="checkbox"
-                    aria-checked={isItemSelected}
-                    selected={isItemSelected}
-                  >
-                    {enableSelection && (
-                      <TableCell padding="checkbox">
-                        <Checkbox
-                          color="primary"
-                          checked={isItemSelected}
-                          onClick={(event) => {
-                            event.stopPropagation();
-                            handleClick(rowId);
+                  <React.Fragment key={String(rowId || index)}>
+                    <TableRow
+                      hover
+                      role="checkbox"
+                      aria-checked={isItemSelected}
+                      selected={isItemSelected}
+                    >
+                      {hasRowDetails && (
+                        <TableCell>
+                          <IconButton
+                            aria-label="expand row"
+                            size="small"
+                            onClick={() => toggleRow(rowId)}
+                          >
+                            {openStates[rowId] ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+                          </IconButton>
+                        </TableCell>
+                      )}
+                      {enableSelection && (
+                        <TableCell padding="checkbox">
+                          <Checkbox
+                            color="primary"
+                            checked={isItemSelected}
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              handleClick(rowId);
+                            }}
+                          />
+                        </TableCell>
+                      )}
+                      {columns.map((c) => (
+                        <TableCell
+                          key={String(c.id)}
+                          align={c.align || "center"}
+                          sx={{
+                            whiteSpace: "normal",
+                            wordBreak: "break-word",
+                            maxWidth: 110,
                           }}
-                        />
-                      </TableCell>
+                        >
+                          {c.render ? (
+                            c.render(row)
+                          ) : (
+                            <Tooltip title={(row as any)[c.id] || ""}>
+                              <span>{(row as any)[c.id] || "—"}</span>
+                            </Tooltip>
+                          )}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                    {hasRowDetails && (
+                      <TableRow>
+                        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={columns.length + (enableSelection ? 1 : 0) + (hasRowDetails ? 1 : 0)}>
+                          <Collapse in={openStates[rowId]} timeout="auto" unmountOnExit>
+                            {renderRowDetails(row)}
+                          </Collapse>
+                        </TableCell>
+                      </TableRow>
                     )}
-                    {columns.map((c) => (
-                      <TableCell
-                        key={String(c.id)}
-                        align={c.align || "center"}
-                        sx={{
-                          whiteSpace: "normal",
-                          wordBreak: "break-word",
-                          maxWidth: 120,
-                        }}
-
-                      >
-                        {c.render ? (
-                          c.render(row)
-                        ) : (
-                          <Tooltip title={(row as any)[c.id] || ""}>
-                            <span>{(row as any)[c.id] || "—"}</span>
-                          </Tooltip>
-                        )}
-                      </TableCell>
-                    ))}
-                  </TableRow>
+                  </React.Fragment>
                 );
               })
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} align="center" sx={{ py: 10 }}>
+                <TableCell colSpan={columns.length + (enableSelection ? 1 : 0) + (hasRowDetails ? 1 : 0)} align="center" sx={{ py: 10 }}>
                   <Typography color="textSecondary">
                     {emptyMessage}
                   </Typography>
@@ -354,19 +427,19 @@ export default function EcomTable<T>({
           />
         )}
         <Box sx={{ ml: "auto" }}>
-        <TablePagination
-          component="div"
-          count={rows.length}
-          page={page}
-          onPageChange={(_, p) => setPage(p)}
-          rowsPerPage={rowsPerPage}
-          onRowsPerPageChange={(e) => {
-            setRowsPerPage(+e.target.value);
-            setPage(0);
-          }}
-          rowsPerPageOptions={rowsPerPageOptions}
-          ActionsComponent={TablePaginationActions}
-        />
+          <TablePagination
+            component="div"
+            count={rows.length}
+            page={page}
+            onPageChange={(_, p) => setPage(p)}
+            rowsPerPage={rowsPerPage}
+            onRowsPerPageChange={(e) => {
+              setRowsPerPage(+e.target.value);
+              setPage(0);
+            }}
+            rowsPerPageOptions={rowsPerPageOptions}
+            ActionsComponent={TablePaginationActions}
+          />
         </Box>
       </Box>
     </Paper>

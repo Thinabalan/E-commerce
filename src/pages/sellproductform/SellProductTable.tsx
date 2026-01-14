@@ -159,23 +159,29 @@ const SellProductTable = () => {
             <DeleteIcon />
           </IconButton>
         </Tooltip>
-      ) : (
+      ) : activeTab === "inactive" ? (
         <Tooltip title={`Reactivate Selected (${selectedIds.length})`}>
           <IconButton color="info" onClick={handleBulkToggle}>
             <RestoreIcon />
           </IconButton>
         </Tooltip>
+      ) : (
+      <Tooltip title={`Delete Selected (${selectedIds.length})`}>
+        <IconButton color="error" onClick={handleBulkToggle}>
+          <DeleteIcon />
+        </IconButton>
+      </Tooltip>
       )}
     </>
   );
 
   const columns: Column<Product>[] = [
-    { id: "sellerName", label: "Seller Name", align: "left" },
-    { id: "email", label: "Email", align: "left" },
-    { id: "phone", label: "Phone", align: "center" },
-    { id: "productName", label: "Product", align: "left" },
-    { id: "category", label: "Category", align: "left" },
-    { id: "brand", label: "Brand", align: "left" },
+    { id: "sellerName", label: "Seller Name", align: "left", groupLabel: activeTab === "all" ? "Seller Info" : undefined },
+    { id: "email", label: "Email", align: "left", groupLabel: activeTab === "all" ? "Seller Info" : undefined },
+    { id: "phone", label: "Phone", align: "center", groupLabel: activeTab === "all" ? "Seller Info" : undefined },
+    { id: "productName", label: "Product", align: "left", groupLabel: activeTab === "all" ? "Product Specifications" : undefined },
+    { id: "category", label: "Category", align: "left", groupLabel: activeTab === "all" ? "Product Specifications" : undefined },
+    { id: "brand", label: "Brand", align: "left", groupLabel: activeTab === "all" ? "Product Specifications" : undefined },
     {
       id: "price",
       label: "Price",
@@ -318,12 +324,37 @@ const SellProductTable = () => {
         rows={filteredRows}
         columns={columns}
         emptyMessage="No products found matching the filters."
-        enableSelection={activeTab !== "draft" && activeTab !== "all"}
+        enableSelection={activeTab !== "all"}
         selected={selectedIds}
         onSelectionChange={setSelectedIds}
-        selectedAction={activeTab !== "draft" && activeTab !== "all" ? bulkActions : undefined}
+        selectedAction={activeTab !== "all" ? bulkActions : undefined}
         dense={dense}
         onDenseChange={setDense}
+        renderRowDetails={activeTab === "all" ? (row) => (
+          <Box p={3} sx={{ backgroundColor: "rgba(0, 0, 0, 0.02)", borderTop: "1px solid rgba(0,0,0,0.05)", m: 0 }}>
+            <Typography variant="subtitle2" color="primary" gutterBottom fontWeight="bold">
+              Extended Product Information
+            </Typography>
+            <Box display="grid" gridTemplateColumns="repeat(3, 1fr)" gap={2}>
+              <Box>
+                <Typography variant="caption" color="textSecondary">Condition</Typography>
+                <Typography variant="body1">{row.condition || "—"}</Typography>
+              </Box>
+              <Box>
+                <Typography variant="caption" color="textSecondary">Warranty</Typography>
+                <Typography variant="body1">{row.warranty || "—"}</Typography>
+              </Box>
+              <Box>
+                <Typography variant="caption" color="textSecondary">Features</Typography>
+                <Typography variant="body1">
+                  {row.productFeatures && row.productFeatures.length > 0
+                    ? row.productFeatures.join(", ")
+                    : "—"}
+                </Typography>
+              </Box>
+            </Box>
+          </Box>
+        ) : undefined}
       />
 
       {/* MODALS */}

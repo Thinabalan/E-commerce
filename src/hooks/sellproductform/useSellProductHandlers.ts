@@ -19,7 +19,7 @@ interface UseSellProductHandlersProps {
     activeTab: "active" | "inactive" | "draft" | "all";
     getProducts: () => Promise<Product[]>;
     getDrafts: () => Promise<Product[]>;
-    deleteDraft: (id: string | number) => void;
+    deleteDraft: (id: string | number) => Promise<void>;
     toggleProductStatus: (id: string | number, status: "active" | "inactive") => Promise<any>;
     Filters: ProductFilters; // Default filters
 }
@@ -81,12 +81,16 @@ export const useSellProductHandlers = ({
     };
 
     const confirmBulkAction = async () => {
-        const targetStatus = activeTab === "active" ? "active" : "inactive";
-
-        for (const id of selectedIds) {
-            await toggleProductStatus(id, targetStatus);
+        if (activeTab === "draft") {
+            for (const id of selectedIds) {
+                await deleteDraft(id);
+            }
+        } else {
+            const targetStatus = activeTab === "active" ? "active" : "inactive";
+            for (const id of selectedIds) {
+                await toggleProductStatus(id, targetStatus);
+            }
         }
-
         setSelectedIds([]);
         setConfirmDialog(null);
         loadProducts();
