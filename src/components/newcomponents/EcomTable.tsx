@@ -260,9 +260,21 @@ export default function EcomTable<T>({
     [paginatedRows, rowKey]
   );
 
+  const groupLabels = useMemo(() =>
+    Array.from(new Set(paginatedRows
+      .filter((r: any) => r.__group)
+      .map((r: any) => r.label))),
+    [paginatedRows]
+  );
+
   const allVisibleExpanded = useMemo(() =>
     visibleRowIds.length > 0 && visibleRowIds.every(id => openStates[id]),
     [visibleRowIds, openStates]
+  );
+
+  const allGroupsCollapsed = useMemo(() =>
+    groupLabels.length > 0 && groupLabels.every(label => collapsedGroups[label]),
+    [groupLabels, collapsedGroups]
   );
 
   const handleToggleAllRows = () => {
@@ -273,6 +285,17 @@ export default function EcomTable<T>({
     });
     setOpenStates(newStates);
   };
+
+  const handleToggleAllGroups = () => {
+    const shouldCollapse = !allGroupsCollapsed;
+    const newCollapsed = { ...collapsedGroups };
+    groupLabels.forEach(label => {
+      newCollapsed[label] = shouldCollapse;
+    });
+    setCollapsedGroups(newCollapsed);
+  };
+
+  const hasGroups = groupLabels.length > 0;
   const numSelected = selected.length;
 
   return (
@@ -308,7 +331,7 @@ export default function EcomTable<T>({
                 zIndex: 4,
                 backgroundColor: "#fafafa",
               }}>
-                {hasRowDetails && (
+                {(hasRowDetails || hasGroups) && (
                   <TableCell
                     rowSpan={2}
                     sx={{
@@ -318,11 +341,19 @@ export default function EcomTable<T>({
                       zIndex: 3
                     }}
                   >
-                    <Tooltip title={allVisibleExpanded ? "Collapse All" : "Expand All"}>
-                      <IconButton size="small" onClick={handleToggleAllRows}>
-                        {allVisibleExpanded ? <KeyboardDoubleArrowUpIcon /> : <KeyboardDoubleArrowDownIcon />}
-                      </IconButton>
-                    </Tooltip>
+                    {hasGroups ? (
+                      <Tooltip title={allGroupsCollapsed ? "Expand All Groups" : "Collapse All Groups"}>
+                        <IconButton size="small" onClick={handleToggleAllGroups}>
+                          {allGroupsCollapsed ? <KeyboardDoubleArrowDownIcon /> : <KeyboardDoubleArrowUpIcon />}
+                        </IconButton>
+                      </Tooltip>
+                    ) : (
+                      <Tooltip title={allVisibleExpanded ? "Collapse All" : "Expand All"}>
+                        <IconButton size="small" onClick={handleToggleAllRows}>
+                          {allVisibleExpanded ? <KeyboardDoubleArrowUpIcon /> : <KeyboardDoubleArrowDownIcon />}
+                        </IconButton>
+                      </Tooltip>
+                    )}
                   </TableCell>
                 )}
                 {enableSelection && (
@@ -410,13 +441,21 @@ export default function EcomTable<T>({
             }}>
               {!columns.some(c => c.groupLabel) && (
                 <>
-                  {hasRowDetails && (
+                  {(hasRowDetails || hasGroups) && (
                     <TableCell sx={{ backgroundColor: "#fafafa", zIndex: 2, width: 40 }}>
-                      <Tooltip title={allVisibleExpanded ? "Collapse All" : "Expand All"}>
-                        <IconButton size="small" onClick={handleToggleAllRows}>
-                          {allVisibleExpanded ? <KeyboardDoubleArrowUpIcon /> : <KeyboardDoubleArrowDownIcon />}
-                        </IconButton>
-                      </Tooltip>
+                      {hasGroups ? (
+                        <Tooltip title={allGroupsCollapsed ? "Expand All Groups" : "Collapse All Groups"}>
+                          <IconButton size="small" onClick={handleToggleAllGroups}>
+                            {allGroupsCollapsed ? <KeyboardDoubleArrowDownIcon /> : <KeyboardDoubleArrowUpIcon />}
+                          </IconButton>
+                        </Tooltip>
+                      ) : (
+                        <Tooltip title={allVisibleExpanded ? "Collapse All" : "Expand All"}>
+                          <IconButton size="small" onClick={handleToggleAllRows}>
+                            {allVisibleExpanded ? <KeyboardDoubleArrowUpIcon /> : <KeyboardDoubleArrowDownIcon />}
+                          </IconButton>
+                        </Tooltip>
+                      )}
                     </TableCell>
                   )}
                   {enableSelection && (
@@ -469,7 +508,7 @@ export default function EcomTable<T>({
               if (paginatedRows.length === 0) {
                 return (
                   <TableRow>
-                    <TableCell colSpan={columns.length + (enableSelection ? 1 : 0) + (hasRowDetails ? 1 : 0)} align="center" sx={{ py: 10 }}>
+                    <TableCell colSpan={columns.length + (enableSelection ? 1 : 0) + (hasRowDetails || hasGroups ? 1 : 0)} align="center" sx={{ py: 10 }}>
                       <Typography color="textSecondary">
                         {emptyMessage}
                       </Typography>
@@ -491,7 +530,7 @@ export default function EcomTable<T>({
                       sx={{ cursor: "pointer", "&:hover": { backgroundColor: "rgba(0,0,0,0.08)" } }}
                     >
                       <TableCell
-                        colSpan={columns.length + (enableSelection ? 1 : 0) + (hasRowDetails ? 1 : 0)}
+                        colSpan={columns.length + (enableSelection ? 1 : 0) + (hasRowDetails || hasGroups ? 1 : 0)}
                         sx={{
                           backgroundColor: "rgba(0,0,0,0.04)",
                           fontWeight: "bold",
@@ -526,6 +565,9 @@ export default function EcomTable<T>({
                       aria-checked={isItemSelected}
                       selected={isItemSelected}
                     >
+                      {hasGroups && !hasRowDetails && (
+                        <TableCell  />
+                      )}
                       {hasRowDetails && (
                         <TableCell sx={{ borderRight: "2px solid rgba(224, 224, 224, 1)" }}>
                           <IconButton
@@ -578,7 +620,7 @@ export default function EcomTable<T>({
                     </TableRow>
                     {hasRowDetails && (
                       <TableRow>
-                        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={columns.length + (enableSelection ? 1 : 0) + (hasRowDetails ? 1 : 0)}>
+                        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={columns.length + (enableSelection ? 1 : 0) + (hasRowDetails || hasGroups ? 1 : 0)}>
                           <Collapse in={openStates[rowId]} timeout="auto" unmountOnExit>
                             {renderRowDetails!(dataRow)}
                           </Collapse>
