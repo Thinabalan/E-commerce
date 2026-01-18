@@ -65,6 +65,42 @@ export const MuiTheme = (mode: PaletteMode) => {
                     },
                 },
             },
+            /* BUTTON STYLING */
+            MuiButton: {
+                defaultProps: {
+                    disableElevation: true,
+                },
+                styleOverrides: {
+                    root: {
+                        textTransform: "none",
+                        fontWeight: 600,
+                        borderRadius: "8px",
+                        padding: "8px 16px",
+                        minHeight: "42px",
+                    },
+                    sizeSmall: {
+                        minHeight: "32px",
+                        fontSize: "0.8125rem",
+                    },
+                    sizeLarge: {
+                        minHeight: "48px",
+                        fontSize: "1rem",
+                        padding: "10px 24px",
+                    },
+                    startIcon: {
+                        marginRight: "8px",
+                        "& > *:nth-of-type(1)": {
+                            fontSize: "1.25rem",
+                        },
+                    },
+                    endIcon: {
+                        marginLeft: "8px",
+                        "& > *:nth-of-type(1)": {
+                            fontSize: "1.25rem",
+                        },
+                    },
+                },
+            },
         },
     });
 };
