@@ -16,7 +16,7 @@ interface UseSellProductHandlersProps {
     reset: UseFormReturn<ProductFilters>["reset"];
     confirmDialog: ConfirmDialogState | null;
     selectedIds: (string | number)[];
-    activeTab: "active" | "inactive" | "draft" | "all";
+    activeTab: "active" | "inactive" | "draft" | "all" | "groupby";
     getProducts: () => Promise<Product[]>;
     getDrafts: () => Promise<Product[]>;
     deleteDraft: (id: string | number) => Promise<void>;

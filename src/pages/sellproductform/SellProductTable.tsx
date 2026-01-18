@@ -41,7 +41,7 @@ const SellProductTable = () => {
   const [editData, setEditData] = useState<Product | null>(null);
   /* DIALOG STATE */
   const [confirmDialog, setConfirmDialog] = useState<ConfirmDialogState | null>(null);
-  const [activeTab, setActiveTab] = useState<"active" | "inactive" | "draft" | "all">("all");
+  const [activeTab, setActiveTab] = useState<"active" | "inactive" | "draft" | "all" | "groupby">("all");
   const [selectedIds, setSelectedIds] = useState<(string | number)[]>([]);
   const [dense, setDense] = useState(false);
 
@@ -98,7 +98,7 @@ const SellProductTable = () => {
   /* FILTER */
   const filteredByStatus = useMemo(() => {
     return rows.filter((p) => {
-      if (activeTab === "all") return true;
+      if (activeTab === "all" || activeTab === "groupby") return true;
       if (activeTab === "draft") {
         return p.status === "draft";
       }
@@ -151,6 +151,27 @@ const SellProductTable = () => {
     );
   });
 
+  const groupedTableRows = useMemo(() => {
+    if (activeTab !== "groupby") {
+      return filteredRows;
+    }
+
+    const map = new Map<string, Product[]>();
+    filteredRows.forEach((row) => {
+      const key = row.category || "Uncategorized";
+      if (!map.has(key)) map.set(key, []);
+      map.get(key)!.push(row);
+    });
+
+    const result: any[] = [];
+    map.forEach((rowsInGroup, category) => {
+      result.push({ __group: true, label: category, count: rowsInGroup.length });
+      rowsInGroup.forEach((r) => result.push(r));
+    });
+
+    return result;
+  }, [filteredRows, activeTab]);
+
   const bulkActions = (
     <>
       {activeTab === "active" ? (
@@ -166,11 +187,11 @@ const SellProductTable = () => {
           </IconButton>
         </Tooltip>
       ) : (
-      <Tooltip title={`Delete Selected (${selectedIds.length})`}>
-        <IconButton color="error" onClick={handleBulkToggle}>
-          <DeleteIcon />
-        </IconButton>
-      </Tooltip>
+        <Tooltip title={`Delete Selected (${selectedIds.length})`}>
+          <IconButton color="error" onClick={handleBulkToggle}>
+            <DeleteIcon />
+          </IconButton>
+        </Tooltip>
       )}
     </>
   );
@@ -240,7 +261,7 @@ const SellProductTable = () => {
         return (
           <>
             {isActive || isDraft ? (
-              <>
+              <Box display="flex" gap={1} whiteSpace="nowrap">
                 <Tooltip title="Edit">
                   <IconButton
                     color="primary"
@@ -258,7 +279,7 @@ const SellProductTable = () => {
                     <DeleteIcon />
                   </IconButton>
                 </Tooltip>
-              </>
+              </Box>
             ) : (
               <Tooltip title="Reactivate">
                 <IconButton
@@ -307,7 +328,7 @@ const SellProductTable = () => {
         <EcomTab
           value={activeTab}
           onChange={(val) => {
-            setActiveTab(val as "active" | "inactive" | "draft" | "all");
+            setActiveTab(val as "active" | "inactive" | "draft" | "all" | "groupby");
             setSelectedIds([]); // Clear selection when switching tabs
           }}
           tabs={[
@@ -315,21 +336,24 @@ const SellProductTable = () => {
             { label: "Active", value: "active", count: counts.active },
             { label: "Inactive", value: "inactive", count: counts.inactive },
             { label: "Drafts", value: "draft", count: counts.draft },
+            { label: "Group By", value: "groupby", count: counts.all },
           ]}
         />
       </Box>
 
       {/* TABLE */}
       <EcomTable
-        rows={filteredRows}
+        rows={groupedTableRows}
         columns={columns}
         emptyMessage="No products found matching the filters."
-        enableSelection={activeTab !== "all"}
+        enableSelection={activeTab !== "all" && activeTab !== "groupby"}
         selected={selectedIds}
         onSelectionChange={setSelectedIds}
-        selectedAction={activeTab !== "all" ? bulkActions : undefined}
+        selectedAction={activeTab !== "all" && activeTab !== "groupby" ? bulkActions : undefined}
         dense={dense}
         onDenseChange={setDense}
+        disablePagination={activeTab === "groupby"}
+        disableSorting={activeTab === "groupby"}
         renderRowDetails={activeTab === "all" ? (row) => (
           <Box p={3} sx={{ backgroundColor: "rgba(0, 0, 0, 0.02)", borderTop: "1px solid rgba(0,0,0,0.05)", m: 0 }}>
             <Typography variant="subtitle2" color="primary" gutterBottom fontWeight="bold">
