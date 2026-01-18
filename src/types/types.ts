@@ -19,9 +19,6 @@ export interface Product extends Partial<SellProduct> {
     status?: "active" | "inactive" | "draft";
 }
 
-export interface DraftProduct extends Omit<Product, "id"> {
-    id?: string | number;
-}
 export type SellProduct = {
     sellerName: string;
     email: string;
@@ -53,6 +50,9 @@ export type SellProduct = {
     bankName?: string;
     paymentNotes?: string;
 }
+
+export type CreateProduct = Omit<Product, 'id'>;
+
 export interface ProductFilters {
     productName: string;
     sellerName: string;
@@ -91,8 +91,6 @@ export interface Category {
     parentId?: string;
     brands?: string[];
 }
-
-// export type CreateProduct = Omit<Product, 'id'>;
 
 export interface User {
     id: number | string;

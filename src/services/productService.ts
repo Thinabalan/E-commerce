@@ -1,5 +1,5 @@
 import { apiService } from "./apiService";
-import type { Product, Category, SellProduct, DraftProduct } from "../types/types";
+import type { Product, Category, CreateProduct } from "../types/types";
 
 export const productService = {
     // Get all products
@@ -13,9 +13,11 @@ export const productService = {
     },
 
     // Create product
-    createProduct: async (data: SellProduct): Promise<Product> => {
-        const productData = { ...data, status: "active" };
-        return apiService.post("products", productData);
+    createProduct: async (data: CreateProduct): Promise<Product> => {
+        return apiService.post("products", {
+            ...data,
+            status: data.status || "active",
+        });
     },
 
     // Update product status
@@ -24,29 +26,12 @@ export const productService = {
     },
 
     // Update product
-    updateProduct: async (id: string | number, data: SellProduct): Promise<Product> => {
+    updateProduct: async (id: string | number, data: Partial<Product>): Promise<Product> => {
         return apiService.patch(`products/${id}`, data);
     },
 
     // Delete product
     deleteProduct: async (id: string | number): Promise<void> => {
         return apiService.delete(`products/${id}`);
-    },
-
-    /* DRAFTS */
-    getDrafts: async (): Promise<Product[]> => {
-        return apiService.get("drafts");
-    },
-
-    createDraft: async (data: DraftProduct): Promise<Product> => {
-        return apiService.post("drafts", data);
-    },
-
-    updateDraft: async (id: string | number, data: DraftProduct): Promise<Product> => {
-        return apiService.patch(`drafts/${id}`, data);
-    },
-
-    deleteDraft: async (id: string | number): Promise<void> => {
-        return apiService.delete(`drafts/${id}`);
     },
 };

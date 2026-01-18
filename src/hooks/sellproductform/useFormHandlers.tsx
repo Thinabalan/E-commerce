@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { UseFormReturn } from "react-hook-form";
 import useProduct from "../useProduct";
-import type { Product, SellProduct, DraftProduct } from "../../types/types";
+import type { CreateProduct, Product, SellProduct } from "../../types/types";
 import { sellProductDefaultValues } from "../../pages/sellproductform/data/sellProductDefaults";
 
 interface UseFormHandlersProps {
@@ -31,7 +31,7 @@ export function useFormHandlers({
   const { trigger, resetField } = form;
 
   const [loading, setLoading] = useState(false);
-  const { addProduct, updateProduct, saveDraft, deleteDraft } = useProduct();
+  const { addProduct, updateProduct } = useProduct();
 
   /* VALIDATE CURRENT STEP */
   const validateStep = async () => {
@@ -105,14 +105,20 @@ export function useFormHandlers({
   /* SAVE DRAFT */
   const handleSave = async (data: SellProduct) => {
     try {
-      const draftData: DraftProduct = {
+      const now = new Date().toISOString();
+      const draftData: CreateProduct = {
         ...data,
-        id: editData?.id,
         status: "draft",
         rating: 0,
+        updatedAt: now,
         image: data.image || ""
       };
-      await saveDraft(draftData);
+
+      if (editData?.id) {
+        await updateProduct(editData.id, draftData);
+      } else {
+        await addProduct(draftData);
+      }
       console.log("Draft saved:", draftData);
     } catch (error) {
       console.error("Failed to save draft", error);
@@ -129,23 +135,24 @@ export function useFormHandlers({
     try {
       const now = new Date().toISOString();
 
-      if (editData?.id && editData?.status !== "draft") {
-        const updateData = { ...data, updatedAt: now };
+      if (editData?.id) {
+        const updateData: Partial<Product> = { ...data, updatedAt: now, status: "active" as const };
+        if (!editData.createdAt) {
+          updateData.createdAt = now;
+        }
         await updateProduct(editData.id, updateData);
         alert("Product updated successfully!");
       } else {
-        const newData = {
+        const newData : CreateProduct= {
           ...data,
+          status: "active" as const,
           rating: 0,
           createdAt: now,
           updatedAt: now,
+          image: data.image || "", 
         };
         await addProduct(newData);
         alert("Product submitted successfully!");
-      }
-
-      if (editData?.status === "draft" && editData?.id) {
-        await deleteDraft(editData.id);
       }
       onClose();
     } catch (error) {

@@ -31,7 +31,7 @@ import type { ProductFilters } from "../../types/types";
 import { Filters } from "./data/sellProductDefaults";
 
 const SellProductTable = () => {
-  const { getProducts, toggleProductStatus, getDrafts, deleteDraft } = useProduct();
+  const { getProducts, toggleProductStatus, deleteProduct } = useProduct();
 
   const [rows, setRows] = useState<Product[]>([]);
   const [appliedFilters, setAppliedFilters] =
@@ -67,8 +67,7 @@ const SellProductTable = () => {
     selectedIds,
     activeTab,
     getProducts,
-    getDrafts,
-    deleteDraft,
+    deleteProduct,
     toggleProductStatus,
     Filters,
   });

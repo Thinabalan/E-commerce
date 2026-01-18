@@ -18,8 +18,7 @@ interface UseSellProductHandlersProps {
     selectedIds: (string | number)[];
     activeTab: "active" | "inactive" | "draft" | "all" | "groupby";
     getProducts: () => Promise<Product[]>;
-    getDrafts: () => Promise<Product[]>;
-    deleteDraft: (id: string | number) => Promise<void>;
+    deleteProduct: (id: string | number) => Promise<void>;
     toggleProductStatus: (id: string | number, status: "active" | "inactive") => Promise<any>;
     Filters: ProductFilters; // Default filters
 }
@@ -35,16 +34,14 @@ export const useSellProductHandlers = ({
     selectedIds,
     activeTab,
     getProducts,
-    getDrafts,
-    deleteDraft,
+    deleteProduct,
     toggleProductStatus,
     Filters,
 }: UseSellProductHandlersProps) => {
     const loadProducts = async () => {
         try {
             const apiProducts = await getProducts();
-            const localDrafts = await getDrafts();
-            setRows([...apiProducts, ...localDrafts]);
+            setRows(apiProducts);
         } catch (error) {
             console.error("Failed to load products:", error);
         }
@@ -64,7 +61,7 @@ export const useSellProductHandlers = ({
     const handleToggleConfirm = async () => {
         if (confirmDialog?.type === "single") {
             if (confirmDialog.status === "draft") {
-                deleteDraft(confirmDialog.id);
+                await deleteProduct(confirmDialog.id);
             } else {
                 await toggleProductStatus(confirmDialog.id, confirmDialog.status);
             }
@@ -83,7 +80,7 @@ export const useSellProductHandlers = ({
     const confirmBulkAction = async () => {
         if (activeTab === "draft") {
             for (const id of selectedIds) {
-                await deleteDraft(id);
+                await deleteProduct(id);
             }
         } else {
             const targetStatus = activeTab === "active" ? "active" : "inactive";

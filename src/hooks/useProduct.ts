@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { productService } from "../services/productService"
-import type { Product, Category, SellProduct, DraftProduct } from "../types/types";
+import type { Product, Category, CreateProduct } from "../types/types";
 
 export default function useProduct() {
   // Get all products
@@ -24,7 +24,7 @@ export default function useProduct() {
   }, []);
 
   // Add product
-  const addProduct = useCallback(async (productData: SellProduct): Promise<Product> => {
+  const addProduct = useCallback(async (productData: CreateProduct): Promise<Product> => {
     try {
       return await productService.createProduct(productData);
     } catch (error) {
@@ -34,7 +34,7 @@ export default function useProduct() {
   }, []);
 
   /* UPDATE */
-  const updateProduct = useCallback(async (id: string | number, productData: SellProduct) => {
+  const updateProduct = useCallback(async (id: string | number, productData: Partial<Product>) => {
     try {
       return await productService.updateProduct(id, productData);
     } catch (error) {
@@ -64,46 +64,6 @@ export default function useProduct() {
     }
   }, []);
 
-  /* DRAFTS (API) */
-  const getDrafts = useCallback(async (): Promise<Product[]> => {
-    try {
-      return await productService.getDrafts();
-    } catch (error) {
-      console.error("Error fetching drafts:", error);
-      return [];
-    }
-  }, []);
-
-  const saveDraft = useCallback(async (draft: DraftProduct) => {
-    try {
-      const now = new Date().toISOString();
-      const draftData = {
-        ...draft,
-        status: "draft" as const,
-        updatedAt: now,
-      };
-
-      if (draft.id) {
-        // UPDATE
-        return await productService.updateDraft(draft.id, draftData);
-      }
-
-      // CREATE
-      return await productService.createDraft(draftData);
-    } catch (error) {
-      console.error("Error saving draft:", error);
-    }
-  }, []);
-
-
-  const deleteDraft = useCallback(async (id: string | number) => {
-    try {
-      await productService.deleteDraft(id);
-    } catch (error) {
-      console.error("Error deleting draft:", error);
-    }
-  }, []);
-
   return {
     getProducts,
     getCategories,
@@ -111,8 +71,5 @@ export default function useProduct() {
     updateProduct,
     deleteProduct,
     toggleProductStatus,
-    getDrafts,
-    saveDraft,
-    deleteDraft
   };
 }
