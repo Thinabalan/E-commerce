@@ -23,7 +23,9 @@ const EcomTab = ({
       <Tabs
         value={value}
         onChange={(_, newValue) => onChange(newValue)}
-        variant="standard"
+        variant="scrollable"
+        scrollButtons="auto"
+        allowScrollButtonsMobile
       >
         {tabs.map((tab) => (
           <Tab
@@ -35,6 +37,10 @@ const EcomTab = ({
                 : tab.label
             }
             sx={{
+              minHeight: 44,
+              px: { xs: 1.5, sm: 3 },
+              fontSize: { xs: "0.75rem", sm: "0.875rem" },
+              textTransform: "none",
               color:
                 tab.color === "success"
                   ? "success.main"

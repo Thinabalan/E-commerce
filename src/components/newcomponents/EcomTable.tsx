@@ -430,7 +430,7 @@ export default function EcomTable<T>({
 
             <TableRow sx={columns.some(c => c.groupLabel) ? {
               position: "sticky",
-              top: 38,
+              top: 51,
               zIndex: 3,
               backgroundColor: "#fafafa",
             } : {
