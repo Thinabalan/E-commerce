@@ -21,12 +21,11 @@ export default function Footer() {
       <Grid
         container
         spacing={3}
-        alignItems="center"
-        ml={2}
-        textAlign={{ xs: "center", md: "left" }}
+        alignItems="flex-start"
+        px={{ xs: 2, md: 3 }}
       >
         {/* Brand */}
-        <Grid size = {{ xs:12, md:4}} >
+        <Grid size={{ xs: 12, md: 4 }} >
           <Typography variant="h6" fontWeight="bold">
             Sellee
           </Typography>
@@ -36,19 +35,21 @@ export default function Footer() {
         </Grid>
 
         {/* Contact */}
-        <Grid size = {{ xs:12, md:4}} textAlign="center">
-          <Typography variant="subtitle2" fontWeight={600} mb={0.5}  >
+        <Grid size={{ xs: 12, md: 4 }}>
+          <Typography variant="subtitle2" fontWeight={700} mb={0.5}>
             Contact Us
           </Typography>
           <Typography variant="body2">Email: sellee@gmail.com</Typography>
           <Typography variant="body2">Phone: +91 98765 43210</Typography>
         </Grid>
 
-        {/* Social + Copyright */}
-        <Grid size = {{ xs:12, md:4}}
-          textAlign={{ xs: "center", md: "right" }}
-        >
-          <Box display="flex" justifyContent={{ xs: "center", md: "flex-end" }} gap={1} mr={2}>
+        {/* Social */}
+        <Grid size={{ xs: 12, md: 4 }} textAlign={{ xs: "left", md: "right" }}>
+          <Box
+            display="flex"
+            justifyContent={{ xs: "flex-start", md: "flex-end" }}
+            gap={1}
+          >
             <IconButton color="inherit">
               <FacebookIcon />
             </IconButton>
@@ -60,7 +61,7 @@ export default function Footer() {
             </IconButton>
           </Box>
 
-          <Typography variant="caption" display="block" mt={1} mr={2}>
+          <Typography variant="caption" display="block" mt={1}>
             © {new Date().getFullYear()} Sellee. All rights reserved.
           </Typography>
         </Grid>
