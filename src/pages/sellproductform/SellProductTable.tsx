@@ -95,60 +95,48 @@ const SellProductTable = () => {
   );
 
   /* FILTER */
-  const filteredByStatus = useMemo(() => {
+  /* 1. APPLY SEARCH FILTERS TO ALL ROWS */
+  const searchFilteredRows = useMemo(() => {
     return rows.filter((p) => {
+      const createdDate = p.createdAt ? new Date(p.createdAt) : null;
+      return (
+        (!appliedFilters.productName ||
+          p.productName?.toLowerCase().includes(appliedFilters.productName.toLowerCase())) &&
+        (!appliedFilters.sellerName ||
+          p.sellerName?.toLowerCase().includes(appliedFilters.sellerName.toLowerCase())) &&
+        (!appliedFilters.email ||
+          p.email?.toLowerCase().includes(appliedFilters.email.toLowerCase())) &&
+        (!appliedFilters.category ||
+          p.category === appliedFilters.category) &&
+        (!appliedFilters.brand ||
+          p.brand === appliedFilters.brand) &&
+        (!appliedFilters.createdAtRange ||
+          (createdDate && dateRange(createdDate, appliedFilters.createdAtRange)))
+      );
+    });
+  }, [rows, appliedFilters]);
+
+  /* 2. UPDATE COUNTS BASED ON SEARCH RESULTS */
+  const counts = useMemo(() => {
+    const active = searchFilteredRows.filter(p => 
+      p.status === "active" || (!p.status && p.category)
+    ).length;
+    const inactive = searchFilteredRows.filter(p => p.status === "inactive").length;
+    const draft = searchFilteredRows.filter(p => p.status === "draft").length;
+    const all = searchFilteredRows.length;
+
+    return { active, inactive, draft, all };
+  }, [searchFilteredRows]);
+
+  /* 3. FILTER BY TAB FOR TABLE DISPLAY */
+  const filteredRows = useMemo(() => {
+    return searchFilteredRows.filter((p) => {
       if (activeTab === "all" || activeTab === "groupby") return true;
-      if (activeTab === "draft") {
-        return p.status === "draft";
-      }
-      if (activeTab === "active") {
-        return p.status === "active" || (!p.status && p.category);
-      }
+      if (activeTab === "draft") return p.status === "draft";
+      if (activeTab === "active") return p.status === "active" || (!p.status && p.category);
       return p.status === "inactive";
     });
-  }, [rows, activeTab]);
-
-  const counts = useMemo(() => {
-    const active = rows.filter(p => {
-      const s = p.status;
-      return s === "active" || (!s && p.category);
-    }).length;
-    const inactive = rows.filter(p => p.status === "inactive").length;
-    const draft = rows.filter(p => p.status === "draft").length;
-    const all = rows.length;
-    return { active, inactive, draft, all };
-  }, [rows]);
-
-  const filteredRows = filteredByStatus.filter((p) => {
-    const createdDate = p.createdAt ? new Date(p.createdAt) : null;
-
-    return (
-      (!appliedFilters.productName ||
-        p.productName
-          ?.toLowerCase()
-          .includes(appliedFilters.productName.toLowerCase())) &&
-
-      (!appliedFilters.sellerName ||
-        p.sellerName
-          ?.toLowerCase()
-          .includes(appliedFilters.sellerName.toLowerCase())) &&
-
-      (!appliedFilters.email ||
-        p.email
-          ?.toLowerCase()
-          .includes(appliedFilters.email.toLowerCase())) &&
-
-      (!appliedFilters.category ||
-        p.category === appliedFilters.category) &&
-
-      (!appliedFilters.brand ||
-        p.brand === appliedFilters.brand) &&
-
-      (!appliedFilters.createdAtRange ||
-        (createdDate &&
-          dateRange(createdDate, appliedFilters.createdAtRange)))
-    );
-  });
+  }, [searchFilteredRows, activeTab]);
 
   const groupedTableRows = useMemo(() => {
     if (activeTab !== "groupby") {
