@@ -1,10 +1,25 @@
 import { useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
-import EcomCard from "../../components/card/EcomCard";
+import {
+  Container,
+  Box,
+  Typography,
+  Checkbox,
+  Radio,
+  FormControlLabel,
+  List,
+  ListItemButton,
+  ListItemText,
+  Divider,
+  Paper,
+  Stack
+} from "@mui/material";
+import Grid from "@mui/material/Grid"; // Using standard Grid
+import EcomCard from "../../components/newcomponents/EcomCard";
+import EcomAccordion from "../../components/newcomponents/EcomAccordion";
+import EcomButton from "../../components/newcomponents/EcomButton";
 import useProduct from "../../hooks/useProduct";
 import type { Product, Category } from "../../types/types";
-import "./ProductsPage.css";
-import EcomFilter from "../../components/filter/EcomFilter";
 
 export default function ProductsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -55,22 +70,15 @@ export default function ProductsPage() {
 
   const availableBrands = useMemo(() => {
     if (urlSubcategories.length === 0) {
-      // If no subcategories selected, show all brands for the main category's subcategories
-      return [
-        ...new Set(availableSubcategories.flatMap(s => s.brands || []))
-      ];
+      return [...new Set(availableSubcategories.flatMap(s => s.brands || []))];
     }
-    // Show brands for selected subcategories
     const selectedSubObjects = availableSubcategories.filter(s => urlSubcategories.includes(s.name));
-    return [
-      ...new Set(selectedSubObjects.flatMap(s => s.brands || []))
-    ];
+    return [...new Set(selectedSubObjects.flatMap(s => s.brands || []))];
   }, [availableSubcategories, urlSubcategories]);
 
   // FILTER LOGIC
   const filteredProducts = useMemo(() => {
     return products.filter((product) => {
-      // 1. Category Filter (Matches either main category or its subcategories)
       const isInCategory =
         urlCategory === "All" ||
         product.category === urlCategory ||
@@ -78,32 +86,24 @@ export default function ProductsPage() {
 
       if (!isInCategory) return false;
 
-      // 2. Subcategory Filter (Multi-select)
       if (urlSubcategories.length > 0 && !urlSubcategories.includes(product.category)) {
-        // if main category is "Electronics" and sub "Mobile" is picked, 
-        // product.category will be "Mobile".
         return false;
       }
 
-      // 3. Brand Filter (Matches explicitly by brand OR falls back to name search)
       if (urlBrands.length > 0) {
         const matchesBrand = urlBrands.some(brand => {
           const productBrand = product.brand?.toLowerCase();
           const targetBrand = brand.toLowerCase();
-
           return (productBrand === targetBrand) ||
             (product.productName.toLowerCase().includes(targetBrand));
         });
-
         if (!matchesBrand) return false;
       }
 
-      // 4. Search Query
       if (searchQuery && !product.productName.toLowerCase().includes(searchQuery.toLowerCase())) {
         return false;
       }
 
-      // 5. Rating
       if (rating && product.rating < rating) {
         return false;
       }
@@ -120,7 +120,7 @@ export default function ProductsPage() {
     } else {
       params.set("category", category);
     }
-    params.delete("sub"); // Reset tiered filters
+    params.delete("sub");
     params.delete("brand");
     setSearchParams(params);
   };
@@ -128,187 +128,216 @@ export default function ProductsPage() {
   const handleFilterToggle = (key: "sub" | "brand", value: string) => {
     const params = new URLSearchParams(searchParams);
     const current = params.get(key) ? params.get(key)!.split(",") : [];
-
     let updated;
     if (current.includes(value)) {
       updated = current.filter(v => v !== value);
     } else {
       updated = [...current, value];
     }
-
     if (updated.length > 0) {
       params.set(key, updated.join(","));
     } else {
       params.delete(key);
     }
-
     setSearchParams(params);
   };
 
   return (
-    <div className="container-fluid bg-light min-vh-100 pt-3 pb-5">
-      <div className="row">
-        {/* FILTER SIDEBAR */}
-        <div className="col-md-3 border-end border-2">
-          <div className="bg-white shadow-sm rounded-1 overflow-hidden">
-            <div className="p-3 border-bottom d-flex justify-content-between align-items-center">
-              <h5 className="mb-0 fs-5 fw-bold">Filters</h5>
-              {(urlCategory !== "All" || urlSubcategories.length > 0 || urlBrands.length > 0 || rating) && (
-                <button
-                  className="btn btn-sm text-primary p-0 border-0"
-                  onClick={() => setSearchParams({})}
-                >
-                  Clear All
-                </button>
-              )}
-            </div>
-
-            {/* MAIN CATEGORIES */}
-            <div className="p-3 border-bottom">
-              <h6 className="filter-title-text mb-3">Categories</h6>
-              <div
-                className={`py-1 cursor-pointer ${urlCategory === "All" ? "text-primary fw-bold" : "text-muted"}`}
-                onClick={() => handleCategoryChange("All")}
-              >
-                All Products
-              </div>
-              {categories.filter(c => !c.parentId && c.name !== "Offers").map((cat) => (
-                <div
-                  key={cat.id}
-                  className={`py-1 cursor-pointer ${urlCategory === cat.name ? "text-primary fw-bold" : "text-muted"}`}
-                  onClick={() => handleCategoryChange(cat.name)}
-                >
-                  {cat.name}
-                </div>
-              ))}
-            </div>
-
-            {/* SUB-CATEGORIES */}
-            {availableSubcategories.length > 0 && (
-              <EcomFilter
-                title="Subcategories"
-                isOpen={openFilter === "Subcategory"}
-                onToggle={() =>
-                  setOpenFilter(openFilter === "Subcategory" ? null : "Subcategory")
-                }
-              >
-                {availableSubcategories.map((sub) => (
-                  <div key={sub.id} className="d-flex align-items-center mb-2">
-                    <input
-                      type="checkbox"
-                      id={`sub-${sub.id}`}
-                      checked={urlSubcategories.includes(sub.name)}
-                      onChange={() => handleFilterToggle("sub", sub.name)}
-                      className="form-check-input mt-0 cursor-pointer"
-                    />
-                    <label
-                      htmlFor={`sub-${sub.id}`}
-                      className="ms-2 filter-label"
-                    >
-                      {sub.name}
-                    </label>
-                  </div>
-                ))}
-              </EcomFilter>
-            )}
-
-            {/* BRANDS */}
-            {availableBrands.length > 0 && (
-              <EcomFilter
-                title="Brands"
-                isOpen={openFilter === "Brand"}
-                onToggle={() =>
-                  setOpenFilter(openFilter === "Brand" ? null : "Brand")
-                }
-              >
-                {availableBrands.map((brand) => (
-                  <div key={brand} className="d-flex align-items-center mb-2">
-                    <input
-                      type="checkbox"
-                      id={`brand-${brand}`}
-                      checked={urlBrands.includes(brand)}
-                      onChange={() => handleFilterToggle("brand", brand)}
-                      className="form-check-input mt-0 cursor-pointer"
-                    />
-                    <label
-                      htmlFor={`brand-${brand}`}
-                      className="ms-2 filter-label"
-                    >
-                      {brand}
-                    </label>
-                  </div>
-                ))}
-              </EcomFilter>
-            )}
-
-            {/* RATING FILTER */}
-            <EcomFilter
-              title="Rating"
-              isOpen={openFilter === "Rating"}
-              onToggle={() =>
-                setOpenFilter(openFilter === "Rating" ? null : "Rating")
-              }
+    <Box sx={{ bgcolor: '#f5f7fa', minHeight: '100vh', py: 4 }}>
+      <Container maxWidth="xl">
+        <Grid container spacing={3}>
+          {/* FILTER SIDEBAR */}
+          <Grid size={{ xs: 12, md: 3 }}>
+            <Paper
+              elevation={2}
+              sx={{
+                borderRadius: '12px',
+                overflow: 'hidden',
+                border: '1px solid',
+                borderColor: 'divider',
+                position: { md: 'sticky' },
+                top: { md: '90px' },
+                maxHeight: 'calc(100vh - 120px)', 
+                overflowY: 'auto',
+              }}
             >
-              {[4, 3, 2].map((r) => (
-                <div key={r} className="d-flex align-items-center mb-2">
-                  <input
-                    type="radio"
-                    id={`rating-${r}`}
-                    checked={rating === r}
-                    onChange={() => setRating(r)}
-                    className="form-check-input mt-0 cursor-pointer"
+              <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid', borderColor: 'divider' }}>
+                <Typography variant="h6" sx={{ fontWeight: 700, fontSize: '1.1rem' }}>Filters</Typography>
+                {(urlCategory !== "All" || urlSubcategories.length > 0 || urlBrands.length > 0 || rating) && (
+                  <EcomButton
+                    label="Clear All"
+                    size="small"
+                    onClick={() => {
+                      setSearchParams({});
+                      setRating(null);
+                    }}
+                    sx={{ textTransform: 'none', fontWeight: 600 }}
                   />
-                  <label
-                    htmlFor={`rating-${r}`}
-                    className="ms-2 filter-label"
+
+                )}
+              </Box>
+
+              {/* MAIN CATEGORIES */}
+              <Box sx={{ p: 2, borderBottom: '1px solid', borderColor: 'divider' }}>
+                <Typography sx={{ mb: 1, fontSize: '0.875rem', fontWeight: 700, color: 'text.secondary', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                  Categories
+                </Typography>
+                <List disablePadding>
+                  <ListItemButton
+                    dense
+                    selected={urlCategory === "All"}
+                    onClick={() => handleCategoryChange("All")}
+                    sx={{ borderRadius: '8px', mb: 0.5 }}
                   >
-                    {r}★ & above
-                  </label>
-                </div>
-              ))}
+                    <ListItemText
+                      primary="All Products"
+                      slotProps={{
+                        primary: {
+                          fontWeight: urlCategory === "All" ? 700 : 500,
+                          color: urlCategory === "All" ? 'primary.main' : 'text.primary'
+                        }
+                      }}
+                    />
+                  </ListItemButton>
+                  {categories.filter(c => !c.parentId && c.name !== "Offers").map((cat) => (
+                    <ListItemButton
+                      key={cat.id}
+                      dense
+                      selected={urlCategory === cat.name}
+                      onClick={() => handleCategoryChange(cat.name)}
+                      sx={{ borderRadius: '8px', mb: 0.5 }}
+                    >
+                      <ListItemText
+                        primary={cat.name}
+                        slotProps={{
+                          primary: {
+                            fontWeight: urlCategory === cat.name ? 700 : 500,
+                            color: urlCategory === cat.name ? 'primary.main' : 'text.primary'
+                          }
+                        }}
+                      />
+                    </ListItemButton>
+                  ))}
+                </List>
+              </Box>
 
-              {rating && (
-                <button
-                  className="clear-btn mt-2"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setRating(null);
-                  }}
+              {/* SUB-CATEGORIES */}
+              {availableSubcategories.length > 0 && (
+                <EcomAccordion
+                  title="Subcategories"
+                  isOpen={openFilter === "Subcategory"}
+                  onToggle={() => setOpenFilter(openFilter === "Subcategory" ? null : "Subcategory")}
                 >
-                  Clear Rating
-                </button>
+                  <Stack spacing={0.5}>
+                    {availableSubcategories.map((sub) => (
+                      <FormControlLabel
+                        key={sub.id}
+                        control={
+                          <Checkbox
+                            size="small"
+                            checked={urlSubcategories.includes(sub.name)}
+                            onChange={() => handleFilterToggle("sub", sub.name)}
+                          />
+                        }
+                        label={<Typography sx={{ fontSize: '0.9rem' }}>{sub.name}</Typography>}
+                      />
+                    ))}
+                  </Stack>
+                </EcomAccordion>
               )}
-            </EcomFilter>
-          </div>
-        </div>
 
-        {/* PRODUCTS GRID */}
-        <div className="col-md-9">
-          <h4 className="mb-3">
-            {urlCategory === "All" ? "All Products" : urlCategory}
-            {urlSubcategories.length > 0 && ` > ${urlSubcategories.join(", ")}`}
-          </h4>
+              {/* BRANDS */}
+              {availableBrands.length > 0 && (
+                <EcomAccordion
+                  title="Brands"
+                  isOpen={openFilter === "Brand"}
+                  onToggle={() => setOpenFilter(openFilter === "Brand" ? null : "Brand")}
+                >
+                  <Stack spacing={0.5}>
+                    {availableBrands.map((brand) => (
+                      <FormControlLabel
+                        key={brand}
+                        control={
+                          <Checkbox
+                            size="small"
+                            checked={urlBrands.includes(brand)}
+                            onChange={() => handleFilterToggle("brand", brand)}
+                          />
+                        }
+                        label={<Typography sx={{ fontSize: '0.9rem' }}>{brand}</Typography>}
+                      />
+                    ))}
+                  </Stack>
+                </EcomAccordion>
+              )}
 
-          {error && <p className="text-danger text-center">{error}</p>}
+              {/* RATING FILTER */}
+              <EcomAccordion
+                title="Rating"
+                isOpen={openFilter === "Rating"}
+                onToggle={() => setOpenFilter(openFilter === "Rating" ? null : "Rating")}
+              >
+                <Stack spacing={0.5}>
+                  {[4, 3, 2].map((r) => (
+                    <FormControlLabel
+                      key={r}
+                      control={
+                        <Radio
+                          size="small"
+                          checked={rating === r}
+                          onChange={() => setRating(r)}
+                        />
+                      }
+                      label={<Typography sx={{ fontSize: '0.9rem' }}>{r}★ & above</Typography>}
+                    />
+                  ))}
+                </Stack>
+              </EcomAccordion>
+            </Paper>
+          </Grid>
 
-          <div className="row g-4">
-            {filteredProducts.map((prod) => (
-              <div className="col-6 col-md-4" key={prod.id}>
-                <EcomCard
-                  name={prod.productName}
-                  price={prod.price}
-                  image={prod.image}
-                />
-              </div>
-            ))}
-          </div>
+          {/* PRODUCTS GRID */}
+          <Grid size={{ xs: 12, md: 9 }}>
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="h5" sx={{ fontWeight: 700, mb: 1 }}>
+                {urlCategory === "All" ? "All Products" : urlCategory}
+                {urlSubcategories.length > 0 && (
+                  <Typography component="span" variant="h5" sx={{ color: 'text.secondary', fontWeight: 500 }}>
+                    {` > ${urlSubcategories.join(", ")}`}
+                  </Typography>
+                )}
+              </Typography>
+              <Divider />
+            </Box>
 
-          {filteredProducts.length === 0 && !error && (
-            <p className="text-center mt-4">No products found.</p>
-          )}
-        </div>
-      </div>
-    </div>
+            {error && (
+              <Box sx={{ py: 4, textAlign: 'center' }}>
+                <Typography color="error">{error}</Typography>
+              </Box>
+            )}
+
+            <Grid container spacing={3}>
+              {filteredProducts.map((prod) => (
+                <Grid size={{ xs: 6, sm: 6, md: 4 }} key={prod.id}>
+                  <EcomCard
+                    name={prod.productName}
+                    price={prod.price}
+                    image={prod.image}
+                  />
+                </Grid>
+              ))}
+            </Grid>
+
+            {filteredProducts.length === 0 && !error && (
+              <Box sx={{ py: 10, textAlign: 'center' }}>
+                <Typography variant="h6" color="text.secondary">No products found.</Typography>
+                <Typography variant="body2" color="text.secondary">Try adjusting your filters or search query.</Typography>
+              </Box>
+            )}
+          </Grid>
+        </Grid>
+      </Container>
+    </Box>
   );
 }
 
