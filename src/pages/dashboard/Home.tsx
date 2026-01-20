@@ -1,8 +1,9 @@
-import CategoriesSection from "./CategoriesSection";
-import EcomCard from "../../components/card/EcomCard";
-
 import { useEffect, useState } from "react";
-
+import { Box, Container, Typography, Paper } from "@mui/material";
+import Grid from "@mui/material/Grid";
+import CategoriesSection from "./CategoriesSection";
+import EcomCard from "../../components/newcomponents/EcomCard";
+import EcomButton from "../../components/newcomponents/EcomButton";
 import useProduct from "../../hooks/useProduct";
 import type { Product } from "../../types/types";
 
@@ -28,70 +29,98 @@ export default function Home() {
   const topPicks = products.filter(p => p.rating >= 4).slice(0, 10);
   const latestTrends = products.slice(-3);
 
+  const scrollToTrends = () => {
+    document.getElementById("latest-trends")?.scrollIntoView({ behavior: "smooth" });
+  };
+
   return (
-    <div className="home-container">
+    <Box sx={{ pt:{ xs: 7, md: 1 }, pb: 8, bgcolor: '#fff', minHeight: '100vh' }}>
 
       {/* CATEGORIES */}
       <CategoriesSection />
 
       {/* HERO SECTION */}
-      <section className="hero-section bg-pink py-4 text-center mt-4">
-        <div className="hero-text">
-          <h1>Shop the Latest Trends</h1>
-          <p>Best deals • Fast delivery • Quality you’ll love</p>
-          <button
-            className="hero-btn"
-            onClick={() =>
-              document
-                .getElementById("latest-trends")
-                ?.scrollIntoView({ behavior: "smooth" })
-            }
-          >
-            Shop Now
-          </button>
-        </div>
-      </section>
+      <Box sx={{ mt: 2 }}>
+        <Paper
+          elevation={0}
+          sx={{
+            py: 3,
+            textAlign: 'center',
+            bgcolor: '#ffbebe',
+            color: 'black',
+            borderRadius: 0,
+          }}
+        >
+          <Container maxWidth="md">
+            <Typography variant="h4" component="h1" fontWeight={700} gutterBottom sx={{ fontSize: '30px', mb: 1 }}>
+              Shop the Latest Trends
+            </Typography>
+            <Typography variant="body1" sx={{ mb: 3, fontSize: '15px' }}>
+              Best deals • Fast delivery • Quality you’ll love
+            </Typography>
+
+            <EcomButton
+              label="Shop Now"
+              onClick={scrollToTrends}
+              variant="contained"
+              sx={{
+                bgcolor: 'white',
+                color: 'black',
+                '&:hover': { bgcolor: '#ffe3e3' },
+                borderRadius: '8px',
+                px: 3
+              }}
+            />
+          </Container>
+        </Paper>
+      </Box>
 
       {/* TOP PICKS */}
-      <section className="container mt-5">
-        <h2 className="section-title mb-4">Top Picks for You</h2>
+      <Container sx={{ mt: 5 }}>
+        <Typography variant="h4" fontWeight={700} gutterBottom sx={{ mb: 4, fontSize: 'calc(1.3rem + .6vw)' }}>
+          Top Picks for You
+        </Typography>
 
-        {error && <p className="text-danger text-center mt-3">{error}</p>}
+        {error && <Typography color="error" align="center">{error}</Typography>}
 
-        <div className="row g-4">
+        <Grid container spacing={4}>
           {topPicks.map((prod: Product) => (
-            <div className="col-6 col-md-3" key={prod.id}>
+            <Grid size={{ xs: 6, sm: 6, md: 3 }} key={prod.id}>
               <EcomCard
                 name={prod.productName}
                 price={prod.price}
                 image={prod.image}
               />
-            </div>
+            </Grid>
           ))}
-        </div>
-      </section>
+        </Grid>
+      </Container>
 
       {/* LATEST TRENDS */}
-      <section className="container mt-5" id="latest-trends">
-        <h2 className="section-title mb-4">Latest Trends</h2>
+      <Container sx={{ mt: 5 }} id="latest-trends">
+        <Typography variant="h4" fontWeight={700} gutterBottom sx={{ mb: 4, fontSize: 'calc(1.3rem + .6vw)' }}>
+          Latest Trends
+        </Typography>
 
-        <div className="row g-4">
+        <Grid container spacing={4}>
           {latestTrends.map((prod: Product) => (
-            <div className="col-6 col-md-3" key={prod.id}>
+            <Grid size={{ xs: 6, sm: 6, md: 3 }} key={prod.id}>
               <EcomCard
                 name={prod.productName}
                 price={prod.price}
                 image={prod.image}
               />
-            </div>
+            </Grid>
           ))}
 
           {latestTrends.length === 0 && !error && (
-            <p className="text-center mt-3">No trending products.</p>
+            <Grid size={{ xs: 12 }}>
+              <Typography align="center" color="text.secondary">No trending products.</Typography>
+            </Grid>
           )}
-        </div>
-      </section>
+        </Grid>
+      </Container>
 
-    </div>
+    </Box>
   );
 }

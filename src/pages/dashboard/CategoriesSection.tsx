@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useTheme } from "../../context/ThemeContext";
-
+import { Box, Paper, Typography, Stack, useTheme } from "@mui/material";
 import useProduct from "../../hooks/useProduct";
 import type { Category } from "../../types/types";
 
 export default function CategoriesSection() {
-  const { isDark } = useTheme();
+  const theme = useTheme();
   const navigate = useNavigate();
   const { getCategories } = useProduct();
 
@@ -25,33 +24,66 @@ export default function CategoriesSection() {
     fetchCategories();
   }, []);
 
-  if (error) return <p className="text-danger">{error}</p>;
+  if (error) return <Typography color="error">{error}</Typography>;
 
   return (
-    <div className="category-wrapper">
-      <div className={`category-card ${isDark ? "cat-wrapper-dark" : ""}`}>
-        <div className="d-flex gap-3 overflow-auto pt-1 ps-3">
+    <Box sx={{ px: { xs: 2, md: 3 } }}>
+      <Paper
+        elevation={0}
+        sx={{
+          p: 2,
+          borderRadius: 3,
+          bgcolor: theme.palette.mode === 'dark' ? 'background.paper' : 'white',
+        }}
+      >
+        <Stack
+          direction="row"
+          spacing={2}
+          sx={{
+            overflowX: 'auto',
+            p: 2,
+            '&::-webkit-scrollbar': { height: '6px' },
+            '&::-webkit-scrollbar-track': { borderRadius: '10px', bgcolor: 'transparent' },
+            '&::-webkit-scrollbar-thumb': { borderRadius: '10px', bgcolor: 'action.hover' },
+          }}
+        >
           {categories.filter(c => c.parentId).map(sub => {
             const parentName = categories.find(p => p.id === sub.parentId)?.name;
 
             if (!parentName) return null;
 
             return (
-              <div
+              <Box
                 key={sub.id}
-                className={`category-box ${isDark ? "cat-dark" : "cat-light"}`}
-                onClick={() =>
-                  navigate(`/products?category=${parentName}&sub=${sub.name}`)
-                }
-                style={{ cursor: "pointer" }}
+                onClick={() => navigate(`/products?category=${parentName}&sub=${sub.name}`)}
+                sx={{
+                  minWidth: 123,
+                  p: 2,
+                  borderRadius: 3,
+                  textAlign: 'center',
+                  cursor: 'pointer',
+                  bgcolor: theme.palette.mode === 'dark' ? 'action.hover' : '#ffe4e4',
+                  color: theme.palette.mode === 'dark' ? 'text.primary' : 'inherit',
+                  transition: 'transform 0.2s',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 1,
+                  '&:hover': {
+                    transform: 'translateY(-8px)',
+                    bgcolor: theme.palette.mode === 'dark' ? 'action.selected' : '#ffcfcf',
+                  }
+                }}
               >
-                <i className={`fa-solid ${sub.icon || "fa-tag"} mx-1 `}></i>
-                <span>{sub.name}</span>
-              </div>
+                <i className={`fa-solid ${sub.icon || "fa-tag"} fa-lg `}></i>
+                <Typography variant="body2" fontWeight={600} noWrap>
+                  {sub.name}
+                </Typography>
+              </Box>
             );
           })}
-        </div>
-      </div>
-    </div>
+        </Stack>
+      </Paper>
+    </Box>
   );
 }
