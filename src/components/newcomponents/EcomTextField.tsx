@@ -11,6 +11,15 @@ interface EcomTextFieldProps {
     rows?: number;
 }
 
+const getNestedValue = (obj: any, path: string) => {
+    if (!obj || !path) return undefined;
+
+    return path.split(".").reduce((acc: any, key: string) => {
+        if (acc === undefined || acc === null) return undefined;
+        return acc[key];
+    }, obj);
+};
+
 const EcomTextField = ({
     name,
     label,
@@ -19,9 +28,9 @@ const EcomTextField = ({
     required = false,
     multiline = false,
     rows = 1,
-}:EcomTextFieldProps) => {
+}: EcomTextFieldProps) => {
     const { control, formState: { errors } } = useFormContext();
-    const error = errors[name];
+    const error = getNestedValue(errors, name);
 
     return (
         <Controller

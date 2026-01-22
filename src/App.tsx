@@ -7,6 +7,7 @@ import Signup from "./pages/authentication/Signup";
 import Login from "./pages/authentication/Login";
 import AddProductForm from "./pages/Rough/AddProductForm";
 import SellProductTable from "./pages/sellproductform/SellProductTable";
+import RegistrationForm from "./pages/registrationform/RegistrationForm";
 
 function App() {
 
@@ -21,6 +22,7 @@ function App() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/newproduct" element={<AddProductForm />} />
           <Route path="/producttable" element={<SellProductTable />} />
+          <Route path="/form" element={<RegistrationForm />} />
         </Routes>
       </div>
       <Footer />
