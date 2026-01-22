@@ -1,5 +1,5 @@
 import * as yup from "yup";
-import { ERROR_MESSAGES, requiredMsg } from "../constants/ErrorMessages";
+import { ERROR_MESSAGES, positive, requiredMsg } from "../constants/ErrorMessages";
 import { REGEX } from "../constants/Regex";
 import type { RegistrationForm } from "../types/RegistrationFormTypes";
 
@@ -21,19 +21,19 @@ export const RegistrationFormSchema: yup.ObjectSchema<RegistrationForm>  = yup.o
           warehouseName: yup
             .string()
             .required(requiredMsg("Warehouse Name"))
-            .max(50, ERROR_MESSAGES.nameTooLong),
+            .max(30, ERROR_MESSAGES.nameTooLong),
           city: yup
             .string()
             .required(requiredMsg("City")),
           pincode: yup
             .string()
             .required(requiredMsg("Pincode"))
-            .matches(/^\d{6}$/, "Pincode must be 6 digits"),
+            .matches(REGEX.pincode, ERROR_MESSAGES.pincodeInvalid),
           upload: yup.mixed().optional(),
         })
       )
       .required()
-      .min(1, "At least one warehouse is required"),
+      .min(1, ERROR_MESSAGES.warehouseMin),
     notes: yup.string().optional(),
   }),
 
@@ -60,22 +60,23 @@ export const RegistrationFormSchema: yup.ObjectSchema<RegistrationForm>  = yup.o
               price: yup
                 .number()
                 .typeError(ERROR_MESSAGES.priceInvalid)
-                .positive("Price must be positive")
+                .positive(positive("Price"))
                 .required(requiredMsg("Price")),
               stock: yup
                 .number()
                 .typeError(ERROR_MESSAGES.stockInvalid)
-                .positive("Stock must be positive")
+                .positive(positive("Stock"))
                 .required(requiredMsg("Stock")),
               category: yup
                 .string()
                 .required(requiredMsg("Category")),
             })
           )
-          .required(),
+          .required()
+          .min(1, ERROR_MESSAGES.productMin),
         optional: yup.string().optional(),
       })
     )
     .required()
-    .min(1, "At least one business is required"),
+    .min(1, ERROR_MESSAGES.businessMin),
 });

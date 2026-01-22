@@ -15,9 +15,26 @@ export const ERROR_MESSAGES = {
   priceInvalid: "Price must be a number",
   stockInvalid: "Stock must be a number",
   
+  // Positive
+  positive:"must be positive",
+
   imageUrlInvalid: "Enter a valid image URL",
 
+  // Pincode
+  pincodeInvalid: "Pincode must be 6 digits",
+ 
+  // Warehouse
+  warehouseMin: "At least one warehouse is required",
+
+  // Product
+  productMin: "At least one product is required",
+
+  // Business
+  businessMin: "At least one business is required",
 };
 
 export const requiredMsg = (label: string) =>
   `${label} ${ERROR_MESSAGES.required}`;
+
+export const positive = (label: string) =>
+  `${label} ${ERROR_MESSAGES.positive}`;

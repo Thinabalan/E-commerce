@@ -105,7 +105,6 @@ export default function RegistrationForm() {
       ]);
       if (!isValid) return;
     }
-
     warehouses.append({ warehouseName: "", city: "", pincode: "", upload: null });
   };
 
@@ -119,10 +118,18 @@ export default function RegistrationForm() {
     // Trigger validation for the last added business
     if (currentBusinesses.length > 0) {
       const lastIndex = currentBusinesses.length - 1;
+      const lastBusiness = currentBusinesses[lastIndex];
       const isValid = await trigger([
         `businesses.${lastIndex}.businessName`,
         `businesses.${lastIndex}.businessEmail`,
-      ]);
+        `businesses.${lastIndex}.products`, // checks if the array has at least 1 item
+        ...lastBusiness.products.map((_, pIndex) => [
+          `businesses.${lastIndex}.products.${pIndex}.productName`,
+          `businesses.${lastIndex}.products.${pIndex}.price`,
+          `businesses.${lastIndex}.products.${pIndex}.stock`,
+          `businesses.${lastIndex}.products.${pIndex}.category`,
+        ]as const).flat()
+      ]as const);
       if (!isValid) return;
     }
 
@@ -143,7 +150,7 @@ export default function RegistrationForm() {
             elevation={3}
             sx={{
               p: { xs: 3, md: 5 },
-              maxWidth: 800,
+              maxWidth: 850,
               mx: "auto",
               borderRadius: 4,
               boxShadow: "0 10px 40px rgba(0,0,0,0.04)",
