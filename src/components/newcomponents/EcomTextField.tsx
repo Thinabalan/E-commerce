@@ -9,6 +9,7 @@ interface EcomTextFieldProps {
     required?: boolean;
     multiline?: boolean;
     rows?: number;
+    disabled?: boolean;
 }
 
 const getNestedValue = (obj: any, path: string) => {
@@ -28,6 +29,7 @@ const EcomTextField = ({
     required = false,
     multiline = false,
     rows = 1,
+    disabled = false,
 }: EcomTextFieldProps) => {
     const { control, formState: { errors } } = useFormContext();
     const error = getNestedValue(errors, name);
@@ -46,6 +48,7 @@ const EcomTextField = ({
                     multiline={multiline}
                     rows={rows}
                     error={!!error}
+                    disabled={disabled}
                     helperText={error?.message as string}
                     slotProps={{
                         formHelperText: {

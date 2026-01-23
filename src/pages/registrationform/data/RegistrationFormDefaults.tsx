@@ -1,10 +1,10 @@
 import type { RegistrationForm } from "../../../types/RegistrationFormTypes"
 
-export const RegistrationFormDefaultValues: RegistrationForm =  {
+export const RegistrationFormDefaultValues: RegistrationForm = {
     seller: {
         name: "",
         email: "",
-        warehouses: [{ warehouseName: "", city: "", pincode: "", upload: null }],
+        warehouses: [{ warehouseName: "", city: "", pincode: "", upload: null, isSaved: false }],
         notes: "",
     },
     businesses: [

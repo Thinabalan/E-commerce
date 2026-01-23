@@ -29,7 +29,7 @@ export const RegistrationFormSchema: yup.ObjectSchema<RegistrationForm>  = yup.o
             .string()
             .required(requiredMsg("Pincode"))
             .matches(REGEX.pincode, ERROR_MESSAGES.pincodeInvalid),
-          upload: yup.mixed().optional(),
+          upload: yup.mixed().optional().notRequired(),
         })
       )
       .required()

@@ -3,6 +3,7 @@ export interface Warehouse {
   city: string;
   pincode: string;
   upload?: any;
+  isSaved?: boolean;
 }
 
 export interface Product {
