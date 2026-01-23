@@ -8,11 +8,19 @@ import {
     IconButton,
     Tooltip,
     Paper,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import BusinessCenterIcon from "@mui/icons-material/BusinessCenter";
+import SaveIcon from '@mui/icons-material/Save';
+import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import EcomTextField from "../../components/newcomponents/EcomTextField";
 import EcomButton from "../../components/newcomponents/EcomButton";
@@ -52,7 +60,7 @@ export default function BusinessDetails({ expanded, onChange }: BusinessDetailsP
         append({
             businessName: "",
             businessEmail: "",
-            products: [{ productName: "", price: 0, stock: 0, category: "" }],
+            products: [{ productName: "", price: 0, stock: 0, category: "", isSaved: false }],
             optional: "",
         });
     };
@@ -83,21 +91,12 @@ export default function BusinessDetails({ expanded, onChange }: BusinessDetailsP
                         fontWeight={600}
                         color={errors.businesses ? "error.main" : "text.primary"}
                     >
-                        Business Details
+                        Business Information
                     </Typography>
                 </Box>
             </AccordionSummary>
 
-            <AccordionDetails sx={{ px: 3, pb: 4 }}>
-                <Box mb={3} mt={1} display="flex" justifyContent="flex-end">
-                    <EcomButton
-                        label="ADD BUSINESS"
-                        variant="contained"
-                        startIcon={<AddCircleOutlineIcon />}
-                        onClick={handleAddBusiness}
-                        sx={{ borderRadius: 2 }}
-                    />
-                </Box>
+            <AccordionDetails sx={{ px: 3, pb: 4, mt: 2}}>
                 <Box>
                     {fields.map((business, bIndex) => (
                         <BusinessItem
@@ -107,6 +106,15 @@ export default function BusinessDetails({ expanded, onChange }: BusinessDetailsP
                             removeBusiness={() => remove(bIndex)}
                         />
                     ))}
+                </Box>
+                 <Box mt={1} display="flex" justifyContent="flex-end">
+                    <EcomButton
+                        label="ADD BUSINESS"
+                        variant="contained"
+                        startIcon={<AddCircleOutlineIcon />}
+                        onClick={handleAddBusiness}
+                        sx={{ borderRadius: 2 }}
+                    />
                 </Box>
             </AccordionDetails>
         </Accordion>
@@ -120,7 +128,7 @@ type BusinessItemProps = {
 };
 
 function BusinessItem({ index, totalBusinesses, removeBusiness }: BusinessItemProps) {
-    const { control, getValues, trigger } = useFormContext<RegistrationForm>();
+    const { control, getValues, trigger, watch, setValue, formState: { errors } } = useFormContext<RegistrationForm>();
     const { fields, append, remove } = useFieldArray({
         control,
         name: `businesses.${index}.products`,
@@ -135,23 +143,18 @@ function BusinessItem({ index, totalBusinesses, removeBusiness }: BusinessItemPr
 
         if (currentProducts.length > 0) {
             const lastIndex = currentProducts.length - 1;
-            const isValid = await trigger([
-                `businesses.${index}.products.${lastIndex}.productName`,
-                `businesses.${index}.products.${lastIndex}.price`,
-                `businesses.${index}.products.${lastIndex}.stock`,
-                `businesses.${index}.products.${lastIndex}.category`,
-            ]);
+            const isValid = await trigger(`businesses.${index}.products.${lastIndex}`);
             if (!isValid) return;
         }
 
-        append({ productName: "", price: 0, stock: 0, category: "" });
+        append({ productName: "", price: 0, stock: 0, category: "", isSaved: false });
     };
 
     return (
         <Paper
             elevation={1}
             sx={{
-                p: 3,
+                p: 2,
                 mb: 3,
                 borderRadius: 3,
                 border: "1px solid #edf2f7",
@@ -159,7 +162,7 @@ function BusinessItem({ index, totalBusinesses, removeBusiness }: BusinessItemPr
                 position: "relative"
             }}
         >
-            <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+            <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
                 <Typography variant="h6" fontWeight={700} color="primary.main">
                     Business #{index + 1}
                 </Typography>
@@ -194,74 +197,124 @@ function BusinessItem({ index, totalBusinesses, removeBusiness }: BusinessItemPr
             </Grid>
 
             <Box mt={4}>
-                {fields.map((product, pIndex) => (
-                    <Box
-                        key={product.id}
-                        sx={{
-                            mb: 2,
-                            p: 2,
-                            bgcolor: "rgba(0,0,0,0.01)",
-                            borderRadius: 2,
-                            border: "1px solid #f0f0f0"
-                        }}
-                    >
-                        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-                            <Typography variant="subtitle1" fontWeight={600} color="text.secondary">
-                                Product Inventory - {pIndex + 1}
-                            </Typography>
-                            {fields.length > 1 && (
-                                <Tooltip title="Remove Product">
-                                    <IconButton
-                                        color="error"
-                                        onClick={() => remove(pIndex)}
-                                        sx={{ bgcolor: "rgba(211, 47, 47, 0.04)" }}
-                                    >
-                                        <DeleteOutlineIcon fontSize="small" />
-                                    </IconButton>
-                                </Tooltip>
-                            )}
-                        </Box>
-                        <Grid container spacing={2}>
-                            <Grid size={{ xs: 12, md: 6 }}>
-                                <EcomTextField
-                                    name={`businesses.${index}.products.${pIndex}.productName`}
-                                    label="Product Name"
-                                    required
-                                />
-                            </Grid>
-                            <Grid size={{ xs: 12, md: 6 }}>
-                                <EcomTextField
-                                    name={`businesses.${index}.products.${pIndex}.category`}
-                                    label="Category"
-                                    required
-                                />
-                            </Grid>
-                            <Grid size={{ xs: 12, md: 6 }}>
-                                <EcomTextField
-                                    name={`businesses.${index}.products.${pIndex}.price`}
-                                    label="Price"
-                                    type="number"
-                                    required
-                                />
-                            </Grid>
-                            <Grid size={{ xs: 12, md: 6 }}>
-                                <EcomTextField
-                                    name={`businesses.${index}.products.${pIndex}.stock`}
-                                    label="Stock"
-                                    type="number"
-                                    required
-                                />
-                            </Grid>
-                        </Grid>
-                    </Box>
-                ))}
+                <Typography variant="subtitle1" fontWeight={600} mb={2} color="text.secondary">
+                    Product Inventory
+                </Typography>
+                <TableContainer component={Paper} elevation={1} sx={{ border: "1px solid #f0f0f0", borderRadius: 2 }}>
+                    <Table size="small">
+                        <TableHead sx={{ bgcolor: "rgba(0,0,0,0.02)" }}>
+                            <TableRow>
+                                <TableCell sx={{ fontWeight: 600 }}>Product Name</TableCell>
+                                <TableCell sx={{ fontWeight: 600 }}>Category</TableCell>
+                                <TableCell sx={{ fontWeight: 600 }}>Price</TableCell>
+                                <TableCell sx={{ fontWeight: 600 }}>Stock</TableCell>
+                                <TableCell sx={{ fontWeight: 600, textAlign: 'center' }}>Actions</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {fields.map((productField, pIndex) => {
+                                const product = watch(`businesses.${index}.products.${pIndex}`);
+                                const isSaved = product?.isSaved;
+                                const isMissingData = !product?.productName || !product?.category || product?.price === 0 || product?.stock === 0;
+                                const hasErrors = !!errors.businesses?.[index]?.products?.[pIndex];
+
+                                const handleSaveProduct = async () => {
+                                    const isValid = await trigger(`businesses.${index}.products.${pIndex}`);
+                                    if (isValid) {
+                                        setValue(`businesses.${index}.products.${pIndex}.isSaved`, true);
+                                    }
+                                };
+
+                                return (
+                                    <TableRow key={productField.id} hover>
+                                        <TableCell sx={{ py: 1.5, verticalAlign: "top" }}>
+                                            <EcomTextField
+                                                name={`businesses.${index}.products.${pIndex}.productName`}
+                                                label="Product Name"
+                                                required
+                                                disabled={isSaved} />
+                                        </TableCell>
+                                        <TableCell sx={{ py: 1.5, verticalAlign: "top" }}>
+                                            <EcomTextField
+                                                name={`businesses.${index}.products.${pIndex}.category`}
+                                                label="Category"
+                                                required
+                                                disabled={isSaved}
+                                            />
+                                        </TableCell>
+                                        <TableCell sx={{ py: 1.5, verticalAlign: "top" }}>
+                                            <EcomTextField
+                                                name={`businesses.${index}.products.${pIndex}.price`}
+                                                label="Price"
+                                                required
+                                                type="number"
+                                                disabled={isSaved}
+                                            />
+                                        </TableCell>
+                                        <TableCell sx={{ py: 1.5,  verticalAlign: "top"}}>
+                                            <EcomTextField
+                                                name={`businesses.${index}.products.${pIndex}.stock`}
+                                                label="Stock"
+                                                required
+                                                type="number"
+                                                disabled={isSaved}
+                                            />
+                                        </TableCell>
+                                        <TableCell sx={{ py: 1.5, textAlign: 'center' }}>
+                                            <Box display="flex" justifyContent="center" gap={0.5}>
+                                                {!isSaved ? (
+                                                    <Tooltip title="Save Product">
+                                                        <span>
+                                                            <IconButton
+                                                                color="primary"
+                                                                size="small"
+                                                                onClick={handleSaveProduct}
+                                                                disabled={isMissingData || hasErrors}
+                                                                sx={{ bgcolor: "rgba(25, 118, 210, 0.04)" }}
+                                                            >
+                                                                <SaveIcon fontSize="small" />
+                                                            </IconButton>
+                                                        </span>
+                                                    </Tooltip>
+                                                ) : (
+                                                    <Tooltip title="Edit Product">
+                                                        <IconButton
+                                                            color="primary"
+                                                            size="small"
+                                                            onClick={() => setValue(`businesses.${index}.products.${pIndex}.isSaved`, false)}
+                                                            sx={{ bgcolor: "rgba(25, 118, 210, 0.04)" }}
+                                                        >
+                                                            <EditOutlinedIcon fontSize="small" />
+                                                        </IconButton>
+                                                    </Tooltip>
+                                                )}
+                                                {fields.length > 1 && (
+                                                    <Tooltip title="Remove Product">
+                                                        <IconButton
+                                                            color="error"
+                                                            size="small"
+                                                            onClick={() => remove(pIndex)}
+                                                            sx={{ bgcolor: "rgba(211, 47, 47, 0.04)" }}
+                                                        >
+                                                            <DeleteOutlineIcon fontSize="small" />
+                                                        </IconButton>
+                                                    </Tooltip>
+                                                )}
+                                            </Box>
+                                        </TableCell>
+                                    </TableRow>
+                                );
+                            })}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
 
                 <EcomButton
                     label="ADD PRODUCT"
                     variant="outlined"
                     startIcon={<AddCircleOutlineIcon />}
                     onClick={handleAddProduct}
-                    sx={{ mt: 1, borderRadius: 2 }}
+                    sx={{ mt: 2, borderRadius: 2 }}
                 />
             </Box>
 

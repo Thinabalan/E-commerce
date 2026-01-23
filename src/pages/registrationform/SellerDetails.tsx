@@ -56,6 +56,13 @@ export default function SellerDetails({ expanded, onChange }: SellerDetailsProps
         append({ warehouseName: "", city: "", pincode: "", upload: null, isSaved: false });
     };
 
+    const handleSaveWarehouse = async (warehouseIndex: number) => {
+        const isValid = await trigger(`seller.warehouses.${warehouseIndex}`);
+        if (isValid) {
+            setValue(`seller.warehouses.${warehouseIndex}.isSaved`, true);
+        }
+    };
+
     return (
         <Accordion
             expanded={expanded}
@@ -118,16 +125,9 @@ export default function SellerDetails({ expanded, onChange }: SellerDetailsProps
                         const warehouse = watch(`seller.warehouses.${index}`);
                         const file = warehouse.upload;
                         const isSaved = warehouse.isSaved;
-                        
+
                         const isMissingData = !warehouse.warehouseName || !warehouse.city || !warehouse.pincode;
                         const hasErrors = !!errors.seller?.warehouses?.[index];
-
-                        const handleSaveWarehouse = async (warehouseIndex: number) => {
-                            const isValid = await trigger(`seller.warehouses.${warehouseIndex}`);
-                            if (isValid) {
-                                setValue(`seller.warehouses.${warehouseIndex}.isSaved`, true);
-                            }
-                        };
 
                         return (
                             <Box
@@ -265,7 +265,7 @@ export default function SellerDetails({ expanded, onChange }: SellerDetailsProps
                         name="seller.notes"
                         label="Internal Notes"
                         multiline
-                        rows={3}
+                        rows={2}
                     />
                 </Box>
             </AccordionDetails>

@@ -11,6 +11,7 @@ export interface Product {
   price: number;
   stock: number;
   category: string;
+  isSaved?: boolean;
 }
 
 export interface Seller {

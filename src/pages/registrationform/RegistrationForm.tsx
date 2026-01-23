@@ -67,7 +67,7 @@ export default function RegistrationForm() {
             elevation={3}
             sx={{
               p: { xs: 3, md: 5 },
-              maxWidth: 850,
+              maxWidth: 870,
               mx: "auto",
               borderRadius: 4,
               boxShadow: "0 10px 40px rgba(0,0,0,0.04)",
