@@ -61,13 +61,13 @@ export default function RegistrationForm() {
 
   return (
     <FormProvider {...registrationForm}>
-      <Box sx={{ bgcolor: "#f5f7fa", minHeight: "100vh", py: 2 }}>
+      <Box sx={{ bgcolor: "#f5f7fa", minHeight: "100vh", py: 8 }}>
         <Container maxWidth="lg">
           <Paper
             elevation={3}
             sx={{
               p: { xs: 3, md: 5 },
-              maxWidth: 870,
+              maxWidth: 980,
               mx: "auto",
               borderRadius: 4,
               boxShadow: "0 10px 40px rgba(0,0,0,0.04)",

@@ -36,6 +36,7 @@ import HomeIcon from "@mui/icons-material/Home";
 import Inventory2Icon from "@mui/icons-material/Inventory2";
 import StoreIcon from "@mui/icons-material/Store";
 import TableChartIcon from "@mui/icons-material/TableChart";
+import AppRegistrationIcon from '@mui/icons-material/AppRegistration';
 
 interface User {
   name: string;
@@ -128,6 +129,12 @@ export default function Header() {
           <ListItemButton onClick={() => { navigate("/producttable"); handleDrawerToggle(); }}>
             <ListItemIcon sx={{ minWidth: 40, color: 'inherit' }}><TableChartIcon /></ListItemIcon>
             <ListItemText primary="Product Table" />
+          </ListItemButton>
+        </ListItem>
+        <ListItem disablePadding>
+          <ListItemButton onClick={() => { navigate("/form"); handleDrawerToggle(); }}>
+            <ListItemIcon sx={{ minWidth: 40, color: 'inherit' }}><AppRegistrationIcon /></ListItemIcon>
+            <ListItemText primary="Registration Form" />
           </ListItemButton>
         </ListItem>
 

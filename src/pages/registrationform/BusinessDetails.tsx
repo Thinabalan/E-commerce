@@ -100,7 +100,8 @@ function BusinessItem({ index, totalBusinesses, removeBusiness }: BusinessItemPr
                 ) : (
                     <EcomTextField
                         name={`businesses.${index}.products.${pIndex}.productName`}
-                        label="Product Name"
+                        size="small"
+                        showErrorText={false}
                         required
                     />
                 );
@@ -120,7 +121,8 @@ function BusinessItem({ index, totalBusinesses, removeBusiness }: BusinessItemPr
                 ) : (
                     <EcomTextField
                         name={`businesses.${index}.products.${pIndex}.category`}
-                        label="Category"
+                        size="small"
+                        showErrorText={false}
                         required
                     />
                 );
@@ -140,7 +142,8 @@ function BusinessItem({ index, totalBusinesses, removeBusiness }: BusinessItemPr
                 ) : (
                     <EcomTextField
                         name={`businesses.${index}.products.${pIndex}.price`}
-                        label="Price"
+                        size="small"
+                        showErrorText={false}
                         required
                         type="number"
                     />
@@ -161,7 +164,8 @@ function BusinessItem({ index, totalBusinesses, removeBusiness }: BusinessItemPr
                 ) : (
                     <EcomTextField
                         name={`businesses.${index}.products.${pIndex}.stock`}
-                        label="Stock"
+                        size="small"
+                        showErrorText={false}
                         required
                         type="number"
                     />
