@@ -61,7 +61,6 @@ export const RegistrationFormSchema: yup.ObjectSchema<RegistrationForm> = yup.ob
               productName: yup
                 .string()
                 .trim()
-                
                 .required(requiredMsg("Product Name"))
                 .max(30, ERROR_MESSAGES.nameTooLong),
               price: yup

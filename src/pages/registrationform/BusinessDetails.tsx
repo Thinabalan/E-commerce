@@ -15,10 +15,11 @@ import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import BusinessCenterIcon from "@mui/icons-material/BusinessCenter";
 import SaveIcon from '@mui/icons-material/Save';
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-import { useFieldArray, useFormContext } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 import EcomTextField from "../../components/newcomponents/EcomTextField";
 import EcomButton from "../../components/newcomponents/EcomButton";
 import EcomTable, { type Column } from "../../components/newcomponents/EcomTable";
+import { useFormHandlers } from "../../hooks/registrationform/useFormHandlers";
 import type { RegistrationForm, Product } from "../../types/RegistrationFormTypes";
 
 type BusinessDetailsProps = {
@@ -28,37 +29,15 @@ type BusinessDetailsProps = {
 
 export default function BusinessDetails({ expanded, onChange }: BusinessDetailsProps) {
     const {
-        control,
         formState: { errors },
-        getValues,
-        trigger,
     } = useFormContext<RegistrationForm>();
 
-    const { fields, append, remove } = useFieldArray({
-        control,
-        name: "businesses",
-    });
-
-    const handleAddBusiness = async () => {
-        const currentBusinesses = getValues("businesses");
-        if (currentBusinesses && currentBusinesses.length >= 3) {
-            alert("Maximum 3 businesses allowed");
-            return;
-        }
-
-        if (currentBusinesses.length > 0) {
-            const lastIndex = currentBusinesses.length - 1;
-            const isValid = await trigger(`businesses.${lastIndex}`);
-            if (!isValid) return;
-        }
-
-        append({
-            businessName: "",
-            businessEmail: "",
-            products: [{ productName: "", price: "", stock: "", category: "", isSaved: false }],
-            optional: "",
-        });
-    };
+    const {
+        businessFields: fields,
+        addBusiness: handleAddBusiness,
+        removeBusiness: remove,
+        
+    } = useFormHandlers();
 
     return (
         <Accordion
@@ -123,27 +102,15 @@ type BusinessItemProps = {
 };
 
 function BusinessItem({ index, totalBusinesses, removeBusiness }: BusinessItemProps) {
-    const { control, getValues, trigger, watch, setValue, formState: { errors } } = useFormContext<RegistrationForm>();
-    const { fields, append, remove } = useFieldArray({
-        control,
-        name: `businesses.${index}.products`,
-    });
-
-    const handleAddProduct = async () => {
-        const currentProducts = getValues(`businesses.${index}.products`);
-        if (currentProducts && currentProducts.length >= 3) {
-            alert("Maximum 3 products allowed per business");
-            return;
-        }
-
-        if (currentProducts.length > 0) {
-            const lastIndex = currentProducts.length - 1;
-            const isValid = await trigger(`businesses.${index}.products.${lastIndex}`);
-            if (!isValid) return;
-        }
-
-        append({ productName: "", price: "", stock: "", category: "", isSaved: false });
-    };
+    const { watch, formState: { errors } } = useFormContext<RegistrationForm>();
+    const { getProductHandlers } = useFormHandlers();
+    const {
+        productFields: fields,
+        addProduct: handleAddProduct,
+        removeProduct: remove,
+        saveProduct: handleSaveProduct,
+        editProduct: handleEditProduct
+    } = getProductHandlers(index);
 
     const productColumns: Column<Product & { id: string }>[] = [
         {
@@ -236,15 +203,8 @@ function BusinessItem({ index, totalBusinesses, removeBusiness }: BusinessItemPr
                 const pIndex = fields.findIndex((f) => f.id === row.id);
                 const product = watch(`businesses.${index}.products.${pIndex}`);
                 const isSaved = product?.isSaved;
-                const isMissingData = !product?.productName || !product?.category || product?.price === "" || product?.stock ==="";
+                const isMissingData = !product?.productName || !product?.category || product?.price === "" || product?.stock === "";
                 const hasErrors = !!errors.businesses?.[index]?.products?.[pIndex];
-
-                const handleSaveProduct = async () => {
-                    const isValid = await trigger(`businesses.${index}.products.${pIndex}`);
-                    if (isValid) {
-                        setValue(`businesses.${index}.products.${pIndex}.isSaved`, true);
-                    }
-                };
 
                 return (
                     <Box display="flex" justifyContent="center" gap={0.5}>
@@ -254,7 +214,7 @@ function BusinessItem({ index, totalBusinesses, removeBusiness }: BusinessItemPr
                                     <IconButton
                                         color="primary"
                                         size="small"
-                                        onClick={handleSaveProduct}
+                                        onClick={() => handleSaveProduct(pIndex)}
                                         disabled={isMissingData || hasErrors}
                                         sx={{ bgcolor: "rgba(25, 118, 210, 0.04)" }}
                                     >
@@ -267,7 +227,7 @@ function BusinessItem({ index, totalBusinesses, removeBusiness }: BusinessItemPr
                                 <IconButton
                                     color="primary"
                                     size="small"
-                                    onClick={() => setValue(`businesses.${index}.products.${pIndex}.isSaved`, false)}
+                                    onClick={() => handleEditProduct(pIndex)}
                                     sx={{ bgcolor: "rgba(25, 118, 210, 0.04)" }}
                                 >
                                     <EditOutlinedIcon fontSize="small" />

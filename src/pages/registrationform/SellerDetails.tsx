@@ -16,9 +16,10 @@ import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import SaveIcon from '@mui/icons-material/Save';
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-import { useFieldArray, useFormContext } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 import EcomTextField from "../../components/newcomponents/EcomTextField";
 import EcomButton from "../../components/newcomponents/EcomButton";
+import { useFormHandlers } from "../../hooks/registrationform/useFormHandlers";
 import type { RegistrationForm } from "../../types/RegistrationFormTypes";
 
 type SellerDetailsProps = {
@@ -28,40 +29,18 @@ type SellerDetailsProps = {
 
 export default function SellerDetails({ expanded, onChange }: SellerDetailsProps) {
     const {
-        control,
         formState: { errors },
-        getValues,
-        trigger,
         setValue,
         watch,
     } = useFormContext<RegistrationForm>();
 
-    const { fields, append, remove } = useFieldArray({
-        control,
-        name: "seller.warehouses",
-    });
-
-    const handleAddWarehouse = async () => {
-        const currentWarehouses = getValues("seller.warehouses");
-        if (currentWarehouses && currentWarehouses.length >= 3) {
-            alert("Maximum 3 warehouses allowed");
-            return;
-        }
-
-        if (currentWarehouses.length > 0) {
-            const lastIndex = currentWarehouses.length - 1;
-            const isValid = await trigger(`seller.warehouses.${lastIndex}`);
-            if (!isValid) return;
-        }
-        append({ warehouseName: "", city: "", pincode: "", upload: null, isSaved: false });
-    };
-
-    const handleSaveWarehouse = async (warehouseIndex: number) => {
-        const isValid = await trigger(`seller.warehouses.${warehouseIndex}`);
-        if (isValid) {
-            setValue(`seller.warehouses.${warehouseIndex}.isSaved`, true);
-        }
-    };
+    const {
+        warehouseFields: fields,
+        addWarehouse: handleAddWarehouse,
+        removeWarehouse: remove,
+        saveWarehouse: handleSaveWarehouse,
+        editWarehouse: handleEditWarehouse,
+    } = useFormHandlers();
 
     return (
         <Accordion
@@ -162,7 +141,7 @@ export default function SellerDetails({ expanded, onChange }: SellerDetailsProps
                                             <Tooltip title="Edit Warehouse">
                                                 <IconButton
                                                     color="primary"
-                                                    onClick={() => setValue(`seller.warehouses.${index}.isSaved`, false)}
+                                                    onClick={() => handleEditWarehouse(index)}
                                                     sx={{ bgcolor: "rgba(25, 118, 210, 0.04)" }}
                                                 >
                                                     <EditOutlinedIcon fontSize="small" />
