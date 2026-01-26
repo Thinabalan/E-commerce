@@ -3,10 +3,11 @@ import { ERROR_MESSAGES, positive, requiredMsg } from "../constants/ErrorMessage
 import { REGEX } from "../constants/Regex";
 import type { RegistrationForm } from "../types/RegistrationFormTypes";
 
-export const RegistrationFormSchema: yup.ObjectSchema<RegistrationForm>  = yup.object({
+export const RegistrationFormSchema: yup.ObjectSchema<RegistrationForm> = yup.object({
   seller: yup.object({
     name: yup
       .string()
+      .trim()
       .required(requiredMsg("Name"))
       .matches(REGEX.name, ERROR_MESSAGES.nameInvalid)
       .max(30, ERROR_MESSAGES.nameTooLong),
@@ -20,10 +21,13 @@ export const RegistrationFormSchema: yup.ObjectSchema<RegistrationForm>  = yup.o
         yup.object({
           warehouseName: yup
             .string()
+            .trim()
             .required(requiredMsg("Warehouse Name"))
+            .matches(REGEX.name, ERROR_MESSAGES.nameInvalid)
             .max(30, ERROR_MESSAGES.nameTooLong),
           city: yup
             .string()
+            .trim()
             .required(requiredMsg("City")),
           pincode: yup
             .string()
@@ -43,8 +47,8 @@ export const RegistrationFormSchema: yup.ObjectSchema<RegistrationForm>  = yup.o
       yup.object({
         businessName: yup
           .string()
+          .trim()
           .required(requiredMsg("Business Name"))
-          .matches(REGEX.name, ERROR_MESSAGES.nameInvalid)
           .max(30, ERROR_MESSAGES.nameTooLong),
         businessEmail: yup
           .string()
@@ -56,20 +60,36 @@ export const RegistrationFormSchema: yup.ObjectSchema<RegistrationForm>  = yup.o
             yup.object({
               productName: yup
                 .string()
-                .required(requiredMsg("Product Name")),
+                .trim()
+                
+                .required(requiredMsg("Product Name"))
+                .max(30, ERROR_MESSAGES.nameTooLong),
               price: yup
-                .number()
-                .typeError(ERROR_MESSAGES.priceInvalid)
-                .positive(positive("Price"))
-                .required(requiredMsg("Price")),
+                .string()
+                .required(requiredMsg("Price"))
+                .matches(REGEX.price, ERROR_MESSAGES.priceInvalid)
+                .max(7, ERROR_MESSAGES.priceTooLong)
+                .test("positive", positive("Price"), (value) => {
+                  if (!value) return false;
+                  const numericValue = Number(value.replace(/,/g, ""));
+                  return numericValue > 0;
+                }),
               stock: yup
-                .number()
-                .typeError(ERROR_MESSAGES.stockInvalid)
-                .positive(positive("Stock"))
-                .required(requiredMsg("Stock")),
+                .string()
+                .required(requiredMsg("Stock"))
+                .matches(REGEX.stock, ERROR_MESSAGES.stockInvalid)
+                .max(7,ERROR_MESSAGES.stockInvalid)
+                .test("positive", positive("Stock"), (value) => {
+                  if (!value) return false;
+                  const numericValue = Number(value.replace(/,/g, ""));
+                  return numericValue > 0;
+                }),
               category: yup
                 .string()
-                .required(requiredMsg("Category")),
+                .trim()
+                .required(requiredMsg("Category"))
+                .matches(REGEX.name, ERROR_MESSAGES.nameInvalid)
+                .max(30, ERROR_MESSAGES.nameTooLong),
             })
           )
           .required()

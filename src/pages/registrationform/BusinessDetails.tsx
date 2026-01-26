@@ -8,12 +8,6 @@ import {
     IconButton,
     Tooltip,
     Paper,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
@@ -24,7 +18,8 @@ import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import EcomTextField from "../../components/newcomponents/EcomTextField";
 import EcomButton from "../../components/newcomponents/EcomButton";
-import type { RegistrationForm } from "../../types/RegistrationFormTypes";
+import EcomTable, { type Column } from "../../components/newcomponents/EcomTable";
+import type { RegistrationForm, Product } from "../../types/RegistrationFormTypes";
 
 type BusinessDetailsProps = {
     expanded: boolean;
@@ -60,7 +55,7 @@ export default function BusinessDetails({ expanded, onChange }: BusinessDetailsP
         append({
             businessName: "",
             businessEmail: "",
-            products: [{ productName: "", price: 0, stock: 0, category: "", isSaved: false }],
+            products: [{ productName: "", price: "", stock: "", category: "", isSaved: false }],
             optional: "",
         });
     };
@@ -96,7 +91,7 @@ export default function BusinessDetails({ expanded, onChange }: BusinessDetailsP
                 </Box>
             </AccordionSummary>
 
-            <AccordionDetails sx={{ px: 3, pb: 4, mt: 2}}>
+            <AccordionDetails sx={{ px: 3, pb: 4, mt: 2 }}>
                 <Box>
                     {fields.map((business, bIndex) => (
                         <BusinessItem
@@ -107,7 +102,7 @@ export default function BusinessDetails({ expanded, onChange }: BusinessDetailsP
                         />
                     ))}
                 </Box>
-                 <Box mt={1} display="flex" justifyContent="flex-end">
+                <Box mt={1} display="flex" justifyContent="flex-end">
                     <EcomButton
                         label="ADD BUSINESS"
                         variant="contained"
@@ -147,8 +142,155 @@ function BusinessItem({ index, totalBusinesses, removeBusiness }: BusinessItemPr
             if (!isValid) return;
         }
 
-        append({ productName: "", price: 0, stock: 0, category: "", isSaved: false });
+        append({ productName: "", price: "", stock: "", category: "", isSaved: false });
     };
+
+    const productColumns: Column<Product & { id: string }>[] = [
+        {
+            id: "productName",
+            label: "Product Name",
+            align: "left",
+            render: (row) => {
+                const pIndex = fields.findIndex((f) => f.id === row.id);
+                const product = watch(`businesses.${index}.products.${pIndex}`);
+                return product?.isSaved ? (
+                    <Typography fontWeight={500} fontSize={15} color="text.secondary">
+                        {product.productName}
+                    </Typography>
+                ) : (
+                    <EcomTextField
+                        name={`businesses.${index}.products.${pIndex}.productName`}
+                        label="Product Name"
+                        required
+                    />
+                );
+            },
+        },
+        {
+            id: "category",
+            label: "Category",
+            align: "left",
+            render: (row) => {
+                const pIndex = fields.findIndex((f) => f.id === row.id);
+                const product = watch(`businesses.${index}.products.${pIndex}`);
+                return product?.isSaved ? (
+                    <Typography fontWeight={500} fontSize={15} color="text.secondary">
+                        {product.category}
+                    </Typography>
+                ) : (
+                    <EcomTextField
+                        name={`businesses.${index}.products.${pIndex}.category`}
+                        label="Category"
+                        required
+                    />
+                );
+            },
+        },
+        {
+            id: "price",
+            label: "Price",
+            align: "left",
+            render: (row) => {
+                const pIndex = fields.findIndex((f) => f.id === row.id);
+                const product = watch(`businesses.${index}.products.${pIndex}`);
+                return product?.isSaved ? (
+                    <Typography fontWeight={500} fontSize={15} color="text.secondary">
+                        {product.price}
+                    </Typography>
+                ) : (
+                    <EcomTextField
+                        name={`businesses.${index}.products.${pIndex}.price`}
+                        label="Price"
+                        required
+                        type="number"
+                    />
+                );
+            },
+        },
+        {
+            id: "stock",
+            label: "Stock",
+            align: "left",
+            render: (row) => {
+                const pIndex = fields.findIndex((f) => f.id === row.id);
+                const product = watch(`businesses.${index}.products.${pIndex}`);
+                return product?.isSaved ? (
+                    <Typography fontWeight={500} fontSize={15} color="text.secondary">
+                        {product.stock}
+                    </Typography>
+                ) : (
+                    <EcomTextField
+                        name={`businesses.${index}.products.${pIndex}.stock`}
+                        label="Stock"
+                        required
+                        type="number"
+                    />
+                );
+            },
+        },
+        {
+            id: "isSaved" as any,
+            label: "Actions",
+            align: "center",
+            render: (row) => {
+                const pIndex = fields.findIndex((f) => f.id === row.id);
+                const product = watch(`businesses.${index}.products.${pIndex}`);
+                const isSaved = product?.isSaved;
+                const isMissingData = !product?.productName || !product?.category || product?.price === "" || product?.stock ==="";
+                const hasErrors = !!errors.businesses?.[index]?.products?.[pIndex];
+
+                const handleSaveProduct = async () => {
+                    const isValid = await trigger(`businesses.${index}.products.${pIndex}`);
+                    if (isValid) {
+                        setValue(`businesses.${index}.products.${pIndex}.isSaved`, true);
+                    }
+                };
+
+                return (
+                    <Box display="flex" justifyContent="center" gap={0.5}>
+                        {!isSaved ? (
+                            <Tooltip title="Save Product">
+                                <span>
+                                    <IconButton
+                                        color="primary"
+                                        size="small"
+                                        onClick={handleSaveProduct}
+                                        disabled={isMissingData || hasErrors}
+                                        sx={{ bgcolor: "rgba(25, 118, 210, 0.04)" }}
+                                    >
+                                        <SaveIcon fontSize="small" />
+                                    </IconButton>
+                                </span>
+                            </Tooltip>
+                        ) : (
+                            <Tooltip title="Edit Product">
+                                <IconButton
+                                    color="primary"
+                                    size="small"
+                                    onClick={() => setValue(`businesses.${index}.products.${pIndex}.isSaved`, false)}
+                                    sx={{ bgcolor: "rgba(25, 118, 210, 0.04)" }}
+                                >
+                                    <EditOutlinedIcon fontSize="small" />
+                                </IconButton>
+                            </Tooltip>
+                        )}
+                        {fields.length > 1 && (
+                            <Tooltip title="Remove Product">
+                                <IconButton
+                                    color="error"
+                                    size="small"
+                                    onClick={() => remove(pIndex)}
+                                    sx={{ bgcolor: "rgba(211, 47, 47, 0.04)" }}
+                                >
+                                    <DeleteOutlineIcon fontSize="small" />
+                                </IconButton>
+                            </Tooltip>
+                        )}
+                    </Box>
+                );
+            },
+        },
+    ];
 
     return (
         <Paper
@@ -200,114 +342,15 @@ function BusinessItem({ index, totalBusinesses, removeBusiness }: BusinessItemPr
                 <Typography variant="subtitle1" fontWeight={600} mb={2} color="text.secondary">
                     Product Inventory
                 </Typography>
-                <TableContainer component={Paper} elevation={1} sx={{ border: "1px solid #f0f0f0", borderRadius: 2 }}>
-                    <Table size="small">
-                        <TableHead sx={{ bgcolor: "rgba(0,0,0,0.02)" }}>
-                            <TableRow>
-                                <TableCell sx={{ fontWeight: 600 }}>Product Name</TableCell>
-                                <TableCell sx={{ fontWeight: 600 }}>Category</TableCell>
-                                <TableCell sx={{ fontWeight: 600 }}>Price</TableCell>
-                                <TableCell sx={{ fontWeight: 600 }}>Stock</TableCell>
-                                <TableCell sx={{ fontWeight: 600, textAlign: 'center' }}>Actions</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {fields.map((productField, pIndex) => {
-                                const product = watch(`businesses.${index}.products.${pIndex}`);
-                                const isSaved = product?.isSaved;
-                                const isMissingData = !product?.productName || !product?.category || product?.price === 0 || product?.stock === 0;
-                                const hasErrors = !!errors.businesses?.[index]?.products?.[pIndex];
 
-                                const handleSaveProduct = async () => {
-                                    const isValid = await trigger(`businesses.${index}.products.${pIndex}`);
-                                    if (isValid) {
-                                        setValue(`businesses.${index}.products.${pIndex}.isSaved`, true);
-                                    }
-                                };
-
-                                return (
-                                    <TableRow key={productField.id} hover>
-                                        <TableCell sx={{ py: 1.5, verticalAlign: "top" }}>
-                                            <EcomTextField
-                                                name={`businesses.${index}.products.${pIndex}.productName`}
-                                                label="Product Name"
-                                                required
-                                                disabled={isSaved} />
-                                        </TableCell>
-                                        <TableCell sx={{ py: 1.5, verticalAlign: "top" }}>
-                                            <EcomTextField
-                                                name={`businesses.${index}.products.${pIndex}.category`}
-                                                label="Category"
-                                                required
-                                                disabled={isSaved}
-                                            />
-                                        </TableCell>
-                                        <TableCell sx={{ py: 1.5, verticalAlign: "top" }}>
-                                            <EcomTextField
-                                                name={`businesses.${index}.products.${pIndex}.price`}
-                                                label="Price"
-                                                required
-                                                type="number"
-                                                disabled={isSaved}
-                                            />
-                                        </TableCell>
-                                        <TableCell sx={{ py: 1.5,  verticalAlign: "top"}}>
-                                            <EcomTextField
-                                                name={`businesses.${index}.products.${pIndex}.stock`}
-                                                label="Stock"
-                                                required
-                                                type="number"
-                                                disabled={isSaved}
-                                            />
-                                        </TableCell>
-                                        <TableCell sx={{ py: 1.5, textAlign: 'center' }}>
-                                            <Box display="flex" justifyContent="center" gap={0.5}>
-                                                {!isSaved ? (
-                                                    <Tooltip title="Save Product">
-                                                        <span>
-                                                            <IconButton
-                                                                color="primary"
-                                                                size="small"
-                                                                onClick={handleSaveProduct}
-                                                                disabled={isMissingData || hasErrors}
-                                                                sx={{ bgcolor: "rgba(25, 118, 210, 0.04)" }}
-                                                            >
-                                                                <SaveIcon fontSize="small" />
-                                                            </IconButton>
-                                                        </span>
-                                                    </Tooltip>
-                                                ) : (
-                                                    <Tooltip title="Edit Product">
-                                                        <IconButton
-                                                            color="primary"
-                                                            size="small"
-                                                            onClick={() => setValue(`businesses.${index}.products.${pIndex}.isSaved`, false)}
-                                                            sx={{ bgcolor: "rgba(25, 118, 210, 0.04)" }}
-                                                        >
-                                                            <EditOutlinedIcon fontSize="small" />
-                                                        </IconButton>
-                                                    </Tooltip>
-                                                )}
-                                                {fields.length > 1 && (
-                                                    <Tooltip title="Remove Product">
-                                                        <IconButton
-                                                            color="error"
-                                                            size="small"
-                                                            onClick={() => remove(pIndex)}
-                                                            sx={{ bgcolor: "rgba(211, 47, 47, 0.04)" }}
-                                                        >
-                                                            <DeleteOutlineIcon fontSize="small" />
-                                                        </IconButton>
-                                                    </Tooltip>
-                                                )}
-                                            </Box>
-                                        </TableCell>
-                                    </TableRow>
-                                );
-                            })}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
+                <EcomTable
+                    rows={fields as any}
+                    columns={productColumns as any}
+                    disablePagination
+                    disableSorting
+                    dense
+                    emptyMessage="No products added yet."
+                />
 
                 <EcomButton
                     label="ADD PRODUCT"

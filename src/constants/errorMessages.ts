@@ -13,7 +13,9 @@ export const ERROR_MESSAGES = {
 
   // Product
   priceInvalid: "Price must be a number",
+  priceTooLong: "Price value is too long",
   stockInvalid: "Stock must be a number",
+  stockTooLong: "Stock value is too long",
   
   // Positive
   positive:"must be positive",
