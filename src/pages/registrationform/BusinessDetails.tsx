@@ -1,7 +1,4 @@
 import {
-    Accordion,
-    AccordionSummary,
-    AccordionDetails,
     Box,
     Grid,
     Typography,
@@ -9,7 +6,7 @@ import {
     Tooltip,
     Paper,
 } from "@mui/material";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import BusinessCenterIcon from "@mui/icons-material/BusinessCenter";
@@ -19,6 +16,7 @@ import { useFormContext } from "react-hook-form";
 import EcomTextField from "../../components/newcomponents/EcomTextField";
 import EcomButton from "../../components/newcomponents/EcomButton";
 import EcomTable, { type Column } from "../../components/newcomponents/EcomTable";
+import EcomAccordion from "../../components/newcomponents/EcomAccordion";
 import { useFormHandlers } from "../../hooks/registrationform/useFormHandlers";
 import type { RegistrationForm, Product } from "../../types/RegistrationFormTypes";
 
@@ -40,58 +38,33 @@ export default function BusinessDetails({ expanded, onChange }: BusinessDetailsP
     } = useFormHandlers();
 
     return (
-        <Accordion
-            expanded={expanded}
-            onChange={onChange}
-            elevation={2}
-            sx={{
-                mb: 3,
-                border: "1px solid #edf2f7",
-                borderRadius: "12px !important",
-                "&:before": { display: "none" },
-                overflow: "hidden"
-            }}
+        <EcomAccordion
+            title="Business Information"
+            isOpen={expanded}
+            onToggle={onChange}
+            icon={<BusinessCenterIcon />}
+            error={!!errors.businesses}
         >
-            <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                sx={{
-                    bgcolor: "rgba(25, 118, 210, 0.04)",
-                    px: 3,
-                }}
-            >
-                <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                    <BusinessCenterIcon color={errors.businesses ? "error" : "primary"} />
-                    <Typography
-                        fontWeight={600}
-                        color={errors.businesses ? "error.main" : "text.primary"}
-                    >
-                        Business Information
-                    </Typography>
-                </Box>
-            </AccordionSummary>
-
-            <AccordionDetails sx={{ px: 3, pb: 4, mt: 2 }}>
-                <Box>
-                    {fields.map((business, bIndex) => (
-                        <BusinessItem
-                            key={business.id}
-                            index={bIndex}
-                            totalBusinesses={fields.length}
-                            removeBusiness={() => remove(bIndex)}
-                        />
-                    ))}
-                </Box>
-                <Box mt={1} display="flex" justifyContent="flex-end">
-                    <EcomButton
-                        label="ADD BUSINESS"
-                        variant="contained"
-                        startIcon={<AddCircleOutlineIcon />}
-                        onClick={handleAddBusiness}
-                        sx={{ borderRadius: 2 }}
+            <Box>
+                {fields.map((business, bIndex) => (
+                    <BusinessItem
+                        key={business.id}
+                        index={bIndex}
+                        totalBusinesses={fields.length}
+                        removeBusiness={() => remove(bIndex)}
                     />
-                </Box>
-            </AccordionDetails>
-        </Accordion>
+                ))}
+            </Box>
+            <Box mt={1} display="flex" justifyContent="flex-end">
+                <EcomButton
+                    label="ADD BUSINESS"
+                    variant="contained"
+                    startIcon={<AddCircleOutlineIcon />}
+                    onClick={handleAddBusiness}
+                    sx={{ borderRadius: 2 }}
+                />
+            </Box>
+        </EcomAccordion>
     );
 }
 
