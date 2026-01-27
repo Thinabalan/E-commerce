@@ -2042,7 +2042,7 @@
       "updatedAt": "2026-01-13T02:48:25.630Z"
     }
   ],
-  "registrations": [   
+  "registrations": [
     {
       "id": "d071",
       "businesses": [
@@ -2076,6 +2076,109 @@
         "notes": ""
       },
       "submittedAt": "2026-01-27T00:54:11.095Z"
+    },
+    {
+      "id": "6142",
+      "seller": {
+        "name": "dhf",
+        "email": "df@g.c",
+        "warehouses": [
+          {
+            "warehouseName": "ycjh",
+            "city": "ghj",
+            "pincode": "657676",
+            "upload": "img-table.jpeg",
+            "isSaved": false
+          },
+          {
+            "warehouseName": "fgbvh",
+            "city": "fgh",
+            "pincode": "565778",
+            "upload": null,
+            "isSaved": true
+          }
+        ],
+        "notes": ""
+      },
+      "businesses": [
+        {
+          "businessName": "gcnjv",
+          "businessEmail": "hft@g.c",
+          "products": [
+            {
+              "productName": "hgj",
+              "price": "67",
+              "stock": "67",
+              "category": "ghj",
+              "isSaved": false
+            }
+          ],
+          "additionaldetails": ""
+        }
+      ],
+      "submittedAt": "2026-01-27T01:00:51.727Z"
+    },
+    {
+      "id": "6c8a",
+      "seller": {
+        "name": "bala",
+        "email": "bala@gmail.com",
+        "warehouses": [
+          {
+            "warehouseName": "ShopHaven",
+            "city": "Chennai",
+            "pincode": "600001",
+            "upload": "Thina balan resume (1).pdf",
+            "isSaved": false
+          },
+          {
+            "warehouseName": "PrimePak",
+            "city": "Madurai",
+            "pincode": "643924",
+            "upload": null,
+            "isSaved": false
+          },
+          {
+            "warehouseName": "SmartStack",
+            "city": "Coimbatore",
+            "pincode": "634934",
+            "upload": "img-table.jpeg",
+            "isSaved": false
+          }
+        ],
+        "notes": ""
+      },
+      "businesses": [
+        {
+          "businessName": "Sellee",
+          "businessEmail": "Sellee@gmail.com",
+          "products": [
+            {
+              "productName": "Bag",
+              "price": "250",
+              "stock": "20",
+              "category": "Fashion",
+              "isSaved": false
+            },
+            {
+              "productName": "Mobile",
+              "price": "15000",
+              "stock": "100",
+              "category": "Electronics",
+              "isSaved": false
+            },
+            {
+              "productName": "Table",
+              "price": "5000",
+              "stock": "150",
+              "category": "Furniture",
+              "isSaved": false
+            }
+          ],
+          "additionaldetails": ""
+        }
+      ],
+      "submittedAt": "2026-01-27T01:57:26.203Z"
     }
   ]
 }

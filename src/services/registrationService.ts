@@ -8,4 +8,8 @@ export const registrationService = {
             submittedAt: new Date().toISOString(),
         });
     },
+
+    getRegistrations: async (): Promise<(RegistrationForm & { id: string })[]> => {
+        return apiService.get("registrations");
+    },
 };

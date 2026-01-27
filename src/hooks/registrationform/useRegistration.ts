@@ -6,6 +6,8 @@ export const useRegistration = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
+    const [registrations, setRegistrations] = useState<(RegistrationForm & { id: string })[]>([]);
+
     const addRegistration = async (data: RegistrationForm) => {
         setIsLoading(true);
         setError(null);
@@ -20,5 +22,19 @@ export const useRegistration = () => {
         }
     };
 
-    return { addRegistration, isLoading, error };
+    const getRegistrationsList = async () => {
+        setIsLoading(true);
+        setError(null);
+        try {
+            const data = await registrationService.getRegistrations();
+            setRegistrations(data);
+            return data;
+        } catch (err) {
+            setError("Failed to fetch registrations.");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    return { addRegistration, getRegistrationsList, registrations, isLoading, error };
 };
