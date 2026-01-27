@@ -1,5 +1,6 @@
 import { useFormContext, useFieldArray } from "react-hook-form";
 import type { RegistrationForm } from "../../types/RegistrationFormTypes";
+import { LIMITS } from "../../constants/RegistrationFormConstants";
 
 export const useFormHandlers = () => {
     const { control, trigger, getValues, setValue } = useFormContext<RegistrationForm>();
@@ -12,8 +13,8 @@ export const useFormHandlers = () => {
 
     const handleAddWarehouse = async () => {
         const currentWarehouses = getValues("seller.warehouses");
-        if (currentWarehouses && currentWarehouses.length >= 3) {
-            alert("Maximum 3 warehouses allowed");
+        if (currentWarehouses && currentWarehouses.length >= LIMITS.warehouse) {
+            alert(`Maximum ${LIMITS.warehouse} warehouses allowed`);
             return;
         }
 
@@ -44,8 +45,8 @@ export const useFormHandlers = () => {
 
     const handleAddBusiness = async () => {
         const currentBusinesses = getValues("businesses");
-        if (currentBusinesses && currentBusinesses.length >= 3) {
-            alert("Maximum 3 businesses allowed");
+        if (currentBusinesses && currentBusinesses.length >= LIMITS.business) {
+            alert(`Maximum ${LIMITS.business} businesses allowed`);
             return;
         }
 
@@ -72,8 +73,8 @@ export const useFormHandlers = () => {
 
         const handleAddProduct = async () => {
             const currentProducts = getValues(`businesses.${bIndex}.products`);
-            if (currentProducts && currentProducts.length >= 3) {
-                alert("Maximum 3 products allowed per business");
+            if (currentProducts && currentProducts.length >= LIMITS.product) {
+                alert(`Maximum ${LIMITS.product} products allowed per business`);
                 return;
             }
 
