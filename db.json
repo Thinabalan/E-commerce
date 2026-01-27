@@ -2041,5 +2041,41 @@
       "rating": 0,
       "updatedAt": "2026-01-13T02:48:25.630Z"
     }
+  ],
+  "registrations": [   
+    {
+      "id": "d071",
+      "businesses": [
+        {
+          "additionaldetails": "",
+          "products": [
+            {
+              "productName": "ftg",
+              "price": "5656",
+              "stock": "657",
+              "category": "fgh",
+              "isSaved": false
+            }
+          ],
+          "businessEmail": "drty@g.c",
+          "businessName": "dzgsf"
+        }
+      ],
+      "seller": {
+        "name": "dfh",
+        "email": "tfgsh@g.c",
+        "warehouses": [
+          {
+            "warehouseName": "ujgxdyf",
+            "city": "fgxh",
+            "pincode": "657777",
+            "upload": "Thina balan resume (1).pdf",
+            "isSaved": false
+          }
+        ],
+        "notes": ""
+      },
+      "submittedAt": "2026-01-27T00:54:11.095Z"
+    }
   ]
 }

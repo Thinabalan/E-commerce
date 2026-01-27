@@ -93,7 +93,7 @@ export const RegistrationFormSchema: yup.ObjectSchema<RegistrationForm> = yup.ob
           )
           .required()
           .min(1, ERROR_MESSAGES.productMin),
-        optional: yup.string().optional(),
+        additionaldetails: yup.string().optional(),
       })
     )
     .required()

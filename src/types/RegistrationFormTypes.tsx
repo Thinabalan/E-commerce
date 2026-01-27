@@ -25,7 +25,7 @@ export interface Business {
   businessName: string;
   businessEmail: string;
   products: Product[];
-  optional?: string;
+  additionaldetails?: string;
 }
 export interface RegistrationForm {
   seller: Seller;

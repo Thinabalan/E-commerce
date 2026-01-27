@@ -12,7 +12,7 @@ export const RegistrationFormDefaultValues: RegistrationForm = {
             businessName: "",
             businessEmail: "",
             products: [{ productName: "", price: "", stock: "", category: "", isSaved: false }],
-            optional: "",
+            additionaldetails: "",
         },
     ],
 }

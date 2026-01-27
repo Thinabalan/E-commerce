@@ -18,6 +18,7 @@ import type { RegistrationForm } from "../../types/RegistrationFormTypes";
 import EcomButton from "../../components/newcomponents/EcomButton";
 import SellerDetails from "./SellerDetails";
 import BusinessDetails from "./BusinessDetails";
+import { useRegistration } from "../../hooks/registrationform/useRegistration";
 
 export default function RegistrationForm() {
   const [expanded, setExpanded] = useState<Record<number, boolean>>({ 0: true, 1: false });
@@ -41,14 +42,21 @@ export default function RegistrationForm() {
     reset,
   } = registrationForm;
 
+  const { addRegistration, isLoading } = useRegistration();
+
   const handleAccordionChange =
     (panel: number) => (_: any, isExpanded: boolean) => {
       setExpanded((prev) => ({ ...prev, [panel]: isExpanded }));
     };
 
-  const onSubmit = (data: RegistrationForm) => {
-    console.log(data);
-    alert("Form submitted successfully ");
+  const onSubmit = async (data: RegistrationForm) => {
+    try {
+      await addRegistration(data);
+      alert("Form submitted successfully ");
+      reset();
+    } catch (error) {
+      alert("Submission failed. Please try again.");
+    }
   };
 
   const onError = (errors: any) => {
@@ -105,10 +113,12 @@ export default function RegistrationForm() {
               <Divider sx={{ my: 4 }} />
               <Box display="flex" justifyContent="center" gap={2}>
                 <EcomButton
-                  label="Submit"
+                  
                   type="submit"
                   variant="contained"
                   sx={{ px: 3, py: 1 }}
+                  disabled={isLoading}
+                  label={isLoading ? "Submitting..." : "Submit"}
                 />
                 <EcomButton
                   label="Reset"

@@ -181,7 +181,7 @@ export default function SellerDetails({ expanded, onChange }: SellerDetailsProps
                                             if (file) {
                                                 setValue(
                                                     `seller.warehouses.${index}.upload`,
-                                                    file,
+                                                    file.name,
                                                     { shouldValidate: true }
                                                 );
                                             }
@@ -195,8 +195,8 @@ export default function SellerDetails({ expanded, onChange }: SellerDetailsProps
                                         whiteSpace: "nowrap",
                                         overflow: "hidden",
                                         textOverflow: "ellipsis",
-                                    }} title={file.name} >
-                                        {file.name}
+                                    }} title={file} >
+                                        {file}
                                     </Typography>
                                 )}
                             </Grid>

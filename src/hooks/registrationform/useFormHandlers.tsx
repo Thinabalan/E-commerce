@@ -60,7 +60,7 @@ export const useFormHandlers = () => {
             businessName: "",
             businessEmail: "",
             products: [{ productName: "", price: "", stock: "", category: "", isSaved: false }],
-            optional: "",
+            additionaldetails: "",
         });
     };
 
