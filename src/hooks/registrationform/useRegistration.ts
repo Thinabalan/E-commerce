@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { registrationService } from "../../services/registrationService";
 import type { RegistrationForm } from "../../types/RegistrationFormTypes";
 
@@ -8,7 +8,7 @@ export const useRegistration = () => {
 
     const [registrations, setRegistrations] = useState<(RegistrationForm & { id: string })[]>([]);
 
-    const addRegistration = async (data: RegistrationForm) => {
+    const addRegistration = useCallback(async (data: RegistrationForm) => {
         setIsLoading(true);
         setError(null);
         try {
@@ -20,9 +20,9 @@ export const useRegistration = () => {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, []);
 
-    const getRegistrationsList = async () => {
+    const getRegistrationsList = useCallback(async () => {
         setIsLoading(true);
         setError(null);
         try {
@@ -34,7 +34,35 @@ export const useRegistration = () => {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, []);
 
-    return { addRegistration, getRegistrationsList, registrations, isLoading, error };
+    const getRegistrationById = useCallback(async (id: string) => {
+        setIsLoading(true);
+        setError(null);
+        try {
+            const data = await registrationService.getRegistrationById(id);
+            return data;
+        } catch (err) {
+            setError("Failed to fetch registration details.");
+            throw err;
+        } finally {
+            setIsLoading(false);
+        }
+    }, []);
+
+    const updateRegistration = useCallback(async (id: string, data: RegistrationForm) => {
+        setIsLoading(true);
+        setError(null);
+        try {
+            const response = await registrationService.updateRegistration(id, data);
+            return response;
+        } catch (err) {
+            setError("Failed to update registration. Please try again.");
+            throw err;
+        } finally {
+            setIsLoading(false);
+        }
+    }, []);
+
+    return { addRegistration, getRegistrationsList, getRegistrationById, updateRegistration, registrations, isLoading, error };
 };

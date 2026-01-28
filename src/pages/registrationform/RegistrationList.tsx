@@ -1,25 +1,29 @@
-import { useEffect, useMemo, useState } from "react";
 import {
-  Box,
-  Container,
   Paper,
   Typography,
   Divider,
-  Dialog,
-  AppBar,
-  Toolbar,
+  Box,
+  Container,
   IconButton,
   Tooltip,
 } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
-import OpenInFullIcon from "@mui/icons-material/OpenInFull";
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useRegistration } from "../../hooks/registrationform/useRegistration";
 import EcomTable, { type Column } from "../../components/newcomponents/EcomTable";
+import EcomDialog from "../../components/newcomponents/EcomDialog";
+import EcomButton from "../../components/newcomponents/EcomButton";
 import { formatDate } from "../../utils/formatDate";
+import OpenInFullIcon from "@mui/icons-material/OpenInFull";
+import EditIcon from "@mui/icons-material/Edit";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import AddIcon from "@mui/icons-material/Add";
 
 const RegistrationList = () => {
   const { getRegistrationsList, registrations } = useRegistration();
   const [isFullViewOpen, setIsFullViewOpen] = useState(false);
+  const [previewData, setPreviewData] = useState<any>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     getRegistrationsList();
@@ -46,6 +50,47 @@ const RegistrationList = () => {
       align: "center",
       render: (row) => (row.submittedAt ? formatDate(row.submittedAt) : "—"),
     },
+    {
+      id: "actions",
+      label: "Actions",
+      align: "center",
+      sortable: false,
+      render: (row) => (
+        <Box display="flex" justifyContent="center" gap={1}>
+          <Tooltip title="Preview">
+            <IconButton
+              size="small"
+              color="info"
+              onClick={(e) => {
+                e.stopPropagation();
+                setPreviewData(row);
+              }}
+            >
+              <VisibilityIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Edit">
+            <IconButton
+              size="small"
+              color="primary"
+              onClick={(e) => {
+                e.stopPropagation();
+                 const { 
+        sellerName, 
+        sellerEmail, 
+        warehouseNames, 
+        businessNames, 
+        ...originalData 
+      } = row;
+                navigate(`/form/${row.id}`, { state: { registrationData: originalData } });
+              }}
+            >
+              <EditIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </Box>
+      ),
+    },
   ];
 
   const tableContent = (
@@ -65,7 +110,29 @@ const RegistrationList = () => {
             Detailed Registration Info
           </Typography>
 
-          <Box display="grid" gridTemplateColumns={{ xs: "1fr", md: "1fr 1fr" }} gap={4}>
+          <Box display="grid" gridTemplateColumns={{ xs: "1fr", md: "1fr 1fr 1fr" }} gap={3}>
+            {/* Seller Info */}
+            <Box>
+              <Typography variant="subtitle2" fontWeight="bold" mb={1} color="text.secondary">
+                Seller Information
+              </Typography>
+              <Box
+                sx={{
+                  p: 1,
+                  bgcolor: "#fff",
+                  borderRadius: 1,
+                  border: "1px solid #f0f0f0",
+                }}
+              >
+                <Typography variant="body2" fontWeight="bold">
+                  NAME: {row.seller.name}
+                </Typography>
+                <Typography variant="caption" color="text.secondary" display="block">
+                  EMAIL: {row.seller.email}
+                </Typography>
+              </Box>
+            </Box>
+
             {/* Warehouses */}
             <Box>
               <Typography variant="subtitle2" fontWeight="bold" mb={1} color="text.secondary">
@@ -160,20 +227,28 @@ const RegistrationList = () => {
           }}
         >
           <Box mb={4} textAlign="center">
-            <Typography
-              variant="h4"
-              fontWeight={600}
-              color="primary.main"
-              gutterBottom
-              sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 1 }}
-            >
-              Submitted Registrations
-              <Tooltip title="Open Full Screen">
-                <IconButton onClick={() => setIsFullViewOpen(true)} color="primary" size="small">
-                  <OpenInFullIcon />
-                </IconButton>
-              </Tooltip>
-            </Typography>
+            <Box display="flex" alignItems="center" justifyContent="center" gap={2} sx={{ position: "relative" }}>
+              <Typography
+                variant="h5"
+                fontWeight={600}
+                color="primary.main"
+                sx={{ display: "flex", alignItems: "center", gap: 1 }}
+              >
+                Submitted Registrations
+                <Tooltip title="Open Full Screen">
+                  <IconButton onClick={() => setIsFullViewOpen(true)} color="primary" size="small">
+                    <OpenInFullIcon />
+                  </IconButton>
+                </Tooltip>
+              </Typography>
+              <EcomButton
+                label="Register"
+                variant="contained"
+                startIcon={<AddIcon />}
+                onClick={() => navigate("/form")}
+                sx={{ position: { md: "absolute" }, right: { md: 0 } }}
+              />
+            </Box>
 
             <Typography variant="body1" color="text.secondary">
               Review and manage all submitted business registration forms.
@@ -184,22 +259,44 @@ const RegistrationList = () => {
         </Paper>
       </Container>
 
-      <Dialog fullScreen open={isFullViewOpen} onClose={() => setIsFullViewOpen(false)}>
-        <AppBar sx={{ position: "relative" }}>
-          <Toolbar>
-            <IconButton edge="start" color="inherit" onClick={() => setIsFullViewOpen(false)}>
-              <CloseIcon />
-            </IconButton>
-            <Typography sx={{ ml: 2, flex: 1 }} variant="h6">
-              Registrations Full View
-            </Typography>
-          </Toolbar>
-        </AppBar>
-
+      <EcomDialog
+        fullScreen
+        open={isFullViewOpen}
+        onClose={() => setIsFullViewOpen(false)}
+        title="Registrations Full View"
+        headerSx={{
+          bgcolor: "primary.main",
+          color: "primary.contrastText",
+          boxShadow: 5,
+        }}
+      >
         <Box sx={{ p: 4, bgcolor: "#f5f7fa", minHeight: "calc(100vh - 64px)" }}>
           {tableContent}
         </Box>
-      </Dialog>
+      </EcomDialog>
+
+      {/* Preview Dialog */}
+      <EcomDialog
+        maxWidth="md"
+        fullWidth
+        open={Boolean(previewData)}
+        onClose={() => setPreviewData(null)}
+        title="Registration Preview"
+        headerSx={{
+          bgcolor: "grey.800",
+          color: "common.white",
+          boxShadow: 3,
+        }}
+
+      >
+        <Box sx={{ p: previewData ? 0 : 4 }}>
+          {previewData && (
+            <Box sx={{ "& .MuiBox-root": { borderTop: "none" } }}>
+              {tableContent.props.renderRowDetails(previewData)}
+            </Box>
+          )}
+        </Box>
+      </EcomDialog>
     </Box>
   );
 };

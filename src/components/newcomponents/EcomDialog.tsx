@@ -24,7 +24,9 @@ interface DialogProps {
   children?: React.ReactNode;
   maxWidth?: "xs" | "sm" | "md" | "lg" | "xl";
   fullWidth?: boolean;
+  fullScreen?: boolean;
   paperSx?: SxProps<Theme>;
+  headerSx?: SxProps<Theme>;
   backdropBlur?: boolean;
 }
 
@@ -40,7 +42,9 @@ const EcomDialog = ({
   children,
   maxWidth = "sm",
   fullWidth = false,
+  fullScreen = false,
   paperSx,
+  headerSx,
   backdropBlur = false,
 }: DialogProps) => {
   return (
@@ -49,6 +53,7 @@ const EcomDialog = ({
       onClose={onClose}
       maxWidth={maxWidth}
       fullWidth={fullWidth}
+      fullScreen={fullScreen}
       slotProps={{
         paper: {
           sx: paperSx,
@@ -66,12 +71,12 @@ const EcomDialog = ({
 
       {/* HEADER */}
       {title && (
-        <Box>
+        <Box sx={headerSx}>
           <Box display="flex" alignItems="center" justifyContent="space-between" px={2} py={1}>
-            <DialogTitle sx={{ p: 0 }}>
+            <DialogTitle sx={{ p: 0, color: "inherit" }}>
               {title}
             </DialogTitle>
-            <IconButton onClick={onClose} size="small">
+            <IconButton onClick={onClose} size="small" color="inherit">
               <CloseIcon />
             </IconButton>
           </Box>

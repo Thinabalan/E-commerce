@@ -12,4 +12,15 @@ export const registrationService = {
     getRegistrations: async (): Promise<(RegistrationForm & { id: string })[]> => {
         return apiService.get("registrations");
     },
+
+    getRegistrationById: async (id: string): Promise<RegistrationForm & { id: string }> => {
+        return apiService.get(`registrations/${id}`);
+    },
+
+    updateRegistration: async (id: string, data: RegistrationForm): Promise<RegistrationForm> => {
+        return apiService.patch(`registrations/${id}`, {
+            ...data,
+            updatedAt: new Date().toISOString(),
+        });
+    },
 };

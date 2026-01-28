@@ -2055,6 +2055,13 @@
               "stock": "657",
               "category": "fgh",
               "isSaved": false
+            },
+            {
+              "productName": "dfffgb",
+              "price": "5656",
+              "stock": "1767",
+              "category": "hgfxbh",
+              "isSaved": true
             }
           ],
           "businessEmail": "drty@g.c",
@@ -2075,7 +2082,8 @@
         ],
         "notes": ""
       },
-      "submittedAt": "2026-01-27T00:54:11.095Z"
+      "submittedAt": "2026-01-27T00:54:11.095Z",
+      "updatedAt": "2026-01-28T03:38:47.020Z"
     },
     {
       "id": "6142",
@@ -2116,7 +2124,8 @@
           "additionaldetails": ""
         }
       ],
-      "submittedAt": "2026-01-27T01:00:51.727Z"
+      "submittedAt": "2026-01-27T01:00:51.727Z",
+      "updatedAt": "2026-01-28T03:38:15.964Z"
     },
     {
       "id": "6c8a",
@@ -2161,13 +2170,6 @@
               "isSaved": false
             },
             {
-              "productName": "Mobile",
-              "price": "15000",
-              "stock": "100",
-              "category": "Electronics",
-              "isSaved": false
-            },
-            {
               "productName": "Table",
               "price": "5000",
               "stock": "150",
@@ -2178,7 +2180,8 @@
           "additionaldetails": ""
         }
       ],
-      "submittedAt": "2026-01-27T01:57:26.203Z"
+      "submittedAt": "2026-01-27T01:57:26.203Z",
+      "updatedAt": "2026-01-28T03:39:25.344Z"
     }
   ]
 }

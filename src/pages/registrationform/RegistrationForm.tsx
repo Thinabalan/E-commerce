@@ -9,8 +9,8 @@ import {
   useForm,
   FormProvider,
 } from "react-hook-form";
-import { useState } from "react";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { RegistrationFormSchema } from "../../schema/RegistrationFormSchema";
 import { RegistrationFormDefaultValues } from "./data/RegistrationFormDefaults";
 import type { RegistrationForm } from "../../types/RegistrationFormTypes";
@@ -19,8 +19,13 @@ import EcomButton from "../../components/newcomponents/EcomButton";
 import SellerDetails from "./SellerDetails";
 import BusinessDetails from "./BusinessDetails";
 import { useRegistration } from "../../hooks/registrationform/useRegistration";
+import { useEffect, useState } from "react";
 
 export default function RegistrationForm() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const isEditMode = Boolean(id);
   const [expanded, setExpanded] = useState<Record<number, boolean>>({ 0: true, 1: false });
 
   const allPanels = [0, 1];
@@ -42,7 +47,30 @@ export default function RegistrationForm() {
     reset,
   } = registrationForm;
 
-  const { addRegistration, isLoading } = useRegistration();
+  const { addRegistration, getRegistrationById, updateRegistration, isLoading } = useRegistration();
+
+  useEffect(() => {
+    if (isEditMode && id) {
+      if (location.state?.registrationData) {
+        reset(location.state.registrationData);
+      } else {
+        const fetchData = async () => {
+          try {
+            const data = await getRegistrationById(id);
+            reset(data);
+          } catch (error) {
+            alert("Failed to fetch registration data.");
+            navigate("/registrations");
+          }
+        };
+        fetchData();
+
+      }
+    }
+    else {
+      reset(RegistrationFormDefaultValues);
+    }
+  }, [id, isEditMode, reset, getRegistrationById, navigate, location.state]);
 
   const handleAccordionChange =
     (panel: number) => (_: any, isExpanded: boolean) => {
@@ -51,11 +79,17 @@ export default function RegistrationForm() {
 
   const onSubmit = async (data: RegistrationForm) => {
     try {
-      await addRegistration(data);
-      alert("Form submitted successfully ");
-      reset();
+      if (isEditMode && id) {
+        await updateRegistration(id, data);
+        alert("Form updated successfully");
+        navigate("/registrations");
+      } else {
+        await addRegistration(data);
+        alert("Form submitted successfully ");
+        reset();
+      }
     } catch (error) {
-      alert("Submission failed. Please try again.");
+      alert(`${isEditMode ? "Update" : "Submission"} failed. Please try again.`);
     }
   };
 
@@ -84,7 +118,7 @@ export default function RegistrationForm() {
           >
             <Box mb={1} textAlign="center">
               <Typography variant="h4" fontWeight={600} color="primary.main" gutterBottom>
-                Registration Form
+                {isEditMode ? "Edit Registration" : "Registration Form"}
               </Typography>
               <Typography variant="body1" color="text.secondary">
                 Complete the details below to register your business profile.
@@ -113,12 +147,12 @@ export default function RegistrationForm() {
               <Divider sx={{ my: 4 }} />
               <Box display="flex" justifyContent="center" gap={2}>
                 <EcomButton
-                  
                   type="submit"
                   variant="contained"
+                  color="success"
                   sx={{ px: 3, py: 1 }}
                   disabled={isLoading}
-                  label={isLoading ? "Submitting..." : "Submit"}
+                  label={isLoading ? (isEditMode ? "Updating..." : "Submitting...") : (isEditMode ? "Update" : "Submit")}
                 />
                 <EcomButton
                   label="Reset"
@@ -127,6 +161,15 @@ export default function RegistrationForm() {
                   onClick={() => reset()}
                   sx={{ px: 3, py: 1, border: 1 }}
                 />
+                {isEditMode && (
+                  <EcomButton
+                    label="Cancel"
+                    variant="outlined"
+                    color="error"
+                    onClick={() => navigate("/registrations")}
+                    sx={{ px: 3, py: 1, border: 1 }}
+                  />
+                )}
               </Box>
             </form>
           </Paper>

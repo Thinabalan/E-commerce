@@ -1,5 +1,11 @@
 import { Controller, useFormContext } from "react-hook-form";
-import { TextField } from "@mui/material";
+import {
+    TextField,
+    Tooltip,
+    InputAdornment,
+    IconButton,
+} from "@mui/material";
+import ErrorIcon from "@mui/icons-material/ErrorOutline";
 
 interface EcomTextFieldProps {
     name: string;
@@ -33,9 +39,13 @@ const EcomTextField = ({
     multiline = false,
     rows = 1,
     disabled = false,
-    showErrorText = true, 
+    showErrorText = true,
 }: EcomTextFieldProps) => {
-    const { control, formState: { errors } } = useFormContext();
+    const {
+        control,
+        formState: { errors },
+    } = useFormContext();
+
     const error = getNestedValue(errors, name);
 
     return (
@@ -52,10 +62,25 @@ const EcomTextField = ({
                     required={required}
                     multiline={multiline}
                     rows={rows}
-                    error={!!error}
                     disabled={disabled}
-                    helperText={showErrorText && (error?.message as string)}
+                    error={!!error}
+                    helperText={showErrorText ? (error?.message as string) : undefined}
                     slotProps={{
+                        input: {
+                            endAdornment:
+                                !showErrorText && error ? (
+                                    <InputAdornment position="end">
+                                        <Tooltip title={error?.message || ""} arrow>
+                                            <IconButton size="small" tabIndex={-1}>
+                                                <ErrorIcon
+                                                    color="error"
+                                                    fontSize={size === "small" ? "small" : "medium"}
+                                                />
+                                            </IconButton>
+                                        </Tooltip>
+                                    </InputAdornment>
+                                ) : undefined,
+                        },
                         formHelperText: {
                             sx: {
                                 ml: 0,

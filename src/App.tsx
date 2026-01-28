@@ -23,7 +23,7 @@ function App() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/newproduct" element={<AddProductForm />} />
           <Route path="/producttable" element={<SellProductTable />} />
-          <Route path="/form" element={<RegistrationForm />} />
+          <Route path="/form/:id?" element={<RegistrationForm />} />
           <Route path="/registrations" element={<RegistrationList />} />
         </Routes>
       </div>
