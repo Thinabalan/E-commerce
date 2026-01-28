@@ -1,9 +1,11 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
 import { useEffect, useState } from "react";
-import AuthModal from "../pages/authentication/AuthModal";
+import Login from "../pages/authentication/Login";
+import Signup from "../pages/authentication/Signup";
+import EcomDialog from "../components/newcomponents/EcomDialog";
 import SellProductForm from "../pages/sellproductform/SellProductForm";
-import { useToast } from "../context/ToastContext";
+import { useSnackbar } from "../context/SnackbarContext";
 import {
   AppBar,
   Toolbar,
@@ -47,10 +49,11 @@ interface User {
 export default function Header() {
   const { isDark, toggleTheme } = useTheme();
   const navigate = useNavigate();
-  const { showToast } = useToast();
+  const { showSnackbar } = useSnackbar();
 
   const [user, setUser] = useState<User | null>(null);
   const [showAuth, setShowAuth] = useState(false);
+  const [authMode, setAuthMode] = useState<"login" | "signup">("login");
   const [showSellModal, setShowSellModal] = useState(false);
 
   // MUI Menu State
@@ -89,13 +92,18 @@ export default function Header() {
     setUser(null);
     handleCloseUserMenu();
     navigate("/");
-    showToast({ message: "Logged out Successfully", type: "error" });
+    showSnackbar("Logged out Successfully", "success");
   };
 
   const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       navigate(`/products?q=${searchValue}`);
     }
+  };
+
+  const handleOpenAuth = (mode: "login" | "signup") => {
+    setAuthMode(mode);
+    setShowAuth(true);
   };
 
   // Drawer Content
@@ -228,7 +236,7 @@ export default function Header() {
                 placeholder="Search for products..."
                 value={searchValue}
                 onChange={(e) => setSearchValue(e.target.value)}
-                onKeyDown={(e: any) => handleSearch(e)} 
+                onKeyDown={(e: any) => handleSearch(e)}
               />
             </Paper>
 
@@ -240,8 +248,8 @@ export default function Header() {
               <Button
                 component={Link}
                 to="/favourites"
-                sx={{ display: { xs: 'none', lg: 'flex' }, color: 'inherit', textTransform: 'none', fontWeight: 600, fontSize:'1rem' }}
-                startIcon={<FavoriteIcon sx={{ fontSize: '1.2rem !important' }}/>}
+                sx={{ display: { xs: 'none', lg: 'flex' }, color: 'inherit', textTransform: 'none', fontWeight: 600, fontSize: '1rem' }}
+                startIcon={<FavoriteIcon sx={{ fontSize: '1.2rem !important' }} />}
               >
                 Favourites
               </Button>
@@ -250,9 +258,9 @@ export default function Header() {
               <Button
                 component={Link}
                 to="/cart"
-                sx={{ color: 'inherit', textTransform: 'none', fontWeight: 600, minWidth: 'auto',fontSize:'1rem' }}
+                sx={{ color: 'inherit', textTransform: 'none', fontWeight: 600, minWidth: 'auto', fontSize: '1rem' }}
               >
-                <ShoppingCartIcon sx={{ mr: 1,fontSize: '1.2rem !important' }} />
+                <ShoppingCartIcon sx={{ mr: 1, fontSize: '1.2rem !important' }} />
                 Cart
               </Button>
 
@@ -269,9 +277,9 @@ export default function Header() {
                 <Box>
                   <Button
                     onClick={handleOpenUserMenu}
-                    sx={{ color: 'inherit', textTransform: 'none', fontWeight: 600, fontSize:'1rem' }}
+                    sx={{ color: 'inherit', textTransform: 'none', fontWeight: 600, fontSize: '1rem' }}
                     endIcon={<KeyboardArrowDownIcon />}
-                    startIcon={<PersonIcon sx={{ fontSize: '1.2rem !important' }}/>}
+                    startIcon={<PersonIcon sx={{ fontSize: '1.2rem !important' }} />}
                   >
                     {user?.name}
                   </Button>
@@ -295,12 +303,12 @@ export default function Header() {
                 </Box>
               ) : (
                 <Button
-                  onClick={() => setShowAuth(true)}
+                  onClick={() => handleOpenAuth("login")}
                   variant={isDark ? "outlined" : "contained"}
                   sx={{
                     bgcolor: isDark ? 'transparent' : '#ffbebe',
                     color: isDark ? 'white' : 'black',
-                    fontSize:'1rem',
+                    fontSize: '1rem',
                     borderColor: 'white',
                     '&:hover': { bgcolor: isDark ? 'rgba(255,255,255,0.1)' : '#ffe3e3' }
                   }}
@@ -356,7 +364,33 @@ export default function Header() {
         {drawerContent}
       </Drawer>
 
-      <AuthModal open={showAuth} onClose={() => setShowAuth(false)} />
+      {/* AUTH DIALOG */}
+      <EcomDialog
+        open={showAuth}
+        onClose={() => setShowAuth(false)}
+        title={authMode === "login" ? "Login" : "Create Account"}
+        maxWidth="xs"
+        headerSx={{
+          bgcolor: 'secondary.main',
+          color: 'white',
+          '& .MuiTypography-root': { fontWeight: 'bold' },
+
+        }}
+      >
+        <Box p={3}>
+          {authMode === "login" ? (
+            <Login
+              onSuccess={() => setShowAuth(false)}
+              switchToSignup={() => setAuthMode("signup")}
+            />
+          ) : (
+            <Signup
+              onSwitchLogin={() => setAuthMode("login")}
+            />
+          )}
+        </Box>
+      </EcomDialog>
+
       <SellProductForm open={showSellModal} onClose={() => setShowSellModal(false)} />
     </>
   );

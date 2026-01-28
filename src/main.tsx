@@ -1,25 +1,22 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
-
 import '@fortawesome/fontawesome-free/css/all.min.css';
-
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import { BrowserRouter } from 'react-router-dom';
 import './styles/global.css';
 import { ThemeProvider } from './context/ThemeContext';
 import { MuiThemeProvider } from './context/MuiThemeProvider';
-import { ToastProvider } from './context/ToastContext';
-
+import { SnackbarProvider } from './context/SnackbarContext';
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <>
     <BrowserRouter>
       <ThemeProvider>
         <MuiThemeProvider>
-          <ToastProvider>
-            <App />
-          </ToastProvider>
+            <SnackbarProvider>
+              <App />
+            </SnackbarProvider>
         </MuiThemeProvider>
       </ThemeProvider>
     </BrowserRouter>

@@ -47,6 +47,18 @@
       "name": "tgh",
       "email": "sxgdfsyt@g.c",
       "password": "1A@345"
+    },
+    {
+      "id": "07e9",
+      "name": "abc",
+      "email": "abc@gmail.com",
+      "password": "123456"
+    },
+    {
+      "id": "f1f8",
+      "name": "xyz",
+      "email": "xyz@gmail.com",
+      "password": "555555"
     }
   ],
   "categories": [
@@ -2053,7 +2065,7 @@
               "productName": "ftg",
               "price": "5656",
               "stock": "657",
-              "category": "fgh",
+              "category": "vgjhf",
               "isSaved": false
             },
             {
@@ -2083,7 +2095,7 @@
         "notes": ""
       },
       "submittedAt": "2026-01-27T00:54:11.095Z",
-      "updatedAt": "2026-01-28T03:38:47.020Z"
+      "updatedAt": "2026-01-28T05:31:38.264Z"
     },
     {
       "id": "6142",

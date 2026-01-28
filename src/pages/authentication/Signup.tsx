@@ -1,95 +1,80 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
-import type { FormEvent, ChangeEvent } from "react";
+import { useForm, FormProvider } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+import {
+  Box,
+  Typography,
+  Grid
+} from "@mui/material";
 
-import EcomButton from "../../components/button/EcomButton";
-import { useToast } from "../../context/ToastContext";
-import { useForm } from "../../hooks/useForm";
-import EcomTextField from "../../components/textfield/EcomTextField";
+import EcomTextField from "../../components/newcomponents/EcomTextField";
+import EcomButton from "../../components/newcomponents/EcomButton";
+import { useSnackbar } from "../../context/SnackbarContext";
 import { useUser } from "../../hooks/useUser";
 import type { CreateUser } from "../../types/types";
-import {
-  validateConfirmPasswordField,
-  validateEmailField,
-  validateNameField,
-  validatePasswordField
-} from "../../utils/validation";
+
+interface SignupFormValues extends CreateUser {
+  confirmPassword: string;
+}
+
+// Validation Schema
+const signupSchema = yup.object().shape({
+  name: yup
+    .string()
+    .required("Name is required")
+    .min(2, "Name must be at least 2 characters"),
+  email: yup
+    .string()
+    .required("Email is required")
+    .email("Invalid email format"),
+  password: yup
+    .string()
+    .required("Password is required")
+    .min(6, "Password must be at least 6 characters"),
+  confirmPassword: yup
+    .string()
+    .required("Please confirm your password")
+    .oneOf([yup.ref("password")], "Passwords must match")
+});
 
 interface SignupProps {
   onSwitchLogin?: () => void;
 }
 
-const Signup: React.FC<SignupProps> = ({ onSwitchLogin }) => {
+const Signup = ({ onSwitchLogin }: SignupProps ) => {
   const navigate = useNavigate();
-  const { showToast } = useToast();
   const { getUsers, createUser } = useUser();
+  const { showSnackbar } = useSnackbar();
 
-  const [errors, setErrors] = useState<Partial<Record<keyof CreateUser, string>>>({});
-
-  const { form, handleChange } = useForm<CreateUser>({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: ""
+  const signupform = useForm<SignupFormValues>({
+    resolver: yupResolver(signupSchema) as any,
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+      confirmPassword: ""
+    }
   });
 
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name } = e.target;
-    handleChange(e);
-    // Live validation: Clear error when user types
-    if (errors[name as keyof CreateUser]) {
-      setErrors(prev => ({ ...prev, [name]: "" }));
-    }
-  };
+  const { handleSubmit, setError, formState: { isSubmitting } } = signupform;
 
-  const validate = (): boolean => {
-    const newErrors: Partial<Record<keyof CreateUser, string>> = {};
-
-    newErrors.name = validateNameField(form.name);
-    newErrors.email = validateEmailField(form.email);
-    newErrors.password = validatePasswordField(form.password);
-    newErrors.confirmPassword = validateConfirmPasswordField(form.password, form.confirmPassword || "");
-
-    setErrors(newErrors);
-
-    return !Object.values(newErrors).some(error => error !== "");
-  };
-
-  // Form submit 
-  const handleSignup = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    if (!validate()) {
-      showToast({
-        message: "Please fix the errors in the form",
-        type: "error"
-      });
-      return;
-    }
-
-    // if (!form.name || !form.email || !form.password || !form.confirmPassword) {
-    //   showToast({
-    //     message: "All fields are required",
-    //     type: "error"
-    //   });
-    //   return;
-    // }
-
+  const onSubmit = async (data: SignupFormValues) => {
     try {
-      const existingUsers = await getUsers({ email: form.email });
+      const existingUsers = await getUsers({ email: data.email });
       if (existingUsers.length > 0) {
-        setErrors(prev => ({ ...prev, email: "User already exists" }));
-        showToast({ message: "User already exists", type: "error" });
+        setError("email", { type: "manual", message: "User already exists" });
+        showSnackbar("User already exists", "error");
         return;
       }
 
       await createUser({
-        name: form.name,
-        email: form.email,
-        password: form.password
+        name: data.name,
+        email: data.email,
+        password: data.password
       });
 
-      showToast({ message: "Signup successful", type: "success" });
+      showSnackbar("Signup successful", "success");
 
       if (onSwitchLogin) {
         onSwitchLogin();
@@ -98,88 +83,109 @@ const Signup: React.FC<SignupProps> = ({ onSwitchLogin }) => {
       }
 
     } catch (error) {
-      showToast({
-        message: "Something went wrong. Please try again.",
-        type: "error"
-      });
+      showSnackbar("Something went wrong. Please try again.", "error");
     }
-
   };
 
   return (
-    <div className="container mt-5">
-      <div className="row justify-content-center">
-        <div className="col-md-5">
-          <div className="card shadow">
-            <div className="card-body">
+    <>
+      <Box
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        mb={3}
+      >
+        <Typography variant="body2" color="textSecondary">
+          Join us today! Please fill in your details.
+        </Typography>
+      </Box>
 
-              <h4 className="text-center mb-4">Create Account</h4>
+      <FormProvider {...signupform}>
+        <form onSubmit={(e) => e.preventDefault()} noValidate>
+          <Grid container spacing={2}>
+            <Grid size={12}>
+              <EcomTextField
+                name="name"
+                label="Full Name"
+                size="small"
+                required
+              />
+            </Grid>
 
-              <form onSubmit={handleSignup}>
+            <Grid size={12}>
+              <EcomTextField
+                name="email"
+                label="Email"
+                type="email"
+                size="small"
+                required
+              />
+            </Grid>
 
-                <EcomTextField
-                  label="Name"
-                  name="name"
-                  value={form.name}
-                  required
-                  error={errors.name}
-                  onChange={handleInputChange}
-                />
+            <Grid size={12}>
+              <EcomTextField
+                name="password"
+                label="Password"
+                type="password"
+                size="small"
+                required
+              />
+            </Grid>
 
-                <EcomTextField
-                  label="Email"
-                  name="email"
-                  type="email"
-                  value={form.email}
-                  required
-                  error={errors.email}
-                  onChange={handleInputChange}
-                />
+            <Grid size={12}>
+              <EcomTextField
+                name="confirmPassword"
+                label="Confirm Password"
+                type="password"
+                size="small"
+                required
+              />
+            </Grid>
 
-                <EcomTextField
-                  label="Password"
-                  name="password"
-                  type="password"
-                  value={form.password}
-                  required
-                  error={errors.password}
-                  onChange={handleInputChange}
-                />
+            <Grid size={12} display="flex" justifyContent="center">
+              <EcomButton
+                variant="contained"
+                color="primary"
+                disabled={isSubmitting}
+                onClick={handleSubmit(onSubmit)}
+                label={isSubmitting ? "Creating Account..." : "Sign Up"}
+                sx={{ width: 130 }}
+              />
+            </Grid>
+          </Grid>
+        </form>
+      </FormProvider>
 
-                <EcomTextField
-                  label="Confirm Password"
-                  name="confirmPassword"
-                  type="password"
-                  value={form.confirmPassword || ""}
-                  required
-                  error={errors.confirmPassword}
-                  onChange={handleInputChange}
-                />
-
-                <EcomButton
-                  text="Sign Up"
-                  type="submit"
-                  className="btn btn-primary w-100"
-                />
-              </form>
-
-              <p className="text-center mt-3 mb-0">
-                Already have an account?{" "}
-                {onSwitchLogin ? (
-                  <button className="link-btn" onClick={onSwitchLogin}>
-                    Login
-                  </button>
-                ) : (
-                  <Link to="/login">Login</Link>
-                )}
-              </p>
-
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+      <Box mt={1} textAlign="center">
+        <Typography variant="body2" color="textSecondary">
+          Already have an account?{" "}
+          {onSwitchLogin ? (
+            <EcomButton
+              color="primary"
+              onClick={onSwitchLogin}
+              label="Login"
+              sx={{ textTransform: "none", fontWeight: "bold", p: 0, minWidth: "auto" }}
+            />
+          ) : (
+            <Link
+              to="/login"
+              style={{
+                textDecoration: "none",
+                color: "#1976d2",
+                fontWeight: "bold"
+              }}
+            >
+              Login
+            </Link>
+          )}
+        </Typography>
+      </Box>
+    </>
   );
+
 };
 
 export default Signup;
+
+
+

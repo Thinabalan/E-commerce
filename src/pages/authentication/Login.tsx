@@ -1,80 +1,56 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
-import type { FormEvent, ChangeEvent } from "react";
+import { useForm, FormProvider } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+import {
+  Box,
+  Typography
+} from "@mui/material";
 
-import EcomButton from "../../components/button/EcomButton";
-import { useToast } from "../../context/ToastContext";
-import { useForm } from "../../hooks/useForm";
-import EcomTextField from "../../components/textfield/EcomTextField";
+import EcomTextField from "../../components/newcomponents/EcomTextField";
+import EcomButton from "../../components/newcomponents/EcomButton";
+import { useSnackbar } from "../../context/SnackbarContext";
 import { useUser } from "../../hooks/useUser";
 import type { LoginForm } from "../../types/types";
-import { validateEmailField, validatePasswordField } from "../../utils/validation";
 
-interface Props {
+// Validation Schema
+const loginSchema = yup.object().shape({
+  email: yup
+    .string()
+    .required("Email is required")
+    .email("Invalid email format"),
+  password: yup
+    .string()
+    .required("Password is required")
+    .min(6, "Password must be at least 6 characters")
+});
+
+interface LoginProps {
   onSuccess?: () => void;
   switchToSignup?: () => void;
 }
 
-const Login: React.FC<Props> = ({ onSuccess, switchToSignup }) => {
+const Login = ({ onSuccess, switchToSignup } : LoginProps ) => {
   const navigate = useNavigate();
-  const { showToast } = useToast();
   const { getUsers } = useUser();
+  const { showSnackbar } = useSnackbar();
 
-  const [errors, setErrors] = useState<Partial<Record<keyof LoginForm, string>>>({});
-
-  const { form, handleChange } = useForm<LoginForm>({
-    email: "",
-    password: ""
+  const loginform = useForm<LoginForm>({
+    resolver: yupResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: ""
+    }
   });
 
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name } = e.target;
-    handleChange(e);
-    // Live validation: Clear error when user types
-    if (errors[name as keyof LoginForm]) {
-      setErrors(prev => ({ ...prev, [name]: "" }));
-    }
-  };
+  const { handleSubmit, formState: { isSubmitting } } = loginform;
 
-  const validate = (): boolean => {
-    const newErrors: Partial<Record<keyof LoginForm, string>> = {};
-
-    newErrors.email = validateEmailField(form.email);
-    newErrors.password = validatePasswordField(form.password);
-
-    setErrors(newErrors);
-
-    return !Object.values(newErrors).some(error => error !== "");
-  };
-
-  // Form submit 
-  const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    if (!validate()) {
-      showToast({
-        message: "Please fix the errors in the form",
-        type: "error"
-      });
-      return;
-    }
-
-    // if (!form.email || !form.password) {
-    //   showToast({
-    //     message: "Email and password are required",
-    //     type: "error"
-    //   });
-    //   return;
-    // }
-
+  const onSubmit = async (data: LoginForm) => {
     try {
-      const users = await getUsers({ email: form.email, password: form.password });
+      const users = await getUsers({ email: data.email, password: data.password });
 
       if (users.length === 0) {
-        showToast({
-          message: "Invalid email or password",
-          type: "error"
-        });
+        showSnackbar("Invalid email or password", "error");
         return;
       }
 
@@ -82,7 +58,7 @@ const Login: React.FC<Props> = ({ onSuccess, switchToSignup }) => {
       localStorage.setItem("user", JSON.stringify(users[0]));
       window.dispatchEvent(new Event("auth-change"));
 
-      showToast({ message: `Welcome back ${users[0].name}`, type: "success" });
+      showSnackbar(`Welcome back ${users[0].name}`, "success");
 
       if (onSuccess) {
         onSuccess();
@@ -91,69 +67,83 @@ const Login: React.FC<Props> = ({ onSuccess, switchToSignup }) => {
       }
 
     } catch {
-      showToast({
-        message: "Something went wrong. Please try again.",
-        type: "error"
-      });
+      showSnackbar("Something went wrong. Please try again.", "error");
     }
   };
 
   return (
-    <div className="container mt-5">
-      <div className="row justify-content-center">
-        <div className="col-md-5">
-          <div className="card shadow">
-            <div className="card-body">
+    <>
+      <Box
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        mb={2}
+      >
+        <Typography variant="body2" color="textSecondary">
+          Welcome back! Please enter your details.
+        </Typography>
+      </Box>
 
-              <h4 className="text-center mb-4">Login</h4>
+      <FormProvider {...loginform}>
+        <form onSubmit={(e) => e.preventDefault()} noValidate>
+          <Box display="flex" flexDirection="column" gap={3} sx={{ width: 310 }}>
+            <EcomTextField
+              name="email"
+              label="Email"
+              size="small"
+              type="email"
+              required
+            />
 
-              <form onSubmit={handleLogin}>
+            <EcomTextField
+              name="password"
+              label="Password"
+              size="small"
+              type="password"
+              required
+            />
 
-                <EcomTextField
-                  label="Email"
-                  name="email"
-                  type="email"
-                  value={form.email}
-                  required
-                  error={errors.email}
-                  onChange={handleInputChange}
-                />
+            <EcomButton
+              variant="contained"
+              color="primary"
+              disabled={isSubmitting}
+              onClick={handleSubmit(onSubmit)}
+              label={isSubmitting ? "Logging in..." : "Login"}
+              sx={{ width: 130, alignSelf: "center" }}
+            />
+          </Box>
+        </form>
+      </FormProvider>
 
-                <EcomTextField
-                  label="Password"
-                  name="password"
-                  type="password"
-                  value={form.password}
-                  required
-                  error={errors.password}
-                  onChange={handleInputChange}
-                />
-
-                <EcomButton
-                  text="Login"
-                  type="submit"
-                  className="btn btn-primary w-100 mt-2"
-                />
-
-              </form>
-
-              <p className="text-center mt-3 mb-0">
-                Don’t have an account?{" "}
-                {switchToSignup ? (
-                  <button className="link-btn" onClick={switchToSignup}>
-                    Signup
-                  </button>
-                ) : (
-                  <Link to="/signup">Sign up</Link>
-                )}
-              </p>
-
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+      <Box mt={1} textAlign="center">
+        <Typography variant="body2" color="textSecondary">
+          Don't have an account?{" "}
+          {switchToSignup ? (
+            <EcomButton
+              color="primary"
+              onClick={switchToSignup}
+              label="Sign up"
+              sx={{ textTransform: "none", fontWeight: "bold", p: 0, minWidth: "auto" }}
+            />
+          ) : (
+            <Link
+              to="/signup"
+              style={{
+                textDecoration: "none",
+                color: "#1976d2",
+                fontWeight: "bold"
+              }}
+            >
+              Sign up
+            </Link>
+          )}
+        </Typography>
+      </Box>
+    </>
   );
+
 };
 
 export default Login;
+
+

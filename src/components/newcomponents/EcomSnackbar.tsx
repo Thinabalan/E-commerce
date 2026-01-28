@@ -21,6 +21,7 @@ const EcomSnackbar = ({
       autoHideDuration={3000}
       onClose={onClose}
       anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      sx={{ zIndex: 3000 }}
     >
       <Alert
         severity={severity}
