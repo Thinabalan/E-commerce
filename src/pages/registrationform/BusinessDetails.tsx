@@ -234,7 +234,7 @@ function BusinessItem({ index, totalBusinesses, removeBusiness }: BusinessItemPr
             elevation={1}
             sx={{
                 p: 2,
-                mb: 3,
+                mb: 2,
                 borderRadius: 3,
                 border: "1px solid #edf2f7",
                 bgcolor: "#fff",
@@ -275,7 +275,7 @@ function BusinessItem({ index, totalBusinesses, removeBusiness }: BusinessItemPr
                 </Grid>
             </Grid>
 
-            <Box mt={4}>
+            <Box mt={2}>
                 <Typography variant="subtitle1" fontWeight={600} mb={2} color="text.secondary">
                     Product Inventory
                 </Typography>
@@ -298,7 +298,7 @@ function BusinessItem({ index, totalBusinesses, removeBusiness }: BusinessItemPr
                 />
             </Box>
 
-            <Box mt={4}>
+            <Box mt={2}>
                 <EcomTextField
                     name={`businesses.${index}.optional`}
                     label="Additional Details (Optional)"

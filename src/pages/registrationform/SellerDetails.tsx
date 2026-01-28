@@ -64,8 +64,8 @@ export default function SellerDetails({ expanded, onChange }: SellerDetailsProps
                 </Grid>
             </Grid>
 
-            <Box mt={4}>
-                <Typography variant="subtitle1" fontWeight={600} mb={2} color="text.primary">
+            <Box mt={2}>
+                <Typography variant="subtitle1" fontWeight={600} mb={1} color="text.primary">
                     Warehouse Locations
                 </Typography>
                 {errors.seller?.warehouses?.message && (
@@ -85,14 +85,14 @@ export default function SellerDetails({ expanded, onChange }: SellerDetailsProps
                         <Box
                             key={field.id}
                             sx={{
-                                mb: 2,
+                                mb: 1,
                                 p: 2,
                                 bgcolor: index % 2 === 0 ? "rgba(0,0,0,0.01)" : "transparent",
                                 borderRadius: 2,
                                 border: "1px solid #f0f0f0"
                             }}
                         >
-                            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+                            <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
                                 <Typography variant="subtitle1" fontWeight={600} color="text.secondary">
                                     Warehouse {index + 1}
                                 </Typography>
@@ -212,7 +212,7 @@ export default function SellerDetails({ expanded, onChange }: SellerDetailsProps
                 />
             </Box>
 
-            <Box mt={4}>
+            <Box mt={2}>
                 <EcomTextField
                     name="seller.notes"
                     label="Internal Notes"

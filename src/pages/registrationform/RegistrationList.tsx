@@ -42,8 +42,8 @@ const RegistrationList = () => {
   const columns: Column<any>[] = [
     { id: "sellerName", label: "Seller Name", align: "left" },
     { id: "sellerEmail", label: "Email", align: "left" },
-    { id: "warehouseNames", label: "Warehouses", align: "center" },
-    { id: "businessNames", label: "Businesses", align: "center" },
+    { id: "warehouseNames", label: "Warehouses", align: "left" },
+    { id: "businessNames", label: "Businesses", align: "left" },
     {
       id: "submittedAt",
       label: "Submitted At",
