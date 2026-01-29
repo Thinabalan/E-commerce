@@ -3,6 +3,7 @@ import type { UseFormReturn } from "react-hook-form";
 import useProduct from "../useProduct";
 import type { CreateProduct, Product, SellProduct } from "../../types/ProductTypes";
 import { sellProductDefaultValues } from "../../pages/sellproductform/data/sellProductDefaults";
+import { useSnackbar } from "../../context/SnackbarContext";
 
 interface UseFormHandlersProps {
   form: UseFormReturn<SellProduct>;
@@ -29,6 +30,7 @@ export function useFormHandlers({
   editData,
 }: UseFormHandlersProps) {
   const { trigger, resetField } = form;
+  const { showSnackbar } = useSnackbar();
 
   const [loading, setLoading] = useState(false);
   const { addProduct, updateProduct } = useProduct();
@@ -141,23 +143,23 @@ export function useFormHandlers({
           updateData.createdAt = now;
         }
         await updateProduct(editData.id, updateData);
-        alert("Product updated successfully!");
+        showSnackbar("Product updated successfully!", "success");
       } else {
-        const newData : CreateProduct= {
+        const newData: CreateProduct = {
           ...data,
           status: "active" as const,
           rating: 0,
           createdAt: now,
           updatedAt: now,
-          image: data.image || "", 
+          image: data.image || "",
         };
         await addProduct(newData);
-        alert("Product submitted successfully!");
+        showSnackbar("Product submitted successfully!", "success");
       }
       onClose();
     } catch (error) {
       console.error("Submission error:", error);
-      alert("Failed to submit product. Please try again.");
+      showSnackbar("Failed to submit product. Please try again.", "error");
     } finally {
       setLoading(false);
     }
@@ -173,3 +175,5 @@ export function useFormHandlers({
     handleSubmitFinal,
   };
 }
+
+

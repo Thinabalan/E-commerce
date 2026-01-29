@@ -12,7 +12,6 @@ import useProduct from "../../hooks/useProduct";
 
 import EcomButton from "../../components/newcomponents/EcomButton";
 import EcomStepper from "../../components/newcomponents/EcomStepper";
-import EcomSnackbar from "../../components/newcomponents/EcomSnackbar";
 import EcomDialog from "../../components/newcomponents/EcomDialog";
 
 import SellerInfoStep from "./SellerInfoStep";
@@ -24,6 +23,7 @@ import { sellProductDefaultValues } from "./data/sellProductDefaults";
 import type { Category, Product, SellProduct } from "../../types/ProductTypes";
 
 import { useFormHandlers } from "../../hooks/sellproductform/useFormHandlers";
+import { useSnackbar } from "../../context/SnackbarContext";
 
 import { STEPS, STEP_FIELDS } from "../../constants/sellProductConstants";
 
@@ -44,10 +44,10 @@ const SellProductForm = ({ open, onClose, editData }: SellProductFormProps) => {
 
   const [categories, setCategories] = useState<Category[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [openResetDialog, setOpenResetDialog] = useState(false);
+  const { showSnackbar } = useSnackbar();
 
-  const methods = useForm<SellProduct>({
+  const productform = useForm<SellProduct>({
     resolver: yupResolver(sellProductSchema),
     mode: "onChange",
     defaultValues: editData || sellProductDefaultValues,
@@ -57,7 +57,7 @@ const SellProductForm = ({ open, onClose, editData }: SellProductFormProps) => {
     handleSubmit,
     reset,
     formState: { isValid },
-  } = methods;
+  } = productform;
 
   // Reset form when editData changes or modal opens
   useEffect(() => {
@@ -95,7 +95,7 @@ const SellProductForm = ({ open, onClose, editData }: SellProductFormProps) => {
 
   const canSaveCurrentStep = async () => {
     const fields = STEP_FIELDS[activeStep];
-    return await methods.trigger(fields);
+    return await productform.trigger(fields);
   };
 
   /* FORM HANDLERS */
@@ -108,7 +108,7 @@ const SellProductForm = ({ open, onClose, editData }: SellProductFormProps) => {
     handleSave,
     handleSubmitFinal,
   } = useFormHandlers({
-    form: methods,
+    form: productform,
     activeStep,
     setActiveStep,
     stepsLength: STEPS.length,
@@ -150,7 +150,7 @@ const SellProductForm = ({ open, onClose, editData }: SellProductFormProps) => {
             </Typography>
           )}
 
-          <FormProvider {...methods}>
+          <FormProvider {...productform}>
             <form
               id="sellProductForm"
               onSubmit={handleSubmit((data) =>
@@ -195,16 +195,9 @@ const SellProductForm = ({ open, onClose, editData }: SellProductFormProps) => {
                       const ok = await canSaveCurrentStep();
                       if (!ok) return;
 
-                      handleSave(methods.getValues());
-                      setSnackbarOpen(true);
+                      handleSave(productform.getValues());
+                      showSnackbar("Saved successfully", "success");
                     }}
-                  />
-
-                  <EcomSnackbar
-                    open={snackbarOpen}
-                    message="Saved successfully"
-                    severity="success"
-                    onClose={() => setSnackbarOpen(false)}
                   />
                 </>
               )}

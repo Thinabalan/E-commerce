@@ -1,9 +1,11 @@
 import { useFormContext, useFieldArray } from "react-hook-form";
 import type { RegistrationForm } from "../../types/RegistrationFormTypes";
 import { LIMITS } from "../../constants/RegistrationFormConstants";
+import { useSnackbar } from "../../context/SnackbarContext";
 
 export const useFormHandlers = () => {
     const { control, trigger, getValues, setValue } = useFormContext<RegistrationForm>();
+    const { showSnackbar } = useSnackbar();
 
     // Warehouse Handlers
     const warehouseFieldArray = useFieldArray({
@@ -14,7 +16,7 @@ export const useFormHandlers = () => {
     const handleAddWarehouse = async () => {
         const currentWarehouses = getValues("seller.warehouses");
         if (currentWarehouses && currentWarehouses.length >= LIMITS.warehouse) {
-            alert(`Maximum ${LIMITS.warehouse} warehouses allowed`);
+            showSnackbar(`Maximum ${LIMITS.warehouse} warehouses allowed`, "warning");
             return;
         }
 
@@ -46,7 +48,7 @@ export const useFormHandlers = () => {
     const handleAddBusiness = async () => {
         const currentBusinesses = getValues("businesses");
         if (currentBusinesses && currentBusinesses.length >= LIMITS.business) {
-            alert(`Maximum ${LIMITS.business} businesses allowed`);
+            showSnackbar(`Maximum ${LIMITS.business} businesses allowed`, "warning");
             return;
         }
 
@@ -74,7 +76,7 @@ export const useFormHandlers = () => {
         const handleAddProduct = async () => {
             const currentProducts = getValues(`businesses.${bIndex}.products`);
             if (currentProducts && currentProducts.length >= LIMITS.product) {
-                alert(`Maximum ${LIMITS.product} products allowed per business`);
+                showSnackbar(`Maximum ${LIMITS.product} products allowed per business`, "warning");
                 return;
             }
 

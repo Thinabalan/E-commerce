@@ -20,11 +20,13 @@ import SellerDetails from "./SellerDetails";
 import BusinessDetails from "./BusinessDetails";
 import { useRegistration } from "../../hooks/registrationform/useRegistration";
 import { useEffect, useState } from "react";
+import { useSnackbar } from "../../context/SnackbarContext";
 
 export default function RegistrationForm() {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
+  const { showSnackbar } = useSnackbar();
   const isEditMode = Boolean(id);
   const [expanded, setExpanded] = useState<Record<number, boolean>>({ 0: true, 1: false });
 
@@ -59,7 +61,7 @@ export default function RegistrationForm() {
             const data = await getRegistrationById(id);
             reset(data);
           } catch (error) {
-            alert("Failed to fetch registration data.");
+            showSnackbar("Failed to fetch registration data.", "error");
             navigate("/registrations");
           }
         };
@@ -81,15 +83,15 @@ export default function RegistrationForm() {
     try {
       if (isEditMode && id) {
         await updateRegistration(id, data);
-        alert("Form updated successfully");
+        showSnackbar("Form updated successfully", "success");
         navigate("/registrations");
       } else {
         await addRegistration(data);
-        alert("Form submitted successfully ");
+        showSnackbar("Form submitted successfully ", "success");
         reset();
       }
     } catch (error) {
-      alert(`${isEditMode ? "Update" : "Submission"} failed. Please try again.`);
+      showSnackbar(`${isEditMode ? "Update" : "Submission"} failed. Please try again.`, "error");
     }
   };
 

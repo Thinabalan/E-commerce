@@ -1,6 +1,7 @@
 import type { UseFormReturn } from "react-hook-form";
 import type { Product } from "../../types/ProductTypes";
 import type { ProductFilters } from "../../types/ProductTypes";
+import { useSnackbar } from "../../context/SnackbarContext";
 
 /* DIALOG STATE TYPE */
 export type ConfirmDialogState =
@@ -8,6 +9,7 @@ export type ConfirmDialogState =
     | { type: "bulk" };
 
 interface UseSellProductHandlersProps {
+    rows: Product[];
     setRows: (rows: Product[]) => void;
     setAppliedFilters: (filters: ProductFilters) => void;
     setConfirmDialog: (state: ConfirmDialogState | null) => void;
@@ -24,6 +26,7 @@ interface UseSellProductHandlersProps {
 }
 
 export const useSellProductHandlers = ({
+    rows,
     setRows,
     setAppliedFilters,
     setConfirmDialog,
@@ -38,6 +41,8 @@ export const useSellProductHandlers = ({
     toggleProductStatus,
     Filters,
 }: UseSellProductHandlersProps) => {
+    const { showSnackbar } = useSnackbar();
+
     const loadProducts = async () => {
         try {
             const apiProducts = await getProducts();
@@ -60,10 +65,18 @@ export const useSellProductHandlers = ({
     /* TOGGLE STATUS / DELETE DRAFT */
     const handleToggleConfirm = async () => {
         if (confirmDialog?.type === "single") {
+            const product = rows.find(r => r.id === confirmDialog.id);
+            const name = product?.productName || "Product";
+
             if (confirmDialog.status === "draft") {
                 await deleteProduct(confirmDialog.id);
+                showSnackbar(`Product "${name}" deleted successfully`, "success");
+            } else if (confirmDialog.status === "active") {
+                await toggleProductStatus(confirmDialog.id, confirmDialog.status);
+                showSnackbar(`Product "${name}" deactivated successfully`, "success");
             } else {
                 await toggleProductStatus(confirmDialog.id, confirmDialog.status);
+                showSnackbar(`Product "${name}" activated successfully`, "success");
             }
             setConfirmDialog(null);
             setSelectedIds([]);
@@ -78,15 +91,19 @@ export const useSellProductHandlers = ({
     };
 
     const confirmBulkAction = async () => {
+        const count = selectedIds.length;
         if (activeTab === "draft") {
             for (const id of selectedIds) {
                 await deleteProduct(id);
             }
+            showSnackbar(`${count} drafts deleted successfully`, "success");
         } else {
             const targetStatus = activeTab === "active" ? "active" : "inactive";
+            const actionLabel = activeTab === "active" ? "deactivated" : "activated";
             for (const id of selectedIds) {
                 await toggleProductStatus(id, targetStatus);
             }
+            showSnackbar(`${count} products ${actionLabel} successfully`, "success");
         }
         setSelectedIds([]);
         setConfirmDialog(null);

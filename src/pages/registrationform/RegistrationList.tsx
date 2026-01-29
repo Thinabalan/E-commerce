@@ -96,7 +96,7 @@ const RegistrationList = () => {
   const tableContent = (
     <EcomTable
       rows={flattenedRows}
-      columns={columns as any}
+      columns={columns}
       emptyMessage="No registrations found."
       renderRowDetails={(row) => (
         <Box

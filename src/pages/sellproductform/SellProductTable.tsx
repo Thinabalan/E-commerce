@@ -57,6 +57,7 @@ const SellProductTable = () => {
     handleBulkToggle,
     handleConfirm,
   } = useSellProductHandlers({
+    rows,
     setRows,
     setAppliedFilters,
     setConfirmDialog,
@@ -118,7 +119,7 @@ const SellProductTable = () => {
 
   /* 2. UPDATE COUNTS BASED ON SEARCH RESULTS */
   const counts = useMemo(() => {
-    const active = searchFilteredRows.filter(p => 
+    const active = searchFilteredRows.filter(p =>
       p.status === "active" || (!p.status && p.category)
     ).length;
     const inactive = searchFilteredRows.filter(p => p.status === "inactive").length;
