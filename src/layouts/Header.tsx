@@ -14,7 +14,6 @@ import {
   Box,
   InputBase,
   Paper,
-  Button,
   Menu,
   MenuItem,
   Drawer,
@@ -26,6 +25,8 @@ import {
   Switch,
   Container
 } from "@mui/material";
+
+import EcomButton from "../components/newcomponents/EcomButton";
 
 import MenuIcon from "@mui/icons-material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
@@ -247,24 +248,20 @@ export default function Header() {
             <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1, md: 1 } }}>
 
               {/* DESKTOP FAVOURITES */}
-              <Button
+              <EcomButton
                 component={Link}
-                to="/favourites"
+                label="Favourites"
                 sx={{ display: { xs: 'none', lg: 'flex' }, color: 'inherit', textTransform: 'none', fontWeight: 600, fontSize: '1rem' }}
                 startIcon={<FavoriteIcon sx={{ fontSize: '1.2rem !important' }} />}
-              >
-                Favourites
-              </Button>
+              />
 
               {/* CART */}
-              <Button
+              <EcomButton
                 component={Link}
-                to="/cart"
+                label="Cart"
+                startIcon={<ShoppingCartIcon sx={{ mr: 1, fontSize: '1.2rem !important' }} />}
                 sx={{ color: 'inherit', textTransform: 'none', fontWeight: 600, minWidth: 'auto', fontSize: '1rem' }}
-              >
-                <ShoppingCartIcon sx={{ mr: 1, fontSize: '1.2rem !important' }} />
-                Cart
-              </Button>
+              />
 
               {/* THEME TOGGLE (Desktop) */}
               <Box sx={{ display: { xs: 'none', lg: 'flex' }, alignItems: 'center' }}>
@@ -277,14 +274,13 @@ export default function Header() {
               {/* USER PROFILE / LOGIN */}
               {isLoggedIn ? (
                 <Box>
-                  <Button
+                  <EcomButton
                     onClick={handleOpenUserMenu}
+                    label={user?.name || ""}
                     sx={{ color: 'inherit', textTransform: 'none', fontWeight: 600, fontSize: '1rem' }}
                     endIcon={<KeyboardArrowDownIcon />}
                     startIcon={<PersonIcon sx={{ fontSize: '1.2rem !important' }} />}
-                  >
-                    {user?.name}
-                  </Button>
+                  />
                   <Menu
                     sx={{ mt: '45px' }}
                     id="menu-appbar"
@@ -304,9 +300,10 @@ export default function Header() {
                   </Menu>
                 </Box>
               ) : (
-                <Button
+                <EcomButton
                   onClick={() => handleOpenAuth("login")}
                   variant={isDark ? "outlined" : "contained"}
+                  label="Login"
                   sx={{
                     bgcolor: isDark ? 'transparent' : '#ffbebe',
                     color: isDark ? 'white' : 'black',
@@ -315,9 +312,7 @@ export default function Header() {
                     '&:hover': { bgcolor: isDark ? 'rgba(255,255,255,0.1)' : '#ffe3e3' }
                   }}
                   startIcon={<PersonIcon sx={{ fontSize: '1.2rem !important' }} />}
-                >
-                  Login
-                </Button>
+                />
               )}
             </Box>
           </Container>
