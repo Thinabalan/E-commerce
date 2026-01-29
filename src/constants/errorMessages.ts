@@ -33,6 +33,9 @@ export const ERROR_MESSAGES = {
 
   // Business
   businessMin: "At least one business is required",
+
+  // Password
+  passwordMin: "Password must be at least 6 characters",
 };
 
 export const requiredMsg = (label: string) =>

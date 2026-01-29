@@ -4,43 +4,7 @@
       "id": "7fe3",
       "name": "bala",
       "email": "bala@gmail.com",
-      "password": "1A@345bc"
-    },
-    {
-      "id": "04cb",
-      "name": "bala",
-      "email": "bala2@gmail.com",
-      "password": "12345"
-    },
-    {
-      "id": "d3bd",
-      "name": "dfg",
-      "email": "sg@g.c",
-      "password": "456"
-    },
-    {
-      "id": "5bd0",
-      "name": "hfg",
-      "email": "jhk@g.c",
-      "password": "657"
-    },
-    {
-      "id": "91ed",
-      "name": "mat",
-      "email": "mat@g.c",
-      "password": "555"
-    },
-    {
-      "id": "1e87",
-      "name": "dsf",
-      "email": "w@g.c",
-      "password": "343"
-    },
-    {
-      "id": "6ee6",
-      "name": "mathan",
-      "email": "mathan@gmail.cm",
-      "password": "12345"
+      "password": "123456"
     },
     {
       "id": "f382",
@@ -55,10 +19,16 @@
       "password": "123456"
     },
     {
-      "id": "f1f8",
+      "id": "c363",
+      "name": "Mathan",
+      "email": "mathan@gmail.com",
+      "password": "555555"
+    },
+    {
+      "id": "0333",
       "name": "xyz",
       "email": "xyz@gmail.com",
-      "password": "555555"
+      "password": "000000"
     }
   ],
   "categories": [

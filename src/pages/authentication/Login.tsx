@@ -1,9 +1,9 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useForm, FormProvider } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
 import {
   Box,
+  Grid,
   Typography
 } from "@mui/material";
 
@@ -11,26 +11,15 @@ import EcomTextField from "../../components/newcomponents/EcomTextField";
 import EcomButton from "../../components/newcomponents/EcomButton";
 import { useSnackbar } from "../../context/SnackbarContext";
 import { useUser } from "../../hooks/useUser";
-import type { LoginForm } from "../../types/types";
-
-// Validation Schema
-const loginSchema = yup.object().shape({
-  email: yup
-    .string()
-    .required("Email is required")
-    .email("Invalid email format"),
-  password: yup
-    .string()
-    .required("Password is required")
-    .min(6, "Password must be at least 6 characters")
-});
+import { loginSchema } from "../../schema/AuthenticationSchema";
+import type { LoginForm } from "../../types/AuthenticationTypes";
 
 interface LoginProps {
   onSuccess?: () => void;
   switchToSignup?: () => void;
 }
 
-const Login = ({ onSuccess, switchToSignup } : LoginProps ) => {
+const Login = ({ onSuccess, switchToSignup }: LoginProps) => {
   const navigate = useNavigate();
   const { getUsers } = useUser();
   const { showSnackbar } = useSnackbar();
@@ -47,7 +36,7 @@ const Login = ({ onSuccess, switchToSignup } : LoginProps ) => {
 
   const onSubmit = async (data: LoginForm) => {
     try {
-      const users = await getUsers({ email: data.email, password: data.password });
+      const users = await getUsers(data);
 
       if (users.length === 0) {
         showSnackbar("Invalid email or password", "error");
@@ -85,32 +74,38 @@ const Login = ({ onSuccess, switchToSignup } : LoginProps ) => {
       </Box>
 
       <FormProvider {...loginform}>
-        <form onSubmit={(e) => e.preventDefault()} noValidate>
+        <form onSubmit={handleSubmit(onSubmit)} noValidate>
           <Box display="flex" flexDirection="column" gap={3} sx={{ width: 310 }}>
-            <EcomTextField
-              name="email"
-              label="Email"
-              size="small"
-              type="email"
-              required
-            />
-
-            <EcomTextField
-              name="password"
-              label="Password"
-              size="small"
-              type="password"
-              required
-            />
-
-            <EcomButton
-              variant="contained"
-              color="primary"
-              disabled={isSubmitting}
-              onClick={handleSubmit(onSubmit)}
-              label={isSubmitting ? "Logging in..." : "Login"}
-              sx={{ width: 130, alignSelf: "center" }}
-            />
+            <Grid container spacing={2}>
+              <Grid size={{ xs: 12 }}>
+                <EcomTextField
+                  name="email"
+                  label="Email"
+                  size="small"
+                  type="email"
+                  required
+                />
+              </Grid>
+              <Grid size={{ xs: 12 }}>
+                <EcomTextField
+                  name="password"
+                  label="Password"
+                  size="small"
+                  type="password"
+                  required
+                />
+              </Grid>
+              <Grid size={{ xs: 12 }} display="flex" justifyContent="center">
+                <EcomButton
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  disabled={isSubmitting}
+                  label={isSubmitting ? "Logging in..." : "Login"}
+                  sx={{ width: 130 }}
+                />
+              </Grid>
+            </Grid>
           </Box>
         </form>
       </FormProvider>

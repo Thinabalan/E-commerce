@@ -1,7 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useForm, FormProvider } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
 import {
   Box,
   Typography,
@@ -12,43 +11,20 @@ import EcomTextField from "../../components/newcomponents/EcomTextField";
 import EcomButton from "../../components/newcomponents/EcomButton";
 import { useSnackbar } from "../../context/SnackbarContext";
 import { useUser } from "../../hooks/useUser";
-import type { CreateUser } from "../../types/types";
-
-interface SignupFormValues extends CreateUser {
-  confirmPassword: string;
-}
-
-// Validation Schema
-const signupSchema = yup.object().shape({
-  name: yup
-    .string()
-    .required("Name is required")
-    .min(2, "Name must be at least 2 characters"),
-  email: yup
-    .string()
-    .required("Email is required")
-    .email("Invalid email format"),
-  password: yup
-    .string()
-    .required("Password is required")
-    .min(6, "Password must be at least 6 characters"),
-  confirmPassword: yup
-    .string()
-    .required("Please confirm your password")
-    .oneOf([yup.ref("password")], "Passwords must match")
-});
+import { signupSchema } from "../../schema/AuthenticationSchema";
+import type { SignupForm } from "../../types/AuthenticationTypes";
 
 interface SignupProps {
   onSwitchLogin?: () => void;
 }
 
-const Signup = ({ onSwitchLogin }: SignupProps ) => {
+const Signup = ({ onSwitchLogin }: SignupProps) => {
   const navigate = useNavigate();
   const { getUsers, createUser } = useUser();
   const { showSnackbar } = useSnackbar();
 
-  const signupform = useForm<SignupFormValues>({
-    resolver: yupResolver(signupSchema) as any,
+  const signupform = useForm<SignupForm>({
+    resolver: yupResolver(signupSchema),
     defaultValues: {
       name: "",
       email: "",
@@ -59,7 +35,7 @@ const Signup = ({ onSwitchLogin }: SignupProps ) => {
 
   const { handleSubmit, setError, formState: { isSubmitting } } = signupform;
 
-  const onSubmit = async (data: SignupFormValues) => {
+  const onSubmit = async (data: SignupForm) => {
     try {
       const existingUsers = await getUsers({ email: data.email });
       if (existingUsers.length > 0) {
@@ -68,11 +44,10 @@ const Signup = ({ onSwitchLogin }: SignupProps ) => {
         return;
       }
 
-      await createUser({
-        name: data.name,
-        email: data.email,
-        password: data.password
-      });
+      // Destructure to remove confirmPassword before storing 
+      const { confirmPassword, ...userData } = data;
+
+      await createUser(userData);
 
       showSnackbar("Signup successful", "success");
 
@@ -101,9 +76,9 @@ const Signup = ({ onSwitchLogin }: SignupProps ) => {
       </Box>
 
       <FormProvider {...signupform}>
-        <form onSubmit={(e) => e.preventDefault()} noValidate>
+        <form onSubmit={handleSubmit(onSubmit)} noValidate>
           <Grid container spacing={2}>
-            <Grid size={12}>
+            <Grid size={{ xs: 12 }}>
               <EcomTextField
                 name="name"
                 label="Full Name"
@@ -112,7 +87,7 @@ const Signup = ({ onSwitchLogin }: SignupProps ) => {
               />
             </Grid>
 
-            <Grid size={12}>
+            <Grid size={{ xs: 12 }}>
               <EcomTextField
                 name="email"
                 label="Email"
@@ -122,7 +97,7 @@ const Signup = ({ onSwitchLogin }: SignupProps ) => {
               />
             </Grid>
 
-            <Grid size={12}>
+            <Grid size={{ xs: 12 }}>
               <EcomTextField
                 name="password"
                 label="Password"
@@ -132,7 +107,7 @@ const Signup = ({ onSwitchLogin }: SignupProps ) => {
               />
             </Grid>
 
-            <Grid size={12}>
+            <Grid size={{ xs: 12 }}>
               <EcomTextField
                 name="confirmPassword"
                 label="Confirm Password"
@@ -142,12 +117,12 @@ const Signup = ({ onSwitchLogin }: SignupProps ) => {
               />
             </Grid>
 
-            <Grid size={12} display="flex" justifyContent="center">
+            <Grid size={{ xs: 12 }} display="flex" justifyContent="center">
               <EcomButton
+                type="submit"
                 variant="contained"
                 color="primary"
                 disabled={isSubmitting}
-                onClick={handleSubmit(onSubmit)}
                 label={isSubmitting ? "Creating Account..." : "Sign Up"}
                 sx={{ width: 130 }}
               />

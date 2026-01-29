@@ -1,9 +1,9 @@
 import { userService } from "../services/userService";
-import type { User, CreateUser } from "../types/types";
+import type { User, CreateUser, LoginForm } from "../types/AuthenticationTypes";
 
 export const useUser = () => {
     // Fetch users 
-    const getUsers = async (params?: any): Promise<User[]> => {
+    const getUsers = async (params: Partial<LoginForm>): Promise<User[]> => {
         try {
             return (await userService.getUsers(params)) || [];
         } catch (error) {

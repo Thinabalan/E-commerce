@@ -1,9 +1,9 @@
 import { apiService } from "./apiService";
-import type { User, CreateUser } from "../types/types";
+import type { User, CreateUser, LoginForm } from "../types/AuthenticationTypes";
 
 export const userService = {
     // Get users 
-    getUsers: async (params?: any): Promise<User[]> => {
+    getUsers: async (params: Partial<LoginForm>): Promise<User[]> => {
         return apiService.get("users", params);
     },
 
