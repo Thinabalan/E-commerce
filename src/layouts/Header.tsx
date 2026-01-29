@@ -6,6 +6,7 @@ import Signup from "../pages/authentication/Signup";
 import EcomDialog from "../components/newcomponents/EcomDialog";
 import SellProductForm from "../pages/sellproductform/SellProductForm";
 import { useSnackbar } from "../context/SnackbarContext";
+import EcomModal from "../components/newcomponents/EcomModal";
 import {
   AppBar,
   Toolbar,
@@ -361,32 +362,23 @@ export default function Header() {
         {drawerContent}
       </Drawer>
 
-      {/* AUTH DIALOG */}
-      <EcomDialog
+      {/* AUTH MODAL */}
+      <EcomModal
         open={showAuth}
         onClose={() => setShowAuth(false)}
         title={authMode === "login" ? "Login" : "Create Account"}
-        maxWidth="xs"
-        headerSx={{
-          bgcolor: 'secondary.main',
-          color: 'white',
-          '& .MuiTypography-root': { fontWeight: 'bold' },
-
-        }}
       >
-        <Box p={3}>
-          {authMode === "login" ? (
-            <Login
-              onSuccess={() => setShowAuth(false)}
-              switchToSignup={() => setAuthMode("signup")}
-            />
-          ) : (
-            <Signup
-              onSwitchLogin={() => setAuthMode("login")}
-            />
-          )}
-        </Box>
-      </EcomDialog>
+        {authMode === "login" ? (
+          <Login
+            onSuccess={() => setShowAuth(false)}
+            switchToSignup={() => setAuthMode("signup")}
+          />
+        ) : (
+          <Signup
+            onSwitchLogin={() => setAuthMode("login")}
+          />
+        )}
+      </EcomModal>
 
       <EcomDialog
         open={openLogoutDialog}

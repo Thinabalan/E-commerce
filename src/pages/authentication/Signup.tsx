@@ -124,7 +124,7 @@ const Signup = ({ onSwitchLogin }: SignupProps) => {
                 color="primary"
                 disabled={isSubmitting}
                 label={isSubmitting ? "Creating Account..." : "Sign Up"}
-                sx={{ width: 130 }}
+                sx={{ width: '40%', py: 1.2, borderRadius: '8px' }} 
               />
             </Grid>
           </Grid>

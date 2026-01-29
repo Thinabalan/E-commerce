@@ -75,7 +75,7 @@ const Login = ({ onSuccess, switchToSignup }: LoginProps) => {
 
       <FormProvider {...loginform}>
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
-          <Box display="flex" flexDirection="column" gap={3} sx={{ width: 310 }}>
+          <Box display="flex" flexDirection="column" gap={3} sx={{ width: '100%' }}>
             <Grid container spacing={2}>
               <Grid size={{ xs: 12 }}>
                 <EcomTextField
@@ -102,7 +102,7 @@ const Login = ({ onSuccess, switchToSignup }: LoginProps) => {
                   color="primary"
                   disabled={isSubmitting}
                   label={isSubmitting ? "Logging in..." : "Login"}
-                  sx={{ width: 130 }}
+                  sx={{ width: '40%', py: 1.2, borderRadius: '8px' }}
                 />
               </Grid>
             </Grid>
