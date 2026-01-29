@@ -59,6 +59,7 @@ export default function Header() {
   // MUI Menu State
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [openLogoutDialog, setOpenLogoutDialog] = useState(false);
 
   // Search State
   const [searchValue, setSearchValue] = useState("");
@@ -91,6 +92,7 @@ export default function Header() {
     localStorage.removeItem("user");
     setUser(null);
     handleCloseUserMenu();
+    setOpenLogoutDialog(false);
     navigate("/");
     showSnackbar("Logged out Successfully", "success");
   };
@@ -296,7 +298,7 @@ export default function Header() {
                     <MenuItem onClick={() => { handleCloseUserMenu(); navigate("/profile"); }}>
                       <Typography textAlign="center">My Profile</Typography>
                     </MenuItem>
-                    <MenuItem onClick={handleLogout}>
+                    <MenuItem onClick={() => { handleCloseUserMenu(); setOpenLogoutDialog(true); }}>
                       <Typography textAlign="center" color="error">Logout</Typography>
                     </MenuItem>
                   </Menu>
@@ -390,6 +392,15 @@ export default function Header() {
           )}
         </Box>
       </EcomDialog>
+
+      <EcomDialog
+        open={openLogoutDialog}
+        title="Logout Confirmation"
+        description="Are you sure you want to log out?"
+        confirmText="Logout"
+        onClose={() => setOpenLogoutDialog(false)}
+        onConfirm={handleLogout}
+      />
 
       <SellProductForm open={showSellModal} onClose={() => setShowSellModal(false)} />
     </>
