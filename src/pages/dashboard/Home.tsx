@@ -5,7 +5,7 @@ import CategoriesSection from "./CategoriesSection";
 import EcomCard from "../../components/newcomponents/EcomCard";
 import EcomButton from "../../components/newcomponents/EcomButton";
 import useProduct from "../../hooks/useProduct";
-import type { Product } from "../../types/types";
+import type { Product } from "../../types/ProductTypes";
 
 export default function Home() {
   const { getProducts } = useProduct();

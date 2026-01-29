@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { productService } from "../services/productService"
-import type { Product, Category, CreateProduct } from "../types/types";
+import type { Product, Category, CreateProduct } from "../types/ProductTypes";
 
 export default function useProduct() {
   // Get all products

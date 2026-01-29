@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { UseFormReturn } from "react-hook-form";
 import useProduct from "../useProduct";
-import type { CreateProduct, Product, SellProduct } from "../../types/types";
+import type { CreateProduct, Product, SellProduct } from "../../types/ProductTypes";
 import { sellProductDefaultValues } from "../../pages/sellproductform/data/sellProductDefaults";
 
 interface UseFormHandlersProps {

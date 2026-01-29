@@ -21,7 +21,7 @@ import PaymentStep from "./PaymentStep";
 
 import { sellProductSchema } from "../../schema/sellProductSchema";
 import { sellProductDefaultValues } from "./data/sellProductDefaults";
-import type { Category, Product, SellProduct } from "../../types/types";
+import type { Category, Product, SellProduct } from "../../types/ProductTypes";
 
 import { useFormHandlers } from "../../hooks/sellproductform/useFormHandlers";
 

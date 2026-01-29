@@ -19,7 +19,7 @@ import EcomDialog from "../../components/newcomponents/EcomDialog";
 import EcomButton from "../../components/newcomponents/EcomButton";
 // import EcomTextField from "../../components/newcomponents/EcomTextField";
 // import EcomDropdown from "../../components/newcomponents/EcomDropdown";
-import type { Product } from "../../types/types";
+import type { Product } from "../../types/ProductTypes";
 import type { Column } from "../../components/newcomponents/EcomTable";
 import EcomTable from "../../components/newcomponents/EcomTable";
 import EcomTab from "../../components/newcomponents/EcomTab";
@@ -27,7 +27,7 @@ import { formatDate } from "../../utils/formatDate";
 import SellProductFilter from "./SellProductFilter";
 import { useSellProductHandlers, type ConfirmDialogState } from "../../hooks/sellproductform/useSellProductHandlers";
 import { dateRange } from "../../utils/dateRange";
-import type { ProductFilters } from "../../types/types";
+import type { ProductFilters } from "../../types/ProductTypes";
 import { Filters } from "./data/sellProductDefaults";
 
 const SellProductTable = () => {

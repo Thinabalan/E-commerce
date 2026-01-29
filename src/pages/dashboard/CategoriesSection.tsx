@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Box, Paper, Typography, Stack, useTheme } from "@mui/material";
 import useProduct from "../../hooks/useProduct";
-import type { Category } from "../../types/types";
+import type { Category } from "../../types/ProductTypes";
 
 export default function CategoriesSection() {
   const theme = useTheme();

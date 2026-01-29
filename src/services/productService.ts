@@ -1,5 +1,5 @@
 import { apiService } from "./apiService";
-import type { Product, Category, CreateProduct } from "../types/types";
+import type { Product, Category, CreateProduct } from "../types/ProductTypes";
 
 export const productService = {
     // Get all products

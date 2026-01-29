@@ -19,7 +19,7 @@ import EcomCard from "../../components/newcomponents/EcomCard";
 import EcomAccordion from "../../components/newcomponents/EcomAccordion";
 import EcomButton from "../../components/newcomponents/EcomButton";
 import useProduct from "../../hooks/useProduct";
-import type { Product, Category } from "../../types/types";
+import type { Product, Category } from "../../types/ProductTypes";
 
 export default function ProductsPage() {
   const [searchParams, setSearchParams] = useSearchParams();

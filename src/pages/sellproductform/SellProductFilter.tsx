@@ -6,7 +6,7 @@ import EcomButton from "../../components/newcomponents/EcomButton";
 import EcomTextField from "../../components/newcomponents/EcomTextField";
 import EcomDropdown from "../../components/newcomponents/EcomDropdown";
 import { CREATED_AT_RANGE } from "../../constants/sellProductConstants";
-import type { ProductFilters } from "../../types/types";
+import type { ProductFilters } from "../../types/ProductTypes";
 // export interface ProductFilters {
 //     productName: string;
 //     sellerName: string;

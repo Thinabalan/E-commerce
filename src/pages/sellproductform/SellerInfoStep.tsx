@@ -2,7 +2,7 @@ import { Grid } from "@mui/material";
 import { useFormContext } from "react-hook-form";
 import EcomTextField from "../../components/newcomponents/EcomTextField";
 import EcomDropdown from "../../components/newcomponents/EcomDropdown";
-import type { SellProduct } from "../../types/types";
+import type { SellProduct } from "../../types/ProductTypes";
 
 const SellerInfoStep = () => {
   const { watch } = useFormContext<SellProduct>();

@@ -62,28 +62,6 @@ export interface ProductFilters {
     createdAtRange: string;
 }
 
-// export interface SellerInfo {
-//     sellerName?: string;
-//     email?: string;
-//     phone?: string;
-//     sellerType?: "individual" | "business" | "";
-//     companyName?: string;
-//     companyEmail?: string;
-//     companyPhone?: string;
-//     city?: string;
-//     address?: string;
-// }
-
-// export interface PaymentInfo {
-//     paymentMethod?: string;
-//     upiId?: string;
-//     accountName?: string;
-//     accountNumber?: string;
-//     ifsc?: string;
-//     bankName?: string;
-//     paymentNotes?: string;
-// }
-
 export interface Category {
     id: number | string;
     name: string;
