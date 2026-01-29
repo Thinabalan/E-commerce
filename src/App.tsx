@@ -3,7 +3,6 @@ import Footer from './layouts/Footer'
 import Header from './layouts/Header'
 import Home from "./pages/dashboard/Home";
 import ProductsPage from "./pages/product/ProductsPage";
-import AddProductForm from "./pages/Rough/AddProductForm";
 import SellProductTable from "./pages/sellproductform/SellProductTable";
 import RegistrationForm from "./pages/registrationform/RegistrationForm";
 import RegistrationList from "./pages/registrationform/RegistrationList";
@@ -17,7 +16,6 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/products" element={<ProductsPage />} />
-          <Route path="/newproduct" element={<AddProductForm />} />
           <Route path="/producttable" element={<SellProductTable />} />
           <Route path="/form/:id?" element={<RegistrationForm />} />
           <Route path="/registrations" element={<RegistrationList />} />
