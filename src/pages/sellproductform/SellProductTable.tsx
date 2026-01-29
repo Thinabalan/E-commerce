@@ -286,7 +286,7 @@ const SellProductTable = () => {
   return (
     <Box p={3}>
       {/* HEADER */}
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3} sx={{pt:{ xs: '60px', lg: '7px' }}}>
         <Typography variant="h5" fontWeight="bold" color="primary">
           Manage Inventory
         </Typography>

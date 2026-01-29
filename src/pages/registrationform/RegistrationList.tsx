@@ -214,7 +214,7 @@ const RegistrationList = () => {
   );
 
   return (
-    <Box sx={{ bgcolor: "#f5f7fa", minHeight: "100vh", py: 8 }}>
+    <Box sx={{ bgcolor: "#f5f7fa", minHeight: "100vh", py: 8 , pt: { xs: '90px', lg: '20px' }}}>
       <Container maxWidth="lg">
         <Paper
           elevation={3}
