@@ -18,11 +18,15 @@ import OpenInFullIcon from "@mui/icons-material/OpenInFull";
 import EditIcon from "@mui/icons-material/Edit";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { useSnackbar } from "../../context/SnackbarContext";
 
 const RegistrationList = () => {
-  const { getRegistrationsList, registrations } = useRegistration();
+  const { getRegistrationsList, deleteRegistration, registrations, isLoading } = useRegistration();
+  const { showSnackbar } = useSnackbar();
   const [isFullViewOpen, setIsFullViewOpen] = useState(false);
   const [previewData, setPreviewData] = useState<any>(null);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -88,10 +92,33 @@ const RegistrationList = () => {
               <EditIcon fontSize="small" />
             </IconButton>
           </Tooltip>
+          <Tooltip title="Delete">
+            <IconButton
+              size="small"
+              color="error"
+              onClick={(e) => {
+                e.stopPropagation();
+                setDeleteId(row.id);
+              }}
+            >
+              <DeleteIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
         </Box>
       ),
     },
   ];
+
+  const handleDelete = async () => {
+    if (!deleteId) return;
+    try {
+      await deleteRegistration(deleteId);
+      showSnackbar("Registration deleted successfully", "success");
+      setDeleteId(null);
+    } catch (error) {
+      showSnackbar("Failed to delete registration", "error");
+    }
+  };
 
   const tableContent = (
     <EcomTable
@@ -297,6 +324,18 @@ const RegistrationList = () => {
           )}
         </Box>
       </EcomDialog>
+
+      {/* Delete Confirmation Dialog */}
+      <EcomDialog
+        open={Boolean(deleteId)}
+        onClose={() => setDeleteId(null)}
+        onConfirm={handleDelete}
+        title="Confirm Delete"
+        description="Are you sure you want to delete this registration? This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+        loading={isLoading}
+      />
     </Box>
   );
 };

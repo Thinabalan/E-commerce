@@ -64,5 +64,19 @@ export const useRegistration = () => {
         }
     }, []);
 
-    return { addRegistration, getRegistrationsList, getRegistrationById, updateRegistration, registrations, isLoading, error };
+    const deleteRegistration = useCallback(async (id: string) => {
+        setIsLoading(true);
+        setError(null);
+        try {
+            await registrationService.deleteRegistration(id);
+            setRegistrations((prev) => prev.filter((r) => r.id !== id));
+        } catch (err) {
+            setError("Failed to delete registration. Please try again.");
+            throw err;
+        } finally {
+            setIsLoading(false);
+        }
+    }, []);
+
+    return { addRegistration, getRegistrationsList, getRegistrationById, updateRegistration, deleteRegistration, registrations, isLoading, error };
 };

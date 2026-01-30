@@ -23,4 +23,8 @@ export const registrationService = {
             updatedAt: new Date().toISOString(),
         });
     },
+
+    deleteRegistration: async (id: string): Promise<void> => {
+        return apiService.delete(`registrations/${id}`);
+    },
 };

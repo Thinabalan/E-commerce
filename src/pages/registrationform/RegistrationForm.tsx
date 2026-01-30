@@ -58,11 +58,13 @@ export default function RegistrationForm() {
     if (isEditMode && id) {
       if (location.state?.registrationData) {
         reset(location.state.registrationData);
+        setExpanded({ 0: true, 1: true })
       } else {
         const fetchData = async () => {
           try {
             const data = await getRegistrationById(id);
             reset(data);
+            setExpanded({ 0: true, 1: true })
           } catch (error) {
             showSnackbar("Failed to fetch registration data.", "error");
             navigate("/registrations");
