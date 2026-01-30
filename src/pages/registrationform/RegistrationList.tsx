@@ -75,13 +75,13 @@ const RegistrationList = () => {
               color="primary"
               onClick={(e) => {
                 e.stopPropagation();
-                 const { 
-        sellerName, 
-        sellerEmail, 
-        warehouseNames, 
-        businessNames, 
-        ...originalData 
-      } = row;
+                const {
+                  sellerName,
+                  sellerEmail,
+                  warehouseNames,
+                  businessNames,
+                  ...originalData
+                } = row;
                 navigate(`/form/${row.id}`, { state: { registrationData: originalData } });
               }}
             >
@@ -214,7 +214,7 @@ const RegistrationList = () => {
   );
 
   return (
-    <Box sx={{ bgcolor: "#f5f7fa", minHeight: "100vh", py: 8 , pt: { xs: '90px', lg: '20px' }}}>
+    <Box sx={{ bgcolor: "#f5f7fa", minHeight: "100vh", py: 8, pt: { xs: '90px', lg: '20px' } }}>
       <Container maxWidth="lg">
         <Paper
           elevation={3}
@@ -234,7 +234,7 @@ const RegistrationList = () => {
                 color="primary.main"
                 sx={{ display: "flex", alignItems: "center", gap: 1 }}
               >
-                Submitted Registrations
+                Registrations List
                 <Tooltip title="Open Full Screen">
                   <IconButton onClick={() => setIsFullViewOpen(true)} color="primary" size="small">
                     <OpenInFullIcon />
@@ -270,7 +270,7 @@ const RegistrationList = () => {
           boxShadow: 5,
         }}
       >
-        <Box sx={{ p: 4, bgcolor: "#f5f7fa", minHeight: "calc(100vh - 64px)" }}>
+        <Box sx={{ p: 4 }}>
           {tableContent}
         </Box>
       </EcomDialog>

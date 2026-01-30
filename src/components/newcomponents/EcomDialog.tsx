@@ -67,7 +67,7 @@ const EcomDialog = ({
             : {},
         },
       }}
-      sx={{ zIndex: 2000, }}>
+      sx={{}}>
 
       {/* HEADER */}
       {title && (

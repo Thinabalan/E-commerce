@@ -11,14 +11,13 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import RestoreIcon from "@mui/icons-material/Restore";
 import AddIcon from "@mui/icons-material/Add";
+import OpenInFullIcon from "@mui/icons-material/OpenInFull";
 import { Chip } from "@mui/material";
 
 import useProduct from "../../hooks/useProduct";
 import SellProductForm from "./SellProductForm";
 import EcomDialog from "../../components/newcomponents/EcomDialog";
 import EcomButton from "../../components/newcomponents/EcomButton";
-// import EcomTextField from "../../components/newcomponents/EcomTextField";
-// import EcomDropdown from "../../components/newcomponents/EcomDropdown";
 import type { Product } from "../../types/ProductTypes";
 import type { Column } from "../../components/newcomponents/EcomTable";
 import EcomTable from "../../components/newcomponents/EcomTable";
@@ -44,6 +43,7 @@ const SellProductTable = () => {
   const [activeTab, setActiveTab] = useState<"active" | "inactive" | "draft" | "all" | "groupby">("all");
   const [selectedIds, setSelectedIds] = useState<(string | number)[]>([]);
   const [dense, setDense] = useState(false);
+  const [isFullViewOpen, setIsFullViewOpen] = useState(false);
 
   const methods = useForm<ProductFilters>({
     defaultValues: Filters,
@@ -283,35 +283,8 @@ const SellProductTable = () => {
     },
   ];
 
-  return (
-    <Box p={3}>
-      {/* HEADER */}
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3} sx={{pt:{ xs: '60px', lg: '7px' }}}>
-        <Typography variant="h5" fontWeight="bold" color="primary">
-          Manage Inventory
-        </Typography>
-
-        <EcomButton
-          variant="contained"
-          label="Add Product"
-          startIcon={<AddIcon />}
-          onClick={() => {
-            setEditData(null);
-            setOpenForm(true);
-          }}
-        />
-      </Box>
-
-      {/* FILTER SECTION */}
-      <SellProductFilter
-        methods={methods}
-        categories={categories}
-        brandsByCategory={brandsByCategory}
-        onSearch={handleSearch}
-        onReset={handleReset}
-      />
-
-      {/* TABS */}
+  const tableContent = (
+    <>
       <Box mt={2}>
         <EcomTab
           value={activeTab}
@@ -329,7 +302,6 @@ const SellProductTable = () => {
         />
       </Box>
 
-      {/* TABLE */}
       <EcomTable
         rows={groupedTableRows}
         columns={columns}
@@ -368,6 +340,62 @@ const SellProductTable = () => {
           </Box>
         ) : undefined}
       />
+    </>
+  );
+
+  return (
+    <Box p={3}>
+      {/* HEADER */}
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3} sx={{ pt: { xs: '60px', lg: '7px' } }}>
+        <Box display="flex" alignItems="center" gap={2}>
+          <Typography variant="h5" fontWeight="bold" color="primary">
+            Manage Inventory
+          </Typography>
+          <Tooltip title="Open Full Screen">
+            <IconButton onClick={() => setIsFullViewOpen(true)} color="primary" size="small">
+              <OpenInFullIcon />
+            </IconButton>
+          </Tooltip>
+        </Box>
+
+        <EcomButton
+          variant="contained"
+          label="Add Product"
+          startIcon={<AddIcon />}
+          onClick={() => {
+            setEditData(null);
+            setOpenForm(true);
+          }}
+        />
+      </Box>
+
+      {/* FILTER SECTION */}
+      <SellProductFilter
+        methods={methods}
+        categories={categories}
+        brandsByCategory={brandsByCategory}
+        onSearch={handleSearch}
+        onReset={handleReset}
+      />
+
+      {/* TABS & TABLE */}
+      {tableContent}
+
+      <EcomDialog
+        fullScreen
+        open={isFullViewOpen}
+        onClose={() => setIsFullViewOpen(false)}
+        title="Inventory Full View"
+        headerSx={{
+          bgcolor: "primary.main",
+          color: "primary.contrastText",
+          boxShadow: 5,
+        }}
+      >
+        <Box p={3}>
+          {tableContent}
+        </Box>
+      </EcomDialog>
 
       {/* MODALS */}
       <SellProductForm
