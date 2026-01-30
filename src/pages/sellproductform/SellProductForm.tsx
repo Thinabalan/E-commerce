@@ -45,7 +45,7 @@ const SellProductForm = ({ open, onClose, editData }: SellProductFormProps) => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [openResetDialog, setOpenResetDialog] = useState(false);
-  const [openDiscardDialog, setOpenDiscardDialog] = useState(false);
+  // const [openDiscardDialog, setOpenDiscardDialog] = useState(false);
   const { showSnackbar } = useSnackbar();
 
   const productform = useForm<SellProduct>({
@@ -119,20 +119,20 @@ const SellProductForm = ({ open, onClose, editData }: SellProductFormProps) => {
     editData: editData || undefined,
   });
 
-  const handleCloseRequest = () => {
-    // If user has made any progress (not at step 0 or editData is present)
-    if (activeStep > 0 || editData) {
-      setOpenDiscardDialog(true);
-    } else {
-      onClose();
-    }
-  };
+  // const handleCloseRequest = () => {
+  //   // If user has made any progress (not at step 0 or editData is present)
+  //   if (activeStep > 0 || editData) {
+  //     setOpenDiscardDialog(true);
+  //   } else {
+  //     onClose();
+  //   }
+  // };
 
   return (
     <>
       <EcomDialog
         open={open}
-        onClose={handleCloseRequest}
+        onClose={onClose}
         title={editData ? "Edit Product" : "Sell Your Product"}
         maxWidth="md"
         fullWidth
@@ -262,7 +262,7 @@ const SellProductForm = ({ open, onClose, editData }: SellProductFormProps) => {
         </DialogActions>
       </EcomDialog>
 
-      <EcomDialog
+      {/* <EcomDialog
         open={openDiscardDialog}
         title="Discard Changes?"
         description="Are you sure you want to close this form? All unsaved progress will be lost."
@@ -272,7 +272,7 @@ const SellProductForm = ({ open, onClose, editData }: SellProductFormProps) => {
           setOpenDiscardDialog(false);
           onClose();
         }}
-      />
+      /> */}
     </>
   );
 }
