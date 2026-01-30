@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useRegistration } from "../../hooks/registrationform/useRegistration";
+import { useRegistrationHandlers } from "../../hooks/registrationform/useRegistrationHandlers";
 import EcomTable, { type Column } from "../../components/newcomponents/EcomTable";
 import EcomDialog from "../../components/newcomponents/EcomDialog";
 import EcomButton from "../../components/newcomponents/EcomButton";
@@ -19,15 +19,20 @@ import EditIcon from "@mui/icons-material/Edit";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { useSnackbar } from "../../context/SnackbarContext";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 const RegistrationList = () => {
-  const { getRegistrationsList, deleteRegistration, registrations, isLoading } = useRegistration();
-  const { showSnackbar } = useSnackbar();
+  const {
+    getRegistrationsList,
+    registrations,
+    isLoading,
+    deleteId,
+    setDeleteId,
+    handleDelete,
+    handleBack,
+  } = useRegistrationHandlers();
   const [isFullViewOpen, setIsFullViewOpen] = useState(false);
   const [previewData, setPreviewData] = useState<any>(null);
-  const [deleteId, setDeleteId] = useState<string | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -110,23 +115,6 @@ const RegistrationList = () => {
     },
   ];
 
-  const handleDelete = async () => {
-    if (!deleteId) return;
-    try {
-      await deleteRegistration(deleteId);
-      showSnackbar("Registration deleted successfully", "success");
-      setDeleteId(null);
-    } catch (error) {
-      showSnackbar("Failed to delete registration", "error");
-    }
-  };
-  const handleBack = () => {
-  if (window.history.length > 1) {
-    navigate(-1);
-  } else {
-    navigate("/");
-  }
-};
 
   const tableContent = (
     <EcomTable
@@ -263,13 +251,13 @@ const RegistrationList = () => {
         >
           <Tooltip title="Back">
             <IconButton onClick={() => handleBack()} aria-label="back">
-              <ArrowBackIcon/>
+              <ArrowBackIcon />
             </IconButton>
           </Tooltip>
           <Box mb={4} textAlign="center">
-            
+
             <Box display="flex" alignItems="center" justifyContent="center" gap={2} sx={{ position: "relative" }}>
-              
+
               <Typography
                 variant="h5"
                 fontWeight={600}
