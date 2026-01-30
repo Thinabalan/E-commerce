@@ -20,6 +20,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useSnackbar } from "../../context/SnackbarContext";
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 const RegistrationList = () => {
   const { getRegistrationsList, deleteRegistration, registrations, isLoading } = useRegistration();
@@ -119,6 +120,13 @@ const RegistrationList = () => {
       showSnackbar("Failed to delete registration", "error");
     }
   };
+  const handleBack = () => {
+  if (window.history.length > 1) {
+    navigate(-1);
+  } else {
+    navigate("/");
+  }
+};
 
   const tableContent = (
     <EcomTable
@@ -253,8 +261,15 @@ const RegistrationList = () => {
             border: "1px solid #edf2f7",
           }}
         >
+          <Tooltip title="Back">
+            <IconButton onClick={() => handleBack()} aria-label="back">
+              <ArrowBackIcon/>
+            </IconButton>
+          </Tooltip>
           <Box mb={4} textAlign="center">
+            
             <Box display="flex" alignItems="center" justifyContent="center" gap={2} sx={{ position: "relative" }}>
+              
               <Typography
                 variant="h5"
                 fontWeight={600}

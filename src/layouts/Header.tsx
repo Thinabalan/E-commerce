@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import Login from "../pages/authentication/Login";
 import Signup from "../pages/authentication/Signup";
 import EcomDialog from "../components/newcomponents/EcomDialog";
-import SellProductForm from "../pages/sellproductform/SellProductForm";
 import { useSnackbar } from "../context/SnackbarContext";
 import EcomModal from "../components/newcomponents/EcomModal";
 import {
@@ -17,38 +16,27 @@ import {
   Paper,
   Menu,
   MenuItem,
-  Drawer,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
   Switch,
   Container
 } from "@mui/material";
 
 import EcomButton from "../components/newcomponents/EcomButton";
-
 import MenuIcon from "@mui/icons-material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
-import FavoriteIcon from "@mui/icons-material/Favorite";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import PersonIcon from "@mui/icons-material/Person";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import CloseIcon from "@mui/icons-material/Close";
-import HomeIcon from "@mui/icons-material/Home";
-import Inventory2Icon from "@mui/icons-material/Inventory2";
-import StoreIcon from "@mui/icons-material/Store";
-import TableChartIcon from "@mui/icons-material/TableChart";
-import AppRegistrationIcon from '@mui/icons-material/AppRegistration';
-import SummarizeIcon from '@mui/icons-material/Summarize';
 
 interface User {
   name: string;
   email: string;
 }
 
-export default function Header() {
+interface HeaderProps {
+  onMenuClick: () => void;
+}
+
+export default function Header({ onMenuClick }: HeaderProps) {
   const { isDark, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const { showSnackbar } = useSnackbar();
@@ -56,11 +44,9 @@ export default function Header() {
   const [user, setUser] = useState<User | null>(null);
   const [showAuth, setShowAuth] = useState(false);
   const [authMode, setAuthMode] = useState<"login" | "signup">("login");
-  const [showSellModal, setShowSellModal] = useState(false);
 
   // MUI Menu State
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
-  const [mobileOpen, setMobileOpen] = useState(false);
   const [openLogoutDialog, setOpenLogoutDialog] = useState(false);
 
   // Search State
@@ -72,10 +58,6 @@ export default function Header() {
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
-  };
-
-  const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
   };
 
   useEffect(() => {
@@ -110,69 +92,6 @@ export default function Header() {
     setShowAuth(true);
   };
 
-  // Drawer Content
-  const drawerContent = (
-    <Box sx={{ width: 250, height: '100%', bgcolor: isDark ? '#121212' : '#ffbebe', color: isDark ? '#fff' : '#000' }} role="presentation">
-      <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Typography variant="h6" fontWeight="bold">Menu</Typography>
-        <IconButton onClick={handleDrawerToggle} sx={{ color: 'inherit' }}>
-          <CloseIcon />
-        </IconButton>
-      </Box>
-      <List>
-        <ListItem disablePadding>
-          <ListItemButton onClick={() => { navigate("/"); handleDrawerToggle(); }}>
-            <ListItemIcon sx={{ minWidth: 40, color: 'inherit' }}><HomeIcon /></ListItemIcon>
-            <ListItemText primary="Home" />
-          </ListItemButton>
-        </ListItem>
-        <ListItem disablePadding>
-          <ListItemButton onClick={() => { navigate("/products"); handleDrawerToggle(); }}>
-            <ListItemIcon sx={{ minWidth: 40, color: 'inherit' }}><Inventory2Icon /></ListItemIcon>
-            <ListItemText primary="All Products" />
-          </ListItemButton>
-        </ListItem>
-        <ListItem disablePadding>
-          <ListItemButton onClick={() => { setShowSellModal(true); handleDrawerToggle(); }}>
-            <ListItemIcon sx={{ minWidth: 40, color: 'inherit' }}><StoreIcon /></ListItemIcon>
-            <ListItemText primary="Become a Seller" />
-          </ListItemButton>
-        </ListItem>
-        <ListItem disablePadding>
-          <ListItemButton onClick={() => { navigate("/producttable"); handleDrawerToggle(); }}>
-            <ListItemIcon sx={{ minWidth: 40, color: 'inherit' }}><TableChartIcon /></ListItemIcon>
-            <ListItemText primary="Product Table" />
-          </ListItemButton>
-        </ListItem>
-        <ListItem disablePadding>
-          <ListItemButton onClick={() => { navigate("/form"); handleDrawerToggle(); }}>
-            <ListItemIcon sx={{ minWidth: 40, color: 'inherit' }}><AppRegistrationIcon /></ListItemIcon>
-            <ListItemText primary="Registration Form" />
-          </ListItemButton>
-        </ListItem>
-        <ListItem disablePadding>
-          <ListItemButton onClick={() => { navigate("/registrations"); handleDrawerToggle(); }}>
-            <ListItemIcon sx={{ minWidth: 40, color: 'inherit' }}><SummarizeIcon /></ListItemIcon>
-            <ListItemText primary="Registration List" />
-          </ListItemButton>
-        </ListItem>
-
-        {/* Mobile Only: Favourites & Theme */}
-        <ListItem disablePadding sx={{ display: { lg: 'none' } }}>
-          <ListItemButton onClick={() => { navigate("/favourites"); handleDrawerToggle(); }}>
-            <ListItemIcon sx={{ minWidth: 40, color: 'inherit' }}><FavoriteIcon /></ListItemIcon>
-            <ListItemText primary="Favourites" />
-          </ListItemButton>
-        </ListItem>
-        <ListItem sx={{ display: { lg: 'none' }, mt: 2 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Switch checked={isDark} onChange={toggleTheme} />
-            <Typography sx={{ ml: 1 }}>{isDark ? "Dark Mode" : "Light Mode"}</Typography>
-          </Box>
-        </ListItem>
-      </List>
-    </Box>
-  );
 
   return (
     <>
@@ -185,17 +104,17 @@ export default function Header() {
           transition: 'background-color 0.3s'
         }}
       >
-        <Toolbar sx={{ py: 1 }}>
-          <Container maxWidth="xl" sx={{ display: 'flex', alignItems: 'center', px: { xs: 1, sm: 2 } }}>
+        <Toolbar>
+          <Container maxWidth="xl" sx={{ display: 'flex', alignItems: 'center', px: { xs: 0, sm: 0 } }}>
 
             {/* HAMBURGER MENU */}
             <IconButton
-              size="large"
+              size="small"
               edge="start"
               color="inherit"
               aria-label="menu"
-              sx={{ mr: 2 }}
-              onClick={handleDrawerToggle}
+              sx={{ mr: 2}}
+              onClick={onMenuClick}
             >
               <MenuIcon fontSize="large" />
             </IconButton>
@@ -220,7 +139,7 @@ export default function Header() {
             <Paper
               component="form"
               sx={{
-                p: '2px 4px',
+                p: '1px 4px',
                 display: { xs: 'none', lg: 'flex' },
                 alignItems: 'center',
                 width: 450,
@@ -247,14 +166,6 @@ export default function Header() {
             {/* RIGHT SIDE ACTIONS */}
             <Box sx={{ flexGrow: 1 }} />
             <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1, md: 1 } }}>
-
-              {/* DESKTOP FAVOURITES */}
-              <EcomButton
-                component={Link}
-                label="Favourites"
-                sx={{ display: { xs: 'none', lg: 'flex' }, color: 'inherit', textTransform: 'none', fontWeight: 600, fontSize: '1rem' }}
-                startIcon={<FavoriteIcon sx={{ fontSize: '1.2rem !important' }} />}
-              />
 
               {/* CART */}
               <EcomButton
@@ -348,19 +259,6 @@ export default function Header() {
         </Box>
       </AppBar>
 
-      {/* MOBILE DRAWER */}
-      <Drawer
-        anchor="left"
-        open={mobileOpen}
-        onClose={handleDrawerToggle}
-        ModalProps={{ keepMounted: true }} // Better open performance on mobile.
-        sx={{
-          display: { xs: 'block' },
-          '& .MuiDrawer-paper': { boxSizing: 'border-box', width: 250 },
-        }}
-      >
-        {drawerContent}
-      </Drawer>
 
       {/* AUTH MODAL */}
       <EcomModal
@@ -389,7 +287,6 @@ export default function Header() {
         onConfirm={handleLogout}
       />
 
-      <SellProductForm open={showSellModal} onClose={() => setShowSellModal(false)} />
     </>
   );
 }

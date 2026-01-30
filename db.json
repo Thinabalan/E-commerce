@@ -1843,7 +1843,7 @@
       "rating": 4.2,
       "createdAt": "2026-01-06T20:30:00.000Z",
       "updatedAt": "2026-01-06T20:30:00.000Z",
-      "status": "inactive"
+      "status": "active"
     },
     {
       "id": "p234",
@@ -1877,7 +1877,7 @@
       "rating": 4,
       "createdAt": "2026-01-06T20:35:00.000Z",
       "updatedAt": "2026-01-29T01:49:04.147Z",
-      "status": "active"
+      "status": "inactive"
     },
     {
       "id": "p235",
