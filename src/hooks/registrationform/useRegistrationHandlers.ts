@@ -8,6 +8,7 @@ export const useRegistrationHandlers = () => {
     const { deleteRegistration } = registration;
     const { showSnackbar } = useSnackbar();
     const [deleteId, setDeleteId] = useState<string | null>(null);
+    const [previewData, setPreviewData] = useState<any>(null);
     const navigate = useNavigate();
 
     const handleDelete = async () => {
@@ -29,11 +30,38 @@ export const useRegistrationHandlers = () => {
         }
     };
 
+    const handlePreview = (row: any) => (e: React.MouseEvent) => {
+        e.stopPropagation();
+        setPreviewData(row);
+    };
+
+    const handleEdit = (row: any) => (e: React.MouseEvent) => {
+        e.stopPropagation();
+        const {
+            sellerName,
+            sellerEmail,
+            warehouseNames,
+            businessNames,
+            ...originalData
+        } = row;
+        navigate(`/form/${row.id}`, { state: { registrationData: originalData } });
+    };
+
+    const handleDeleteClick = (id: string) => (e: React.MouseEvent) => {
+        e.stopPropagation();
+        setDeleteId(id);
+    };
+
     return {
         ...registration,
         deleteId,
         setDeleteId,
+        previewData,
+        setPreviewData,
         handleDelete,
         handleBack,
+        handlePreview,
+        handleEdit,
+        handleDeleteClick,
     };
 };

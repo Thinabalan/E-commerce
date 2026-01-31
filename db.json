@@ -2157,6 +2157,48 @@
       ],
       "submittedAt": "2026-01-27T01:57:26.203Z",
       "updatedAt": "2026-01-28T03:39:25.344Z"
+    },
+    {
+      "id": "39bd",
+      "seller": {
+        "name": "sdgf",
+        "email": "sdg@g.c",
+        "warehouses": [
+          {
+            "warehouseName": "hdtg",
+            "city": "dfgb",
+            "pincode": "456567",
+            "upload": null,
+            "isSaved": false
+          }
+        ],
+        "notes": ""
+      },
+      "businesses": [
+        {
+          "businessName": "ghjngh",
+          "businessEmail": "ghj@g.c",
+          "products": [
+            {
+              "productName": "gfhgf",
+              "price": "67",
+              "stock": "76",
+              "category": "fghj",
+              "isSaved": false
+            },
+            {
+              "productName": "fb",
+              "price": "567",
+              "stock": "545",
+              "category": "dfsg",
+              "isSaved": false
+            }
+          ],
+          "additionaldetails": ""
+        }
+      ],
+      "submittedAt": "2026-01-31T03:42:25.710Z",
+      "updatedAt": "2026-01-31T03:46:10.981Z"
     }
   ]
 }

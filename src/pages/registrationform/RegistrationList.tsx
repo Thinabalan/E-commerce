@@ -30,9 +30,13 @@ const RegistrationList = () => {
     setDeleteId,
     handleDelete,
     handleBack,
+    handlePreview,
+    handleEdit,
+    handleDeleteClick,
+    previewData,
+    setPreviewData,
   } = useRegistrationHandlers();
   const [isFullViewOpen, setIsFullViewOpen] = useState(false);
-  const [previewData, setPreviewData] = useState<any>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -71,10 +75,7 @@ const RegistrationList = () => {
             <IconButton
               size="small"
               color="info"
-              onClick={(e) => {
-                e.stopPropagation();
-                setPreviewData(row);
-              }}
+              onClick={handlePreview(row)}
             >
               <VisibilityIcon fontSize="small" />
             </IconButton>
@@ -83,17 +84,7 @@ const RegistrationList = () => {
             <IconButton
               size="small"
               color="primary"
-              onClick={(e) => {
-                e.stopPropagation();
-                const {
-                  sellerName,
-                  sellerEmail,
-                  warehouseNames,
-                  businessNames,
-                  ...originalData
-                } = row;
-                navigate(`/form/${row.id}`, { state: { registrationData: originalData } });
-              }}
+              onClick={handleEdit(row)}
             >
               <EditIcon fontSize="small" />
             </IconButton>
@@ -102,10 +93,7 @@ const RegistrationList = () => {
             <IconButton
               size="small"
               color="error"
-              onClick={(e) => {
-                e.stopPropagation();
-                setDeleteId(row.id);
-              }}
+              onClick={handleDeleteClick(row.id)}
             >
               <DeleteIcon fontSize="small" />
             </IconButton>
