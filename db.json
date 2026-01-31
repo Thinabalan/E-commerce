@@ -2036,7 +2036,7 @@
               "price": "5656",
               "stock": "657",
               "category": "vgjhf",
-              "isSaved": false
+              "isSaved": true
             }
           ],
           "businessEmail": "drty@g.c",
@@ -2058,7 +2058,7 @@
         "notes": ""
       },
       "submittedAt": "2026-01-27T00:54:11.095Z",
-      "updatedAt": "2026-01-29T01:48:29.050Z"
+      "updatedAt": "2026-01-31T04:01:05.144Z"
     },
     {
       "id": "6142",
@@ -2093,14 +2093,14 @@
               "price": "67",
               "stock": "67",
               "category": "ghj",
-              "isSaved": false
+              "isSaved": true
             }
           ],
           "additionaldetails": ""
         }
       ],
       "submittedAt": "2026-01-27T01:00:51.727Z",
-      "updatedAt": "2026-01-28T03:38:15.964Z"
+      "updatedAt": "2026-01-31T04:00:39.877Z"
     },
     {
       "id": "6c8a",
@@ -2142,21 +2142,21 @@
               "price": "250",
               "stock": "20",
               "category": "Fashion",
-              "isSaved": false
+              "isSaved": true
             },
             {
               "productName": "Table",
               "price": "5000",
               "stock": "150",
               "category": "Furniture",
-              "isSaved": false
+              "isSaved": true
             }
           ],
           "additionaldetails": ""
         }
       ],
       "submittedAt": "2026-01-27T01:57:26.203Z",
-      "updatedAt": "2026-01-28T03:39:25.344Z"
+      "updatedAt": "2026-01-31T04:00:54.630Z"
     },
     {
       "id": "39bd",
@@ -2184,21 +2184,70 @@
               "price": "67",
               "stock": "76",
               "category": "fghj",
-              "isSaved": false
+              "isSaved": true
             },
             {
               "productName": "fb",
               "price": "567",
               "stock": "545",
               "category": "dfsg",
-              "isSaved": false
+              "isSaved": true
             }
           ],
           "additionaldetails": ""
         }
       ],
       "submittedAt": "2026-01-31T03:42:25.710Z",
-      "updatedAt": "2026-01-31T03:46:10.981Z"
+      "updatedAt": "2026-01-31T04:01:33.150Z"
+    },
+    {
+      "id": "527c",
+      "seller": {
+        "name": "sefgs",
+        "email": "sdg@g.c",
+        "warehouses": [
+          {
+            "warehouseName": "sdhk",
+            "city": "jfg",
+            "pincode": "358466",
+            "upload": null,
+            "isSaved": false
+          }
+        ],
+        "notes": ""
+      },
+      "businesses": [
+        {
+          "businessName": "gr",
+          "businessEmail": "gfdg@g.c",
+          "products": [
+            {
+              "productName": "dfghf",
+              "price": "56",
+              "stock": "76",
+              "category": "gh",
+              "isSaved": true
+            }
+          ],
+          "additionaldetails": ""
+        },
+        {
+          "businessName": "fg",
+          "businessEmail": "gd@g.c",
+          "products": [
+            {
+              "productName": "tgrf",
+              "price": "76",
+              "stock": "657",
+              "category": "fghb",
+              "isSaved": true
+            }
+          ],
+          "additionaldetails": ""
+        }
+      ],
+      "submittedAt": "2026-01-31T03:59:14.902Z",
+      "updatedAt": "2026-01-31T04:00:00.320Z"
     }
   ]
 }

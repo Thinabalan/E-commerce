@@ -86,12 +86,23 @@ export default function RegistrationForm() {
 
   const onSubmit = async (data: RegistrationForm) => {
     try {
+      const processedData = {
+        ...data,
+        businesses: data.businesses.map((business) => ({
+          ...business,
+          products: business.products.map((product) => ({
+            ...product,
+            isSaved: true,
+          })),
+        })),
+      };
+
       if (isEditMode && id) {
-        await updateRegistration(id, data);
+        await updateRegistration(id, processedData);
         showSnackbar("Form updated successfully", "success");
         navigate("/registrations");
       } else {
-        await addRegistration(data);
+        await addRegistration(processedData);
         showSnackbar("Form submitted successfully ", "success");
         reset();
       }
@@ -110,7 +121,7 @@ export default function RegistrationForm() {
 
   return (
     <FormProvider {...registrationForm}>
-      <Box sx={{ bgcolor: "#f5f7fa", minHeight: "100vh", py: 8 ,pt: { xs: '90px', lg: '20px' } }}>
+      <Box sx={{ bgcolor: "#f5f7fa", minHeight: "100vh", py: 8, pt: { xs: '90px', lg: '20px' } }}>
         <Container maxWidth="lg">
           <Paper
             elevation={3}
