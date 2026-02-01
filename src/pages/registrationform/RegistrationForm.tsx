@@ -21,17 +21,16 @@ import BusinessDetails from "./BusinessDetails";
 import { useRegistration } from "../../hooks/registrationform/useRegistration";
 import { useEffect, useState } from "react";
 import { useSnackbar } from "../../context/SnackbarContext";
-import EcomDialog from "../../components/newcomponents/EcomDialog";
+import { useDialog } from "../../context/DialogContext";
 
 export default function RegistrationForm() {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
   const { showSnackbar } = useSnackbar();
+  const { showDialog } = useDialog();
   const isEditMode = Boolean(id);
   const [expanded, setExpanded] = useState<Record<number, boolean>>({ 0: true, 1: false });
-  const [openResetDialog, setOpenResetDialog] = useState(false);
-  const [openCancelDialog, setOpenCancelDialog] = useState(false);
 
   const allPanels = [0, 1];
   const isAllExpanded = allPanels.every((id) => expanded[id]);
@@ -105,6 +104,7 @@ export default function RegistrationForm() {
         await addRegistration(processedData);
         showSnackbar("Form submitted successfully ", "success");
         reset();
+        navigate("/registrations")
       }
     } catch (error) {
       showSnackbar(`${isEditMode ? "Update" : "Submission"} failed. Please try again.`, "error");
@@ -176,7 +176,14 @@ export default function RegistrationForm() {
                   label="Reset"
                   variant="text"
                   color="inherit"
-                  onClick={() => setOpenResetDialog(true)}
+                  onClick={() => showDialog({
+                    title: "Reset Form?",
+                    description: "Are you sure you want to clear the form?",
+                    confirmText: "Reset",
+                    onConfirm: () => {
+                      reset();
+                    }
+                  })}
                   sx={{ px: 3, py: 1, border: 1 }}
                 />
                 {isEditMode && (
@@ -184,7 +191,14 @@ export default function RegistrationForm() {
                     label="Cancel"
                     variant="outlined"
                     color="error"
-                    onClick={() => setOpenCancelDialog(true)}
+                    onClick={() => showDialog({
+                      title: "Discard Changes?",
+                      description: "Are you sure you want to discard your changes and go back?",
+                      confirmText: "Discard",
+                      onConfirm: () => {
+                        navigate("/registrations");
+                      }
+                    })}
                     sx={{ px: 3, py: 1, border: 1 }}
                   />
                 )}
@@ -193,28 +207,6 @@ export default function RegistrationForm() {
           </Paper>
         </Container>
       </Box >
-      <EcomDialog
-        open={openResetDialog}
-        title="Reset Form?"
-        description="Are you sure you want to clear the form?"
-        confirmText="Reset"
-        onClose={() => setOpenResetDialog(false)}
-        onConfirm={() => {
-          reset();
-          setOpenResetDialog(false);
-        }}
-      />
-      <EcomDialog
-        open={openCancelDialog}
-        title="Discard Changes?"
-        description="Are you sure you want to discard your changes and go back?"
-        confirmText="Discard"
-        onClose={() => setOpenCancelDialog(false)}
-        onConfirm={() => {
-          setOpenCancelDialog(false);
-          navigate("/registrations");
-        }}
-      />
     </FormProvider >
   );
 }
