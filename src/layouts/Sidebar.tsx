@@ -47,7 +47,7 @@ export default function Sidebar({ open, onSellClick, onClose }: SidebarProps & {
                 <ListItem key={item.text} disablePadding sx={{ display: "block" }}>
                     <Tooltip title={!open ? item.text : ""} placement="right" disableHoverListener={open}>
                         <ListItemButton
-                            selected={location.pathname === item.path} 
+                            selected={location.pathname === item.path}
                             onClick={() => {
                                 if (item.path) navigate(item.path);
                                 if (item.onClick) item.onClick();
@@ -57,16 +57,6 @@ export default function Sidebar({ open, onSellClick, onClose }: SidebarProps & {
                                 minHeight: 48,
                                 justifyContent: { xs: "initial", md: open ? "initial" : "center" },
                                 px: 4,
-                                '&.Mui-selected': {
-                                    bgcolor: isDark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(156, 39, 176, 0.12)',
-                                    color: isDark ? '#fff' : '#000',
-                                    '&:hover': {
-                                        bgcolor: isDark ? 'rgba(255, 255, 255, 0.2)' : '#ffbebe',
-                                    }
-                                },
-                                '&:hover': {
-                                    bgcolor: isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.04)',
-                                },
                             }}
                         >
                             <ListItemIcon
@@ -103,10 +93,10 @@ export default function Sidebar({ open, onSellClick, onClose }: SidebarProps & {
                 variant="permanent"
                 sx={{
                     display: { xs: 'none', md: 'block' },
-                    width: SIDEBAR_WIDTH_COLLAPSED, 
+                    width: SIDEBAR_WIDTH_COLLAPSED,
                     flexShrink: 0,
                     "& .MuiDrawer-paper": {
-                        width: open ? SIDEBAR_WIDTH_EXPANDED : SIDEBAR_WIDTH_COLLAPSED, 
+                        width: open ? SIDEBAR_WIDTH_EXPANDED : SIDEBAR_WIDTH_COLLAPSED,
                         boxSizing: "border-box",
                         marginTop: "65px",
                         height: "calc(100% - 70px)",

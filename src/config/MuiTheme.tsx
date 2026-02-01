@@ -101,6 +101,29 @@ export const MuiTheme = (mode: PaletteMode) => {
                     },
                 },
             },
+            /* LIST ITEM BUTTON STYLING */
+            MuiListItemButton: {
+                styleOverrides: {
+                    root: ({ theme }) => ({
+                        '&.Mui-selected': {
+                            bgcolor: theme.palette.mode === 'dark'
+                                ? 'rgba(255, 255, 255, 0.15)'
+                                : 'rgba(156, 39, 176, 0.12)',
+                            color: theme.palette.mode === 'dark' ? '#fff' : '#000',
+                            '&:hover': {
+                                bgcolor: theme.palette.mode === 'dark'
+                                    ? 'rgba(255, 255, 255, 0.2)'
+                                    : '#ffbebe',
+                            }
+                        },
+                        '&:hover': {
+                            bgcolor: theme.palette.mode === 'dark'
+                                ? 'rgba(255, 255, 255, 0.08)'
+                                : 'rgba(0, 0, 0, 0.04)',
+                        }
+                    })
+                }
+            },
         },
     });
 };
