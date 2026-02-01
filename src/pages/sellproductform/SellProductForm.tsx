@@ -24,6 +24,7 @@ import type { Category, Product, SellProduct } from "../../types/ProductTypes";
 
 import { useFormHandlers } from "../../hooks/sellproductform/useFormHandlers";
 import { useSnackbar } from "../../context/SnackbarContext";
+import { useDialog } from "../../context/DialogContext";
 
 import { STEPS, STEP_FIELDS } from "../../constants/sellProductConstants";
 
@@ -44,9 +45,9 @@ const SellProductForm = ({ open, onClose, editData }: SellProductFormProps) => {
 
   const [categories, setCategories] = useState<Category[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [openResetDialog, setOpenResetDialog] = useState(false);
   // const [openDiscardDialog, setOpenDiscardDialog] = useState(false);
   const { showSnackbar } = useSnackbar();
+  const { showDialog } = useDialog();
 
   const productform = useForm<SellProduct>({
     resolver: yupResolver(sellProductSchema),
@@ -234,18 +235,14 @@ const SellProductForm = ({ open, onClose, editData }: SellProductFormProps) => {
               <EcomButton
                 label="Reset"
                 variant="outlined"
-                onClick={() => setOpenResetDialog(true)}
-              />
-              <EcomDialog
-                open={openResetDialog}
-                title="Reset Form?"
-                description="All entered data for this step will be cleared."
-                confirmText="Reset"
-                onClose={() => setOpenResetDialog(false)}
-                onConfirm={() => {
-                  handleReset();
-                  setOpenResetDialog(false);
-                }}
+                onClick={() => showDialog({
+                  title: "Reset Form?",
+                  description: "All entered data for this step will be cleared.",
+                  confirmText: "Reset",
+                  onConfirm: () => {
+                    handleReset();
+                  }
+                })}
               />
             </Box>
 

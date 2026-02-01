@@ -3,8 +3,8 @@ import { useTheme } from "../context/ThemeContext";
 import { useEffect, useState } from "react";
 import Login from "../pages/authentication/Login";
 import Signup from "../pages/authentication/Signup";
-import EcomDialog from "../components/newcomponents/EcomDialog";
 import { useSnackbar } from "../context/SnackbarContext";
+import { useDialog } from "../context/DialogContext";
 import EcomModal from "../components/newcomponents/EcomModal";
 import {
   AppBar,
@@ -40,6 +40,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
   const { isDark, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const { showSnackbar } = useSnackbar();
+  const { showDialog } = useDialog();
 
   const [user, setUser] = useState<User | null>(null);
   const [showAuth, setShowAuth] = useState(false);
@@ -47,7 +48,6 @@ export default function Header({ onMenuClick }: HeaderProps) {
 
   // MUI Menu State
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
-  const [openLogoutDialog, setOpenLogoutDialog] = useState(false);
 
   // Search State
   const [searchValue, setSearchValue] = useState("");
@@ -76,7 +76,6 @@ export default function Header({ onMenuClick }: HeaderProps) {
     localStorage.removeItem("user");
     setUser(null);
     handleCloseUserMenu();
-    setOpenLogoutDialog(false);
     navigate("/");
     showSnackbar("Logged out Successfully", "success");
   };
@@ -113,7 +112,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
               edge="start"
               color="inherit"
               aria-label="menu"
-              sx={{ mr: 2}}
+              sx={{ mr: 2 }}
               onClick={onMenuClick}
             >
               <MenuIcon fontSize="large" />
@@ -206,7 +205,15 @@ export default function Header({ onMenuClick }: HeaderProps) {
                     <MenuItem onClick={() => { handleCloseUserMenu(); navigate("/profile"); }}>
                       <Typography textAlign="center">My Profile</Typography>
                     </MenuItem>
-                    <MenuItem onClick={() => { handleCloseUserMenu(); setOpenLogoutDialog(true); }}>
+                    <MenuItem onClick={() => {
+                      handleCloseUserMenu();
+                      showDialog({
+                        title: "Logout Confirmation",
+                        description: "Are you sure you want to log out?",
+                        confirmText: "Logout",
+                        onConfirm: handleLogout
+                      });
+                    }}>
                       <Typography textAlign="center" color="error">Logout</Typography>
                     </MenuItem>
                   </Menu>
@@ -277,15 +284,6 @@ export default function Header({ onMenuClick }: HeaderProps) {
           />
         )}
       </EcomModal>
-
-      <EcomDialog
-        open={openLogoutDialog}
-        title="Logout Confirmation"
-        description="Are you sure you want to log out?"
-        confirmText="Logout"
-        onClose={() => setOpenLogoutDialog(false)}
-        onConfirm={handleLogout}
-      />
 
     </>
   );
