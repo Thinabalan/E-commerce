@@ -1,23 +1,49 @@
-import { type ReactNode, useMemo } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import type { ReactNode } from "react";
 import { ThemeProvider as MuiProvider, CssBaseline } from "@mui/material";
-import { useTheme } from "./ThemeContext";
 import { MuiTheme } from "../config/MuiTheme";
 
-interface Props {
-    children: ReactNode;
+interface ThemeContextType {
+  isDark: boolean;
+  toggleTheme: () => void;
 }
 
-export const MuiThemeProvider = ({ children }: Props) => {
-    const { isDark } = useTheme();
+const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-    const theme = useMemo(() => {
-        return MuiTheme(isDark ? "dark" : "light");
-    }, [isDark]);
+export function MuiThemeProvider({ children }: { children: ReactNode }) {
+  // load from storage immediately
+  const [isDark, setIsDark] = useState<boolean>(() => {
+    return localStorage.getItem("theme") === "dark";
+  });
 
-    return (
-        <MuiProvider theme={theme}>
-            <CssBaseline />
-            {children}
-        </MuiProvider>
-    );
-};
+  // apply to body + save
+  useEffect(() => {
+    document.body.classList.toggle("dark-mode", isDark);
+    localStorage.setItem("theme", isDark ? "dark" : "light");
+  }, [isDark]);
+
+  const toggleTheme = () => {
+    setIsDark(prev => !prev);
+  };
+
+  const theme = useMemo(() => {
+    return MuiTheme(isDark ? "dark" : "light");
+  }, [isDark]);
+
+  return (
+    <ThemeContext.Provider value={{ isDark, toggleTheme }}>
+      <MuiProvider theme={theme}>
+        <CssBaseline />
+        {children}
+      </MuiProvider>
+    </ThemeContext.Provider>
+  );
+}
+
+export function useTheme(): ThemeContextType {
+  const context = useContext(ThemeContext);
+  if (!context) {
+    throw new Error("useTheme must be used inside AppThemeProvider");
+  }
+  return context;
+}

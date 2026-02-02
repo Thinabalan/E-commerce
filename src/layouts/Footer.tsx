@@ -2,7 +2,7 @@ import { Box, Grid, Typography, IconButton } from "@mui/material";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import XIcon from "@mui/icons-material/X";
-import { useTheme } from "../context/ThemeContext";
+import { useTheme } from "../context/MuiThemeProvider";
 
 export default function Footer() {
   const { isDark } = useTheme();
