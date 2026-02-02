@@ -124,7 +124,9 @@ export default function Header({ onMenuClick }: HeaderProps) {
                 mr: 2,
                 fontWeight: 700,
                 color: 'inherit',
+                flexShrink: 0,
                 textDecoration: 'none',
+                fontSize: { xs: '1.25rem', md: '1.5rem' }
               }}
             >
               Sellee

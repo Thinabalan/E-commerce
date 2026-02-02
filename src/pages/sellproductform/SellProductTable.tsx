@@ -346,7 +346,7 @@ const SellProductTable = () => {
   return (
     <Box p={3}>
       {/* HEADER */}
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3} sx={{ pt: { xs: '60px', lg: '7px' } }}>
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3} sx={{ pt: { xs: '60px', md: '7px' } }}>
         <Box display="flex" alignItems="center" gap={2}>
           <Typography variant="h5" fontWeight="bold" color="primary">
             Manage Inventory
@@ -365,6 +365,9 @@ const SellProductTable = () => {
           onClick={() => {
             setEditData(null);
             setOpenForm(true);
+          }}
+          sx={{
+            width:{xs:'170px',md:'140px'}
           }}
         />
       </Box>

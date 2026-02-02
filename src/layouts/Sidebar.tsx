@@ -2,13 +2,16 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useTheme } from "../context/MuiThemeProvider";
 import { useAuth } from "../context/AuthContext";
 import {
+    Box,
     Drawer,
     List,
     ListItem,
     ListItemButton,
     ListItemIcon,
     ListItemText,
+    Switch,
     Tooltip,
+    Typography,
 } from "@mui/material";
 
 import HomeIcon from "@mui/icons-material/Home";
@@ -29,7 +32,7 @@ const SIDEBAR_WIDTH_EXPANDED = 240;
 const SIDEBAR_WIDTH_COLLAPSED = 65;
 
 export default function Sidebar({ open, onSellClick, onClose }: SidebarProps & { onClose: () => void }) {
-    const { isDark } = useTheme();
+    const { isDark , toggleTheme } = useTheme();
     const { user, hasRole } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
@@ -52,6 +55,7 @@ export default function Sidebar({ open, onSellClick, onClose }: SidebarProps & {
     });
 
     const drawerContent = (
+         <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         <List sx={{ mt: 1 }}>
             {menuItems.map((item) => (
                 <ListItem key={item.text} disablePadding sx={{ display: "block" }}>
@@ -95,6 +99,24 @@ export default function Sidebar({ open, onSellClick, onClose }: SidebarProps & {
                 </ListItem>
             ))}
         </List>
+        <Box sx={{ display: { xs: 'block', md: 'none' } }}>
+            <Box sx={{ 
+                px: 3, 
+                pb: 3, 
+                display: 'flex', 
+                alignItems: 'center', 
+            }}> 
+                <Switch 
+                    checked={isDark} 
+                    onChange={toggleTheme} 
+                    color="default" 
+                />
+                <Typography variant="body1" fontWeight={600}>
+                    {isDark ? "Dark Mode" : "Light Mode"}
+                </Typography>
+            </Box>
+        </Box>
+    </Box>
     );
 
     return (
@@ -102,7 +124,7 @@ export default function Sidebar({ open, onSellClick, onClose }: SidebarProps & {
             <Drawer
                 variant="permanent"
                 sx={{
-                    display: { xs: 'none', md: 'block' },
+                    display: { xs: 'none', lg: 'block' },
                     width: SIDEBAR_WIDTH_COLLAPSED,
                     flexShrink: 0,
                     "& .MuiDrawer-paper": {
@@ -134,7 +156,7 @@ export default function Sidebar({ open, onSellClick, onClose }: SidebarProps & {
                 onClose={onClose}
                 ModalProps={{ keepMounted: true }}
                 sx={{
-                    display: { xs: 'block', md: 'none' },
+                    display: { xs: 'block', lg: 'none' },
                     "& .MuiDrawer-paper": {
                         width: SIDEBAR_WIDTH_EXPANDED,
                         boxSizing: "border-box",

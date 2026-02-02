@@ -121,7 +121,7 @@ export default function RegistrationForm() {
 
   return (
     <FormProvider {...registrationForm}>
-      <Box sx={{ bgcolor: "#f5f7fa", minHeight: "100vh", py: 8, pt: { xs: '90px', lg: '20px' } }}>
+      <Box sx={{ bgcolor: "#f5f7fa", minHeight: "100vh", py: 8, pt: { xs: '90px', md: '20px' } }}>
         <Container maxWidth="lg">
           <Paper
             elevation={3}
@@ -135,7 +135,7 @@ export default function RegistrationForm() {
             }}
           >
             <Box mb={1} textAlign="center">
-              <Typography variant="h4" fontWeight={600} color="primary.main" gutterBottom>
+              <Typography variant="h4" fontWeight={600} color="primary.main" sx={{fontSize:{ xs: '1.3rem', md: '1.8rem'}}} gutterBottom>
                 {isEditMode ? "Edit Registration" : "Registration Form"}
               </Typography>
               <Typography variant="body1" color="text.secondary">

@@ -143,7 +143,7 @@ export default function ProductsPage() {
   };
 
   return (
-    <Box sx={{ bgcolor: '#f5f7fa', minHeight: '100vh', py: 4, pt: { xs: '100px', lg: '20px' }, pb: 4 }}>
+    <Box sx={{ bgcolor: '#f5f7fa', minHeight: '100vh', py: 4, pt: { xs: '90px', md: '20px' }, pb: 4 }}>
       <Container maxWidth="xl">
         <Grid container spacing={3}>
           {/* FILTER SIDEBAR */}
@@ -156,7 +156,7 @@ export default function ProductsPage() {
                 border: '1px solid',
                 borderColor: 'divider',
                 position: { md: 'sticky' },
-                top: { md: '90px' },
+                top: { md: '140px' ,lg: '80px'},
                 maxHeight: 'calc(100vh - 120px)', 
                 overflowY: 'auto',
               }}

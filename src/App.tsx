@@ -18,7 +18,7 @@ function App() {
 
   const navigate = useNavigate();
   const location = useLocation();
-   const { isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [showSellModal, setShowSellModal] = useState(false);
   const { showSnackbar } = useSnackbar();
@@ -47,9 +47,9 @@ function App() {
           sx={{
             flexGrow: 1,
             p: 0,
-            marginTop: '70px',
-            marginLeft: { xs: 0, md: '0px' },
-            width: { xs: '100%', md: 'calc(100% - 65px)' },
+            marginTop: { xs: '60px', md: '120px', lg: '60px' },
+            marginLeft: { xs: 0, lg: '0px' },
+            width: { xs: '100%', lg: 'calc(100% - 65px)' },
             minHeight: 'calc(100vh - 80px)',
           }}
         >
