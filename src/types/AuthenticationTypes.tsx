@@ -1,8 +1,11 @@
+export type UserRole = 'admin' | 'seller' | 'buyer';
+
 export interface User {
-    id: number | string;
-    name: string;
-    email: string;
-    password: string;
+  id: number | string;
+  name: string;
+  email: string;
+  password: string;
+  role: UserRole;
 }
 
 export interface SignupForm {

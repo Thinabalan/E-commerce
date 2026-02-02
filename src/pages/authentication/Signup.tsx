@@ -47,7 +47,7 @@ const Signup = ({ onSwitchLogin }: SignupProps) => {
       // Destructure to remove confirmPassword before storing 
       const { confirmPassword, ...userData } = data;
 
-      await createUser(userData);
+      await createUser({ ...userData, role: 'buyer' });
 
       showSnackbar("Signup successful", "success");
 
@@ -124,7 +124,7 @@ const Signup = ({ onSwitchLogin }: SignupProps) => {
                 color="primary"
                 disabled={isSubmitting}
                 label={isSubmitting ? "Creating Account..." : "Sign Up"}
-                sx={{ width: '40%', py: 1.2, borderRadius: '8px' }} 
+                sx={{ width: '40%', py: 1.2, borderRadius: '8px' }}
               />
             </Grid>
           </Grid>

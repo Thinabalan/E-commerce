@@ -1,5 +1,6 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { useTheme } from "../context/ThemeContext";
+import { useTheme } from "../context/MuiThemeProvider";
+import { useAuth } from "../context/AuthContext";
 import {
     Drawer,
     List,
@@ -17,6 +18,7 @@ import TableChartIcon from "@mui/icons-material/TableChart";
 import AppRegistrationIcon from '@mui/icons-material/AppRegistration';
 import SummarizeIcon from '@mui/icons-material/Summarize';
 import FavoriteIcon from "@mui/icons-material/Favorite";
+import type { UserRole } from "../types/AuthenticationTypes";
 
 interface SidebarProps {
     open: boolean;
@@ -28,18 +30,26 @@ const SIDEBAR_WIDTH_COLLAPSED = 65;
 
 export default function Sidebar({ open, onSellClick, onClose }: SidebarProps & { onClose: () => void }) {
     const { isDark } = useTheme();
+    const { user, hasRole } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
 
-    const menuItems = [
-        { text: "Home", icon: <HomeIcon />, path: "/" },
-        { text: "All Products", icon: <Inventory2Icon />, path: "/products" },
-        { text: "Become a Seller", icon: <StoreIcon />, onClick: onSellClick },
-        { text: "Product Table", icon: <TableChartIcon />, path: "/producttable" },
-        { text: "Registration Form", icon: <AppRegistrationIcon />, path: "/form" },
-        { text: "Registration List", icon: <SummarizeIcon />, path: "/registrations" },
-        { text: "Favorites", icon: <FavoriteIcon />, path: "/favourites" },
+    const allMenuItems = [
+        { text: "Home", icon: <HomeIcon />, path: "/", roles: ['admin', 'seller', 'buyer'] },
+        { text: "All Products", icon: <Inventory2Icon />, path: "/products", roles: ['admin', 'seller', 'buyer'] },
+        { text: "Become a Seller", icon: <StoreIcon />, onClick: onSellClick, roles: ['admin', 'buyer'] },
+        { text: "Product Table", icon: <TableChartIcon />, path: "/producttable", roles: ['admin'] },
+        { text: "Registration Form", icon: <AppRegistrationIcon />, path: "/form", roles: ['admin', 'seller'] },
+        { text: "Registration List", icon: <SummarizeIcon />, path: "/registrations", roles: ['admin'] },
+        { text: "Favourites", icon: <FavoriteIcon />, path: "/favourites", roles: ['admin', 'seller', 'buyer'] },
     ];
+
+    const menuItems = allMenuItems.filter(item => {
+        if (!item.roles) return true;
+        if (!user) return item.roles.includes('buyer'); // Show buyer items to non-logged in users? Or maybe just home/products
+        return hasRole(item.roles as UserRole[]);
+
+    });
 
     const drawerContent = (
         <List sx={{ mt: 1 }}>

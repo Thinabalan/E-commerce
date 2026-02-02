@@ -1,10 +1,11 @@
-import { Link, useNavigate } from "react-router-dom";
-import { useTheme } from "../context/ThemeContext";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useTheme } from "../context/MuiThemeProvider";
 import { useEffect, useState } from "react";
 import Login from "../pages/authentication/Login";
 import Signup from "../pages/authentication/Signup";
 import { useSnackbar } from "../context/SnackbarContext";
 import { useDialog } from "../context/DialogContext";
+import { useAuth } from "../context/AuthContext";
 import EcomModal from "../components/newcomponents/EcomModal";
 import {
   AppBar,
@@ -27,10 +28,7 @@ import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import PersonIcon from "@mui/icons-material/Person";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
-interface User {
-  name: string;
-  email: string;
-}
+
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -41,10 +39,19 @@ export default function Header({ onMenuClick }: HeaderProps) {
   const navigate = useNavigate();
   const { showSnackbar } = useSnackbar();
   const { showDialog } = useDialog();
-
-  const [user, setUser] = useState<User | null>(null);
+  const { user, logout, isAuthenticated } = useAuth();
   const [showAuth, setShowAuth] = useState(false);
   const [authMode, setAuthMode] = useState<"login" | "signup">("login");
+  const location = useLocation() as any;
+
+  useEffect(() => {
+    if (location.state?.showAuth && !isAuthenticated) {
+      setShowAuth(true);
+      setAuthMode("login");
+      // Clean up the state to prevent it from showing again on refresh
+      window.history.replaceState({}, document.title);
+    }
+  }, [location, isAuthenticated]);
 
   // MUI Menu State
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
@@ -60,21 +67,10 @@ export default function Header({ onMenuClick }: HeaderProps) {
     setAnchorElUser(null);
   };
 
-  useEffect(() => {
-    const loadUser = () => {
-      const storedUser = localStorage.getItem("user");
-      setUser(storedUser ? JSON.parse(storedUser) : null);
-    };
-    loadUser();
-    window.addEventListener("auth-change", loadUser);
-    return () => window.removeEventListener("auth-change", loadUser);
-  }, []);
-
-  const isLoggedIn = Boolean(user);
+  const isLoggedIn = isAuthenticated;
 
   const handleLogout = () => {
-    localStorage.removeItem("user");
-    setUser(null);
+    logout();
     handleCloseUserMenu();
     navigate("/");
     showSnackbar("Logged out Successfully", "success");

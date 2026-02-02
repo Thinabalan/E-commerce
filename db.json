@@ -1,34 +1,47 @@
 {
   "users": [
-    {
-      "id": "7fe3",
-      "name": "bala",
-      "email": "bala@gmail.com",
-      "password": "123456"
-    },
-    {
-      "id": "f382",
-      "name": "tgh",
-      "email": "sxgdfsyt@g.c",
-      "password": "1A@345"
-    },
+
     {
       "id": "07e9",
       "name": "abc",
       "email": "abc@gmail.com",
-      "password": "123456"
+      "password": "123456",
+      "role": "seller"
     },
     {
       "id": "c363",
       "name": "Mathan",
       "email": "mathan@gmail.com",
-      "password": "555555"
+      "password": "555555",
+      "role": "buyer"
     },
     {
-      "id": "0333",
-      "name": "xyz",
-      "email": "xyz@gmail.com",
-      "password": "000000"
+      "id": "b705",
+      "name": "bills",
+      "email": "bills@gmail.com",
+      "password": "212121",
+      "role": "buyer"
+    },
+    {
+      "id": "caf1",
+      "name": "admin",
+      "email": "a@g.c",
+      "password": "000000",
+      "role": "admin"
+    },
+    {
+      "id": "394b",
+      "name": "buyer",
+      "email": "b@g.c",
+      "password": "123456",
+      "role": "buyer"
+    },
+    {
+      "id": "6af6",
+      "name": "seller",
+      "email": "s@g.c",
+      "password": "222222",
+      "role": "seller"
     }
   ],
   "categories": [

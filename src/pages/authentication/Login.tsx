@@ -13,6 +13,7 @@ import { useSnackbar } from "../../context/SnackbarContext";
 import { useUser } from "../../hooks/useUser";
 import { loginSchema } from "../../schema/AuthenticationSchema";
 import type { LoginForm } from "../../types/AuthenticationTypes";
+import { useAuth } from "../../context/AuthContext";
 
 interface LoginProps {
   onSuccess?: () => void;
@@ -23,6 +24,7 @@ const Login = ({ onSuccess, switchToSignup }: LoginProps) => {
   const navigate = useNavigate();
   const { getUsers } = useUser();
   const { showSnackbar } = useSnackbar();
+  const { login } = useAuth();
 
   const loginform = useForm<LoginForm>({
     resolver: yupResolver(loginSchema),
@@ -43,10 +45,7 @@ const Login = ({ onSuccess, switchToSignup }: LoginProps) => {
         return;
       }
 
-      // Temporary login storage 
-      localStorage.setItem("user", JSON.stringify(users[0]));
-      window.dispatchEvent(new Event("auth-change"));
-
+      login(users[0]);
       showSnackbar(`Welcome back ${users[0].name}`, "success");
 
       if (onSuccess) {
