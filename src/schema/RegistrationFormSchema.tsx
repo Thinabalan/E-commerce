@@ -1,6 +1,6 @@
 import * as yup from "yup";
 import { ERROR_MESSAGES, positive, requiredMsg } from "../constants/ErrorMessages";
-import { REGEX } from "../constants/Regex";
+import { VALIDATION_REGEX } from "../constants/ValidationRegex";
 import type { RegistrationForm } from "../types/RegistrationFormTypes";
 
 export const RegistrationFormSchema: yup.ObjectSchema<RegistrationForm> = yup.object({
@@ -9,7 +9,7 @@ export const RegistrationFormSchema: yup.ObjectSchema<RegistrationForm> = yup.ob
       .string()
       .trim()
       .required(requiredMsg("Name"))
-      .matches(REGEX.name, ERROR_MESSAGES.nameInvalid)
+      .matches(VALIDATION_REGEX.name, ERROR_MESSAGES.nameInvalid)
       .max(30, ERROR_MESSAGES.nameTooLong),
     email: yup
       .string()
@@ -23,7 +23,7 @@ export const RegistrationFormSchema: yup.ObjectSchema<RegistrationForm> = yup.ob
             .string()
             .trim()
             .required(requiredMsg("Warehouse Name"))
-            .matches(REGEX.name, ERROR_MESSAGES.nameInvalid)
+            .matches(VALIDATION_REGEX.name, ERROR_MESSAGES.nameInvalid)
             .max(30, ERROR_MESSAGES.nameTooLong),
           city: yup
             .string()
@@ -32,7 +32,7 @@ export const RegistrationFormSchema: yup.ObjectSchema<RegistrationForm> = yup.ob
           pincode: yup
             .string()
             .required(requiredMsg("Pincode"))
-            .matches(REGEX.pincode, ERROR_MESSAGES.pincodeInvalid),
+            .matches(VALIDATION_REGEX.pincode, ERROR_MESSAGES.pincodeInvalid),
           upload: yup.mixed().optional().notRequired(),
         })
       )
@@ -66,7 +66,7 @@ export const RegistrationFormSchema: yup.ObjectSchema<RegistrationForm> = yup.ob
               price: yup
                 .string()
                 .required(requiredMsg("Price"))
-                .matches(REGEX.price, ERROR_MESSAGES.priceInvalid)
+                .matches(VALIDATION_REGEX.price, ERROR_MESSAGES.priceInvalid)
                 .max(7, ERROR_MESSAGES.priceTooLong)
                 .test("positive", positive("Price"), (value) => {
                   if (!value) return false;
@@ -76,7 +76,7 @@ export const RegistrationFormSchema: yup.ObjectSchema<RegistrationForm> = yup.ob
               stock: yup
                 .string()
                 .required(requiredMsg("Stock"))
-                .matches(REGEX.stock, ERROR_MESSAGES.stockInvalid)
+                .matches(VALIDATION_REGEX.stock, ERROR_MESSAGES.stockInvalid)
                 .max(7,ERROR_MESSAGES.stockInvalid)
                 .test("positive", positive("Stock"), (value) => {
                   if (!value) return false;
@@ -87,7 +87,7 @@ export const RegistrationFormSchema: yup.ObjectSchema<RegistrationForm> = yup.ob
                 .string()
                 .trim()
                 .required(requiredMsg("Category"))
-                .matches(REGEX.name, ERROR_MESSAGES.nameInvalid)
+                .matches(VALIDATION_REGEX.name, ERROR_MESSAGES.nameInvalid)
                 .max(30, ERROR_MESSAGES.nameTooLong),
             })
           )

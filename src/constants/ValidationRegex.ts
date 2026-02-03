@@ -1,4 +1,4 @@
-export const REGEX = {
+export const VALIDATION_REGEX = {
   name: /^[A-Za-z ]+$/,
   price: /^[\d,]+(\.\d+)?$/,
   stock: /^[\d,]+$/,

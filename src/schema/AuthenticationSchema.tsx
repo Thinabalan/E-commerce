@@ -1,6 +1,6 @@
 import * as yup from "yup";
 import { ERROR_MESSAGES, requiredMsg } from "../constants/ErrorMessages";
-import { REGEX } from "../constants/Regex";
+import { VALIDATION_REGEX } from "../constants/ValidationRegex";
 import type { LoginForm, SignupForm } from "../types/AuthenticationTypes";
 
 // Login Validation Schema
@@ -21,7 +21,7 @@ export const signupSchema: yup.ObjectSchema<SignupForm> = yup.object({
         .string()
         .trim()
         .required(requiredMsg("Name"))
-        .matches(REGEX.name, ERROR_MESSAGES.nameInvalid)
+        .matches(VALIDATION_REGEX.name, ERROR_MESSAGES.nameInvalid)
         .max(30, ERROR_MESSAGES.nameTooLong),
     email: yup
         .string()

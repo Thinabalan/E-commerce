@@ -1,14 +1,14 @@
 import * as yup from "yup";
 import type { SellProduct } from "../types/ProductTypes";
 import { ERROR_MESSAGES, requiredMsg } from "../constants/ErrorMessages";
-import { REGEX } from "../constants/Regex";
+import { VALIDATION_REGEX } from "../constants/ValidationRegex";
 
 export const sellProductSchema: yup.ObjectSchema<SellProduct> = yup.object({
     // SELLER INFO
     sellerName: yup
         .string()
         .required(requiredMsg("Name"))
-        .matches(REGEX.name, ERROR_MESSAGES.nameInvalid)
+        .matches(VALIDATION_REGEX.name, ERROR_MESSAGES.nameInvalid)
         .max(30, ERROR_MESSAGES.nameTooLong),
 
     email: yup
@@ -19,7 +19,7 @@ export const sellProductSchema: yup.ObjectSchema<SellProduct> = yup.object({
     phone: yup
         .string()
         .required(requiredMsg("Phone number"))
-        .matches(REGEX.phone, ERROR_MESSAGES.phoneInvalid,),
+        .matches(VALIDATION_REGEX.phone, ERROR_MESSAGES.phoneInvalid,),
 
     sellerType: yup
         .string()
@@ -31,7 +31,7 @@ export const sellProductSchema: yup.ObjectSchema<SellProduct> = yup.object({
         is: "business",
         then: (schema) => schema
             .required(requiredMsg("Name"))
-            .matches(REGEX.name, ERROR_MESSAGES.nameInvalid)
+            .matches(VALIDATION_REGEX.name, ERROR_MESSAGES.nameInvalid)
             .max(30, ERROR_MESSAGES.nameTooLong),
         otherwise: (schema) => schema.optional(),
     }),
@@ -50,7 +50,7 @@ export const sellProductSchema: yup.ObjectSchema<SellProduct> = yup.object({
         then: (schema) =>
             schema
                 .required(requiredMsg("Phone number"))
-                .matches(REGEX.phone, ERROR_MESSAGES.phoneInvalid,),
+                .matches(VALIDATION_REGEX.phone, ERROR_MESSAGES.phoneInvalid,),
         otherwise: (schema) => schema.optional(),
     }),
 
