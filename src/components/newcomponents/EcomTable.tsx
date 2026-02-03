@@ -566,7 +566,7 @@ export default function EcomTable<T>({
                       selected={isItemSelected}
                     >
                       {hasGroups && !hasRowDetails && (
-                        <TableCell  />
+                        <TableCell />
                       )}
                       {hasRowDetails && (
                         <TableCell sx={{ borderRight: "2px solid rgba(224, 224, 224, 1)" }}>
@@ -601,9 +601,10 @@ export default function EcomTable<T>({
                             key={String(c.id)}
                             align={c.align || "center"}
                             sx={{
-                              whiteSpace: "normal",
+                              whiteSpace: { xs: "nowrap", md: "normal" },
                               wordBreak: "break-word",
-                              maxWidth: 110,
+                              maxWidth: { xs: "none", md: 109 },
+                              minWidth: { xs: "150px", md: "auto" },
                               borderLeft: borderLeft,
                             }}
                           >

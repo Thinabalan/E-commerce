@@ -367,7 +367,7 @@ const SellProductTable = () => {
             setOpenForm(true);
           }}
           sx={{
-            width:{xs:'170px',md:'140px'}
+            width:{xs:'190px',md:'140px'}
           }}
         />
       </Box>
