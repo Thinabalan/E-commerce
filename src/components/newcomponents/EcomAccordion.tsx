@@ -32,8 +32,7 @@ const EcomAccordion = ({
                 borderRadius: "12px !important",
                 "&:before": { display: "none" },
                 overflow: "hidden",
-                mb:1,
-                mt:1,
+                m:1,
                 ...sx
             }}
         >

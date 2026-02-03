@@ -237,7 +237,6 @@ function BusinessItem({ index, totalBusinesses, removeBusiness }: BusinessItemPr
                 mb: 2,
                 borderRadius: 3,
                 border: "1px solid #edf2f7",
-                bgcolor: "#fff",
                 position: "relative"
             }}
         >

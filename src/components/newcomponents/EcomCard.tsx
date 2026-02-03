@@ -29,7 +29,7 @@ const EcomCard = ({ name, price, image }: EcomCardProps) => {
                 height="200"
                 image={image}
                 alt={name}
-                sx={{ objectFit: 'contain', p: 1, bgcolor: '#f8f9fa' }}
+                sx={{ objectFit: 'contain', p: 1 }}
             />
             <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
                 <Typography
@@ -69,7 +69,7 @@ const EcomCard = ({ name, price, image }: EcomCardProps) => {
                             fontWeight: 600,
                             whiteSpace: 'nowrap',
                             px: 1,       
-                            fontSize: { xs: '0.75rem', sm: '0.875rem' } // Smaller font on mobile
+                            fontSize: { xs: '0.75rem', sm: '0.875rem' } 
                         }}
                     />
                 </Box>

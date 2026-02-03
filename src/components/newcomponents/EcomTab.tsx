@@ -47,9 +47,6 @@ const EcomTab = ({
                   : tab.color === "error"
                     ? "error.main"
                     : "text.secondary",
-              "&.Mui-selected": {
-                bgcolor: "whitesmoke",
-              },
             }}
           />
         ))}

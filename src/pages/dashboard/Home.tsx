@@ -34,7 +34,7 @@ export default function Home() {
   };
 
   return (
-    <Box sx={{ pt:{ xs: 7, md: 1 }, pb: 8, bgcolor: '#fff', minHeight: '100vh' }}>
+    <Box sx={{ pt: { xs: 7, md: 1 }, pb: 8, minHeight: '100vh' }}>
 
       {/* CATEGORIES */}
       <CategoriesSection />
@@ -46,8 +46,8 @@ export default function Home() {
           sx={{
             py: 3,
             textAlign: 'center',
-            bgcolor: '#ffbebe',
-            color: 'black',
+            bgcolor: (theme) => theme.palette.mode === 'dark' ? 'grey.900' : '#ffbebe',
+            color: (theme) => theme.palette.mode === 'dark' ? 'white' : 'black',
             borderRadius: 0,
           }}
         >
@@ -64,9 +64,8 @@ export default function Home() {
               onClick={scrollToTrends}
               variant="contained"
               sx={{
-                bgcolor: 'white',
-                color: 'black',
-                '&:hover': { bgcolor: '#ffe3e3' },
+                bgcolor: (theme) => theme.palette.mode === 'dark' ? 'black' : 'white',
+                color: (theme) => theme.palette.mode === 'dark' ? 'white' : 'black',
                 borderRadius: '8px',
                 px: 3
               }}

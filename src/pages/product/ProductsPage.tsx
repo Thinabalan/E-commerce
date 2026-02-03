@@ -143,7 +143,7 @@ export default function ProductsPage() {
   };
 
   return (
-    <Box sx={{ bgcolor: '#f5f7fa', minHeight: '100vh', py: 4, pt: { xs: '90px', md: '20px' }, pb: 4 }}>
+    <Box sx={{ minHeight: '100vh', py: 4, pt: { xs: '90px', md: '20px' }, pb: 4 }}>
       <Container maxWidth="xl">
         <Grid container spacing={3}>
           {/* FILTER SIDEBAR */}

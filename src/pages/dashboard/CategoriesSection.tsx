@@ -33,7 +33,6 @@ export default function CategoriesSection() {
         sx={{
           p: 2,
           borderRadius: 3,
-          bgcolor: theme.palette.mode === 'dark' ? 'background.paper' : 'white',
         }}
       >
         <Stack
@@ -63,7 +62,6 @@ export default function CategoriesSection() {
                   textAlign: 'center',
                   cursor: 'pointer',
                   bgcolor: theme.palette.mode === 'dark' ? 'action.hover' : '#ffe4e4',
-                  color: theme.palette.mode === 'dark' ? 'text.primary' : 'inherit',
                   transition: 'transform 0.2s',
                   display: 'flex',
                   alignItems: 'center',

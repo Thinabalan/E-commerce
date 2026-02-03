@@ -329,13 +329,13 @@ export default function EcomTable<T>({
                 position: "sticky",
                 top: 0,
                 zIndex: 4,
-                backgroundColor: "#fafafa",
+ 
               }}>
                 {(hasRowDetails || hasGroups) && (
                   <TableCell
                     rowSpan={2}
                     sx={{
-                      backgroundColor: "#fafafa",
+                      
                       textAlign: "center",
                       borderRight: "2px solid rgba(224, 224, 224, 1)",
                       zIndex: 3
@@ -359,7 +359,7 @@ export default function EcomTable<T>({
                 {enableSelection && (
                   <TableCell
                     rowSpan={2}
-                    sx={{ backgroundColor: "#fafafa", zIndex: 3 }}
+                    sx={{ zIndex: 3 }}
                   />
                 )}
                 {(() => {
@@ -382,7 +382,7 @@ export default function EcomTable<T>({
                           colSpan={colSpan}
                           align="center"
                           sx={{
-                            backgroundColor: "#fafafa",
+                            
                             fontWeight: "bold",
                             borderBottom: "2px solid rgba(224, 224, 224, 0.8)",
                             borderLeft: borderLeft,
@@ -403,7 +403,7 @@ export default function EcomTable<T>({
                           rowSpan={2}
                           align={col.headerAlign || "center"}
                           sx={{
-                            backgroundColor: "#fafafa",
+                           
                             borderLeft: borderLeft,
                             fontWeight: "bold"
                           }}
@@ -432,17 +432,17 @@ export default function EcomTable<T>({
               position: "sticky",
               top: 51,
               zIndex: 3,
-              backgroundColor: "#fafafa",
+              
             } : {
               position: "sticky",
               top: 0,
               zIndex: 2,
-              backgroundColor: "#fafafa",
+            
             }}>
               {!columns.some(c => c.groupLabel) && (
                 <>
                   {(hasRowDetails || hasGroups) && (
-                    <TableCell sx={{ backgroundColor: "#fafafa", zIndex: 2, width: 40 }}>
+                    <TableCell sx={{ zIndex: 2, width: 40 }}>
                       {hasGroups ? (
                         <Tooltip title={allGroupsCollapsed ? "Expand All Groups" : "Collapse All Groups"}>
                           <IconButton size="small" onClick={handleToggleAllGroups}>
@@ -459,7 +459,7 @@ export default function EcomTable<T>({
                     </TableCell>
                   )}
                   {enableSelection && (
-                    <TableCell padding="checkbox" sx={{ backgroundColor: "#fafafa", zIndex: 2 }}>
+                    <TableCell padding="checkbox" sx={{  zIndex: 2 }}>
                       <Checkbox
                         color="primary"
                         indeterminate={selected.length > 0 && selected.length < rows.length}

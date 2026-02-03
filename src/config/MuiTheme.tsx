@@ -7,6 +7,10 @@ export const MuiTheme = (mode: PaletteMode) => {
             primary: {
                 main: "#2563eb",
             },
+            background: {
+                default: mode === 'dark' ? "#121212" : "#f5f7fa",
+                paper: mode === 'dark' ? "#1e1e1e" : "#ffffff",
+            },
         },
         components: {
             /* DIALOG TITLE BORDER */
@@ -32,21 +36,26 @@ export const MuiTheme = (mode: PaletteMode) => {
             /* TAB STYLING */
             MuiTab: {
                 styleOverrides: {
-                    root: {
+                    root: ({ theme }) => ({
                         textTransform: "none",
                         fontWeight: 600,
-                    },
+                        "&.Mui-selected": {
+                            backgroundColor: theme.palette.mode === 'dark'
+                                ? "rgba(255, 255, 255, 0.08)"
+                                : "rgba(0, 0, 0, 0.04)",
+                        },
+                    }),
                 },
             },
             /* TABLE HEADER STYLING */
             MuiTableCell: {
                 styleOverrides: {
-                    head: {
+                    head: ({ theme }) => ({
                         fontWeight: "bold",
-                        backgroundColor: "#fafafa",
+                        backgroundColor: theme.palette.mode === 'dark' ? theme.palette.background.paper : "#fafafa",
                         whiteSpace: "nowrap",
                         zIndex: 1,
-                    },
+                    }),
                 },
             },
             /* PAGINATION STYLING */
