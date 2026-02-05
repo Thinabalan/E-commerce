@@ -2,10 +2,81 @@ import { useFormContext, useFieldArray } from "react-hook-form";
 import type { RegistrationForm } from "../../types/RegistrationFormTypes";
 import { LIMITS } from "../../constants/RegistrationFormConstants";
 import { useUI } from "../../context/UIContext";
+import { useState, useCallback } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { useRegistration } from "./useRegistration";
 
 export const useFormHandlers = () => {
-    const { control, trigger, getValues, setValue } = useFormContext<RegistrationForm>();
+    const { control, trigger, getValues, setValue, reset } = useFormContext<RegistrationForm>();
     const { showSnackbar } = useUI();
+    const navigate = useNavigate();
+    const { id } = useParams();
+    const { addRegistration, getRegistrationById, updateRegistration } = useRegistration();
+
+    const [expanded, setExpanded] = useState<Record<number, boolean>>({ 0: true, 1: false });
+
+    const isEditMode = Boolean(id);
+
+    // Accordion Handlers
+    const handleAccordionChange = (panel: number) => (_: any, isExpanded: boolean) => {
+        setExpanded((prev) => ({ ...prev, [panel]: isExpanded }));
+    };
+
+    const handleToggleAll = () => {
+        const allPanels = [0, 1];
+        const isAllExpanded = allPanels.every((id) => expanded[id]);
+        const target = !isAllExpanded;
+        setExpanded({ 0: target, 1: target });
+    };
+
+    // Data Fetching
+    const fetchRegistrationData = useCallback(async (regId: string) => {
+        try {
+            const data = await getRegistrationById(regId);
+            reset(data);
+            setExpanded({ 0: true, 1: true });
+        } catch (error) {
+            showSnackbar("Failed to fetch registration data.", "error");
+            navigate("/registrations");
+        }
+    }, [getRegistrationById, reset, navigate, showSnackbar]);
+
+    // Validation Error Handling
+    const handleFormError = (errors: any) => {
+        setExpanded((prev) => ({
+            ...prev,
+            ...(errors.seller && { 0: true }),
+            ...(errors.businesses && { 1: true }),
+        }));
+    };
+
+    // Form Submission
+    const onSubmit = async (data: RegistrationForm) => {
+        try {
+            const processedData = {
+                ...data,
+                businesses: data.businesses.map((business) => ({
+                    ...business,
+                    products: business.products.map((product) => ({
+                        ...product,
+                        isSaved: true,
+                    })),
+                })),
+            };
+
+            if (isEditMode && id) {
+                await updateRegistration(id, processedData);
+                showSnackbar("Form updated successfully", "success");
+            } else {
+                await addRegistration(processedData);
+                showSnackbar("Form submitted successfully", "success");
+                reset();
+            }
+            navigate("/registrations");
+        } catch (error) {
+            showSnackbar(`${isEditMode ? "Update" : "Submission"} failed. Please try again.`, "error");
+        }
+    };
 
     // Warehouse Handlers
     const warehouseFieldArray = useFieldArray({
@@ -121,5 +192,15 @@ export const useFormHandlers = () => {
         removeBusiness: businessFieldArray.remove,
 
         getProductHandlers,
+
+        expanded,
+        handleAccordionChange,
+        handleToggleAll,
+        fetchRegistrationData,
+        handleFormError,
+        onSubmit,
+        isEditMode,
+        id,
+        reset,
     };
 };
