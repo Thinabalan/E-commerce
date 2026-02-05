@@ -11,6 +11,21 @@ const api = axios.create({
     },
 });
 
+api.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        let message = "Unexpected error occurred";
+        if (error.response) {
+            message = error.response.data?.message || `Server Error: ${error.response.status}`;
+        } else if (error.request) {
+            message = "Network error. Please check your connection.";
+        } else {
+            message = error.message;
+        }
+        return Promise.reject(new Error(message));
+    }
+);
+
 // API service
 export const apiService = {
     async get<T>(url: string, params?: any): Promise<T> {

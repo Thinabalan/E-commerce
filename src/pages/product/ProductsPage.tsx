@@ -14,6 +14,7 @@ import {
   Paper,
   Stack
 } from "@mui/material";
+import { useErrorBoundary } from "react-error-boundary";
 import Grid from "@mui/material/Grid"; // Using standard Grid
 import EcomCard from "../../components/newcomponents/EcomCard";
 import EcomAccordion from "../../components/newcomponents/EcomAccordion";
@@ -28,7 +29,7 @@ export default function ProductsPage() {
   // DATA STATE
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [error, setError] = useState<string | null>(null);
+  const { showBoundary } = useErrorBoundary();
 
   // UI STATE
   const [rating, setRating] = useState<number | null>(null);
@@ -51,7 +52,7 @@ export default function ProductsPage() {
         setProducts(prodData);
         setCategories(catData);
       } catch (err) {
-        setError("Failed to load data");
+        showBoundary(err);
       }
     };
     fetchData();
@@ -156,8 +157,8 @@ export default function ProductsPage() {
                 border: '1px solid',
                 borderColor: 'divider',
                 position: { md: 'sticky' },
-                top: { md: '140px' ,lg: '80px'},
-                maxHeight: 'calc(100vh - 120px)', 
+                top: { md: '140px', lg: '80px' },
+                maxHeight: 'calc(100vh - 120px)',
                 overflowY: 'auto',
               }}
             >
@@ -310,12 +311,6 @@ export default function ProductsPage() {
               <Divider />
             </Box>
 
-            {error && (
-              <Box sx={{ py: 4, textAlign: 'center' }}>
-                <Typography color="error">{error}</Typography>
-              </Box>
-            )}
-
             <Grid container spacing={3}>
               {filteredProducts.map((prod) => (
                 <Grid size={{ xs: 6, sm: 6, md: 4 }} key={prod.id}>
@@ -328,7 +323,7 @@ export default function ProductsPage() {
               ))}
             </Grid>
 
-            {filteredProducts.length === 0 && !error && (
+            {filteredProducts.length === 0 && (
               <Box sx={{ py: 10, textAlign: 'center' }}>
                 <Typography variant="h6" color="text.secondary">No products found.</Typography>
                 <Typography variant="body2" color="text.secondary">Try adjusting your filters or search query.</Typography>

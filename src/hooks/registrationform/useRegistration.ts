@@ -7,7 +7,7 @@ export const useRegistration = () => {
     const [error, setError] = useState<string | null>(null);
 
     const [registrations, setRegistrations] = useState<(RegistrationForm & { id: string })[]>([]);
-
+    
     const addRegistration = useCallback(async (data: RegistrationForm) => {
         setIsLoading(true);
         setError(null);
@@ -30,7 +30,7 @@ export const useRegistration = () => {
             setRegistrations(data);
             return data;
         } catch (err) {
-            setError("Failed to fetch registrations.");
+            throw err;
         } finally {
             setIsLoading(false);
         }

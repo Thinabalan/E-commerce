@@ -7,16 +7,21 @@ import { MuiThemeProvider } from './context/MuiThemeProvider';
 import { AuthProvider } from './context/AuthContext';
 import { UIProvider } from './context/UIContext';
 
+import { ErrorBoundary } from 'react-error-boundary';
+import ErrorFallback from './components/errorfallback/ErrorFallback';
+
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <>
-    <BrowserRouter>
-      <AuthProvider>
-        <MuiThemeProvider>
-          <UIProvider>
-            <App />
-          </UIProvider>
-        </MuiThemeProvider>
-      </AuthProvider>
-    </BrowserRouter>
+    <ErrorBoundary FallbackComponent={ErrorFallback}>
+      <BrowserRouter>
+        <AuthProvider>
+          <MuiThemeProvider>
+            <UIProvider>
+              <App />
+            </UIProvider>
+          </MuiThemeProvider>
+        </AuthProvider>
+      </BrowserRouter>
+    </ErrorBoundary>
   </>
 );

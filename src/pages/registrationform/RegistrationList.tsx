@@ -20,6 +20,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { useErrorBoundary } from "react-error-boundary";
 
 const RegistrationList = () => {
   const {
@@ -38,9 +39,10 @@ const RegistrationList = () => {
   } = useRegistrationHandlers();
   const [isFullViewOpen, setIsFullViewOpen] = useState(false);
   const navigate = useNavigate();
+  const { showBoundary } = useErrorBoundary();
 
   useEffect(() => {
-    getRegistrationsList();
+    getRegistrationsList().catch(showBoundary);
   }, []);
 
   const flattenedRows = useMemo(() => {
@@ -243,9 +245,7 @@ const RegistrationList = () => {
             </IconButton>
           </Tooltip>
           <Box mb={4} textAlign="center">
-
             <Box display="flex" alignItems="center" justifyContent="center" gap={2} sx={{ position: "relative" }}>
-
               <Typography
                 variant="h5"
                 fontWeight={600}
