@@ -3,8 +3,7 @@ import { useTheme } from "../context/MuiThemeProvider";
 import { useEffect, useState } from "react";
 import Login from "../pages/authentication/Login";
 import Signup from "../pages/authentication/Signup";
-import { useSnackbar } from "../context/SnackbarContext";
-import { useDialog } from "../context/DialogContext";
+import { useUI } from "../context/UIContext";
 import { useAuth } from "../context/AuthContext";
 import EcomModal from "../components/newcomponents/EcomModal";
 import {
@@ -28,8 +27,6 @@ import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import PersonIcon from "@mui/icons-material/Person";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
-
-
 interface HeaderProps {
   onMenuClick: () => void;
 }
@@ -37,8 +34,7 @@ interface HeaderProps {
 export default function Header({ onMenuClick }: HeaderProps) {
   const { isDark, toggleTheme } = useTheme();
   const navigate = useNavigate();
-  const { showSnackbar } = useSnackbar();
-  const { showDialog } = useDialog();
+  const { showSnackbar, showDialog } = useUI();
   const { user, logout, isAuthenticated } = useAuth();
   const [showAuth, setShowAuth] = useState(false);
   const [authMode, setAuthMode] = useState<"login" | "signup">("login");

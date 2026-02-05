@@ -14,6 +14,7 @@ import ProtectedRoute from "./components/auth/ProtectedRoute";
 import { useAuth } from "./context/AuthContext";
 import { useSnackbar } from "./context/SnackbarContext";
 
+
 function App() {
 
   const navigate = useNavigate();

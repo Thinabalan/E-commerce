@@ -49,7 +49,7 @@ export default function Sidebar({ open, onSellClick, onClose }: SidebarProps & {
 
     const menuItems = allMenuItems.filter(item => {
         if (!item.roles) return true;
-        if (!user) return item.roles.includes('buyer'); // Show buyer items to non-logged in users? Or maybe just home/products
+        if (!user) return item.roles.includes('buyer'); 
         return hasRole(item.roles as UserRole[]);
 
     });

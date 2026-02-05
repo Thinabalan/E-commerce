@@ -7,18 +7,21 @@ import { MuiThemeProvider } from './context/MuiThemeProvider';
 import { SnackbarProvider } from './context/SnackbarContext';
 import { DialogProvider } from './context/DialogContext';
 import { AuthProvider } from './context/AuthContext';
+import { UIProvider } from './context/UIContext';
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <>
     <BrowserRouter>
       <AuthProvider>
-          <MuiThemeProvider>
-            <SnackbarProvider>
-              <DialogProvider>
+        <MuiThemeProvider>
+          <SnackbarProvider>
+            <DialogProvider>
+              <UIProvider>
                 <App />
-              </DialogProvider>
-            </SnackbarProvider>
-          </MuiThemeProvider>
+              </UIProvider>
+            </DialogProvider>
+          </SnackbarProvider>
+        </MuiThemeProvider>
       </AuthProvider>
     </BrowserRouter>
   </>
