@@ -9,7 +9,7 @@ import {
 
 import EcomTextField from "../../components/newcomponents/EcomTextField";
 import EcomButton from "../../components/newcomponents/EcomButton";
-import { useSnackbar } from "../../context/SnackbarContext";
+import { useUI } from "../../context/UIContext";
 import { useUser } from "../../hooks/useUser";
 import { loginSchema } from "../../schema/AuthenticationSchema";
 import type { LoginForm } from "../../types/AuthenticationTypes";
@@ -23,7 +23,7 @@ interface LoginProps {
 const Login = ({ onSuccess, switchToSignup }: LoginProps) => {
   const navigate = useNavigate();
   const { getUsers } = useUser();
-  const { showSnackbar } = useSnackbar();
+  const { showSnackbar } = useUI();
   const { login } = useAuth();
 
   const loginform = useForm<LoginForm>({

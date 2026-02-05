@@ -23,8 +23,7 @@ import { sellProductDefaultValues } from "./data/sellProductDefaults";
 import type { Category, Product, SellProduct } from "../../types/ProductTypes";
 
 import { useFormHandlers } from "../../hooks/sellproductform/useFormHandlers";
-import { useSnackbar } from "../../context/SnackbarContext";
-import { useDialog } from "../../context/DialogContext";
+import { useUI } from "../../context/UIContext";
 
 import { STEPS, STEP_FIELDS } from "../../constants/sellProductConstants";
 
@@ -46,8 +45,7 @@ const SellProductForm = ({ open, onClose, editData }: SellProductFormProps) => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [error, setError] = useState<string | null>(null);
   // const [openDiscardDialog, setOpenDiscardDialog] = useState(false);
-  const { showSnackbar } = useSnackbar();
-  const { showDialog } = useDialog();
+  const { showSnackbar, showDialog } = useUI();
 
   const productform = useForm<SellProduct>({
     resolver: yupResolver(sellProductSchema),

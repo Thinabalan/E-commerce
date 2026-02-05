@@ -1,7 +1,7 @@
 import type { UseFormReturn } from "react-hook-form";
 import type { Product } from "../../types/ProductTypes";
 import type { ProductFilters } from "../../types/ProductTypes";
-import { useSnackbar } from "../../context/SnackbarContext";
+import { useUI } from "../../context/UIContext";
 
 /* DIALOG STATE TYPE */
 export type ConfirmDialogState =
@@ -41,7 +41,7 @@ export const useSellProductHandlers = ({
     toggleProductStatus,
     Filters,
 }: UseSellProductHandlersProps) => {
-    const { showSnackbar } = useSnackbar();
+    const { showSnackbar } = useUI();
 
     const loadProducts = async () => {
         try {

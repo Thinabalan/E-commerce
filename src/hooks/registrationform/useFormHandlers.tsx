@@ -1,11 +1,11 @@
 import { useFormContext, useFieldArray } from "react-hook-form";
 import type { RegistrationForm } from "../../types/RegistrationFormTypes";
 import { LIMITS } from "../../constants/RegistrationFormConstants";
-import { useSnackbar } from "../../context/SnackbarContext";
+import { useUI } from "../../context/UIContext";
 
 export const useFormHandlers = () => {
     const { control, trigger, getValues, setValue } = useFormContext<RegistrationForm>();
-    const { showSnackbar } = useSnackbar();
+    const { showSnackbar } = useUI();
 
     // Warehouse Handlers
     const warehouseFieldArray = useFieldArray({

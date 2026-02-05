@@ -3,7 +3,7 @@ import type { UseFormReturn } from "react-hook-form";
 import useProduct from "../useProduct";
 import type { CreateProduct, Product, SellProduct } from "../../types/ProductTypes";
 import { sellProductDefaultValues } from "../../pages/sellproductform/data/sellProductDefaults";
-import { useSnackbar } from "../../context/SnackbarContext";
+import { useUI } from "../../context/UIContext";
 
 interface UseFormHandlersProps {
   form: UseFormReturn<SellProduct>;
@@ -30,7 +30,7 @@ export function useFormHandlers({
   editData,
 }: UseFormHandlersProps) {
   const { trigger, resetField } = form;
-  const { showSnackbar } = useSnackbar();
+  const { showSnackbar } = useUI();
 
   const [loading, setLoading] = useState(false);
   const { addProduct, updateProduct } = useProduct();

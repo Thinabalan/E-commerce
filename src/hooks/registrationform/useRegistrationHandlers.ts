@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRegistration } from "./useRegistration";
-import { useSnackbar } from "../../context/SnackbarContext";
+import { useUI } from "../../context/UIContext";
 
 export const useRegistrationHandlers = () => {
     const registration = useRegistration();
     const { deleteRegistration } = registration;
-    const { showSnackbar } = useSnackbar();
+    const { showSnackbar } = useUI();
     const [deleteId, setDeleteId] = useState<string | null>(null);
     const [previewData, setPreviewData] = useState<any>(null);
     const navigate = useNavigate();

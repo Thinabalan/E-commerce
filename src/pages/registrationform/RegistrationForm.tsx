@@ -20,15 +20,13 @@ import SellerDetails from "./SellerDetails";
 import BusinessDetails from "./BusinessDetails";
 import { useRegistration } from "../../hooks/registrationform/useRegistration";
 import { useEffect, useState } from "react";
-import { useSnackbar } from "../../context/SnackbarContext";
-import { useDialog } from "../../context/DialogContext";
+import { useUI } from "../../context/UIContext";
 
 export default function RegistrationForm() {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const { showSnackbar } = useSnackbar();
-  const { showDialog } = useDialog();
+  const { showSnackbar, showDialog } = useUI();
   const isEditMode = Boolean(id);
   const [expanded, setExpanded] = useState<Record<number, boolean>>({ 0: true, 1: false });
 
@@ -135,7 +133,7 @@ export default function RegistrationForm() {
             }}
           >
             <Box mb={1} textAlign="center">
-              <Typography variant="h4" fontWeight={600} color="primary.main" sx={{fontSize:{ xs: '1.3rem', md: '1.8rem'}}} gutterBottom>
+              <Typography variant="h4" fontWeight={600} color="primary.main" sx={{ fontSize: { xs: '1.3rem', md: '1.8rem' } }} gutterBottom>
                 {isEditMode ? "Edit Registration" : "Registration Form"}
               </Typography>
               <Typography variant="body1" color="text.secondary">

@@ -9,7 +9,7 @@ import {
 
 import EcomTextField from "../../components/newcomponents/EcomTextField";
 import EcomButton from "../../components/newcomponents/EcomButton";
-import { useSnackbar } from "../../context/SnackbarContext";
+import { useUI } from "../../context/UIContext";
 import { useUser } from "../../hooks/useUser";
 import { signupSchema } from "../../schema/AuthenticationSchema";
 import type { SignupForm } from "../../types/AuthenticationTypes";
@@ -21,7 +21,7 @@ interface SignupProps {
 const Signup = ({ onSwitchLogin }: SignupProps) => {
   const navigate = useNavigate();
   const { getUsers, createUser } = useUser();
-  const { showSnackbar } = useSnackbar();
+  const { showSnackbar } = useUI();
 
   const signupform = useForm<SignupForm>({
     resolver: yupResolver(signupSchema),

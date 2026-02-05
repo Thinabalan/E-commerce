@@ -12,7 +12,7 @@ import RegistrationList from "./pages/registrationform/RegistrationList";
 import SellProductForm from "./pages/sellproductform/SellProductForm";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import { useAuth } from "./context/AuthContext";
-import { useSnackbar } from "./context/SnackbarContext";
+import { useUI } from "./context/UIContext";
 
 
 function App() {
@@ -22,7 +22,7 @@ function App() {
   const { isAuthenticated } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [showSellModal, setShowSellModal] = useState(false);
-  const { showSnackbar } = useSnackbar();
+  const { showSnackbar } = useUI();
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
   const handleSellClick = () => {
