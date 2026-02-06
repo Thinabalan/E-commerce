@@ -17,8 +17,8 @@ export const useRegistrationHandlers = () => {
             await deleteRegistration(deleteId);
             showSnackbar("Registration deleted successfully", "success");
             setDeleteId(null);
-        } catch (error) {
-            showSnackbar("Failed to delete registration", "error");
+        } catch (error: any) {
+            showSnackbar(error.message, "error");
         }
     };
 

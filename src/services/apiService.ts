@@ -11,14 +11,23 @@ const api = axios.create({
     },
 });
 
+const ERROR_MESSAGES: Record<number, string> = {
+    400: "We couldn't process this request. Please check your information.",
+    401: "Your session has expired. Please log in again.",
+    403: "You don't have permission to perform this action.",
+    404: "This item is no longer available. It might have been deleted or moved.",
+    500: "Our servers are having some trouble. We're working on it!",
+};
+
 api.interceptors.response.use(
     (response) => response,
     (error) => {
-        let message = "Unexpected error occurred";
+        let message = "Something went wrong. Please try again later.";
+
         if (error.response) {
-            message = error.response.data?.message || `Server Error: ${error.response.status}`;
+            message = ERROR_MESSAGES[error.response.status] || error.response.data?.message || message;
         } else if (error.request) {
-            message = "Network error. Please check your connection.";
+           message = "We’re having trouble connecting right now. Please try again shortly.";
         } else {
             message = error.message;
         }

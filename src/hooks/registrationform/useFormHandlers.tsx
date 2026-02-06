@@ -35,8 +35,8 @@ export const useFormHandlers = () => {
             const data = await getRegistrationById(regId);
             reset(data);
             setExpanded({ 0: true, 1: true });
-        } catch (error) {
-            showSnackbar("Failed to fetch registration data.", "error");
+        } catch (error: any) {
+            showSnackbar(error.message, "error");
             navigate("/registrations");
         }
     }, [getRegistrationById, reset, navigate, showSnackbar]);
@@ -73,8 +73,8 @@ export const useFormHandlers = () => {
                 reset();
             }
             navigate("/registrations");
-        } catch (error) {
-            showSnackbar(`${isEditMode ? "Update" : "Submission"} failed. Please try again.`, "error");
+        } catch (error: any) {
+            showSnackbar(error.message, "error");
         }
     };
 
