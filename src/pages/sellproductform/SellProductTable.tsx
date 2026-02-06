@@ -305,6 +305,7 @@ const SellProductTable = () => {
       <EcomTable
         rows={groupedTableRows}
         columns={columns}
+        enableFind={true}
         emptyMessage="No products found matching the filters."
         enableSelection={activeTab !== "all" && activeTab !== "groupby"}
         selected={selectedIds}
@@ -367,7 +368,7 @@ const SellProductTable = () => {
             setOpenForm(true);
           }}
           sx={{
-            width:{xs:'190px',md:'140px'}
+            width: { xs: '190px', md: '140px' }
           }}
         />
       </Box>

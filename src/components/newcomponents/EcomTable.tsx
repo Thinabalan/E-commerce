@@ -19,6 +19,8 @@ import {
   FormControlLabel,
   Switch,
   Collapse,
+  TextField,
+  InputAdornment,
 } from "@mui/material";
 import { useTheme } from '@mui/material/styles';
 import FirstPageIcon from '@mui/icons-material/FirstPage';
@@ -30,6 +32,8 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrowDown';
 import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp';
+import SearchIcon from '@mui/icons-material/Search';
+import CloseIcon from '@mui/icons-material/Close';
 
 type Order = "asc" | "desc";
 
@@ -141,6 +145,7 @@ interface TableProps<T> {
   renderRowDetails?: (row: T) => React.ReactNode;
   disablePagination?: boolean;
   disableSorting?: boolean;
+  enableFind?: boolean;
 }
 
 export default function EcomTable<T>({
@@ -159,6 +164,7 @@ export default function EcomTable<T>({
   renderRowDetails,
   disablePagination = false,
   disableSorting = false,
+  enableFind = false,
 }: TableProps<T>) {
   const [orderBy, setOrderBy] = useState<keyof T | "">("");
   const [order, setOrder] = useState<Order>("asc");
@@ -166,7 +172,133 @@ export default function EcomTable<T>({
   const [rowsPerPage, setRowsPerPage] = useState(defaultRowsPerPage);
   const [openStates, setOpenStates] = useState<Record<string | number, boolean>>({});
   const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [activeMatchIndex, setActiveMatchIndex] = useState(0);
+  const [totalMatches, setTotalMatches] = useState(0);
+  const searchInputRef = React.useRef<HTMLInputElement>(null);
+
   const hasRowDetails = typeof renderRowDetails === "function";
+
+  /* SEARCH FILTER */
+  const filteredRows = useMemo(() => {
+    if (!searchQuery) return rows;
+
+    return rows.filter((row: any) => {
+      return columns.some((col) => {
+        const value = row[col.id];
+        if (value === null || value === undefined) return false;
+        return String(value)
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase());
+      });
+    });
+  }, [rows, columns, searchQuery]);
+
+  /* KEYBOARD SHORTCUT Ctrl + F */
+  useEffect(() => {
+    if (!enableFind) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "f") {
+        e.preventDefault();
+        setIsSearchOpen(true);
+        // Focus after state update
+        setTimeout(() => searchInputRef.current?.focus(), 100);
+      }
+      if (e.key === "Escape") {
+        setIsSearchOpen(false);
+        setSearchQuery("");
+      }
+      if (isSearchOpen && searchQuery) {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          if (e.shiftKey) {
+            handlePrevMatch();
+          } else {
+            handleNextMatch();
+          }
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [enableFind]);
+
+  /* HIGHLIGHT HELPER */
+  let matchCounter = 0;
+  const highlightText = (text: any, query: string) => {
+    if (!query) return text;
+    const stringText = String(text);
+    const regex = new RegExp(`(${query})`, "gi");
+    const parts = stringText.split(regex);
+
+    return (
+      <span>
+        {parts.map((part, i) => {
+          if (part.toLowerCase() === query.toLowerCase()) {
+            const currentIndex = matchCounter++;
+            const isCurrent = currentIndex === activeMatchIndex;
+            return (
+              <mark
+                key={i}
+                data-match-index={currentIndex}
+                style={{
+                  backgroundColor: isCurrent ? "#f39c12" : "#ffeb3b",
+                  color: isCurrent ? "white" : "inherit",
+                  boxShadow: isCurrent ? "0 0 0 1px #f39c12" : "none",
+                }}
+              >
+                {part}
+              </mark>
+            );
+          }
+          return part;
+        })}
+      </span>
+    );
+  };
+
+  const handleNextMatch = () => {
+    setActiveMatchIndex((prev) => (totalMatches > 0 ? (prev + 1) % totalMatches : 0));
+  };
+
+  const handlePrevMatch = () => {
+    setActiveMatchIndex((prev) => (totalMatches > 0 ? (prev - 1 + totalMatches) % totalMatches : 0));
+  };
+
+  /* COUNT TOTAL MATCHES */
+  useEffect(() => {
+    if (!searchQuery) {
+      setTotalMatches(0);
+      setActiveMatchIndex(0);
+      return;
+    }
+
+    let count = 0;
+    filteredRows.forEach((row: any) => {
+      columns.forEach((col) => {
+        const value = row[col.id];
+        if (value) {
+          const matches = String(value).match(new RegExp(searchQuery, "gi"));
+          if (matches) count += matches.length;
+        }
+      });
+    });
+    setTotalMatches(count);
+    setActiveMatchIndex(0);
+  }, [searchQuery, filteredRows, columns]);
+
+  /* SCROLL TO ACTIVE MATCH */
+  useEffect(() => {
+    if (isSearchOpen && searchQuery && totalMatches > 0) {
+      const activeMark = document.querySelector(`mark[data-match-index="${activeMatchIndex}"]`);
+      if (activeMark) {
+        activeMark.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }
+  }, [activeMatchIndex, isSearchOpen, searchQuery, totalMatches]);
 
   const toggleRow = (id: string | number) => {
     setOpenStates((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -224,10 +356,11 @@ export default function EcomTable<T>({
 
   const isSelected = (id: string | number) => selected.indexOf(id) !== -1;
 
-  const sortedRows = useMemo(() => {
-    if (disableSorting || !orderBy) return rows;
 
-    return [...rows].sort((a: any, b: any) => {
+  const sortedRows = useMemo(() => {
+    if (disableSorting || !orderBy) return filteredRows;
+
+    return [...filteredRows].sort((a: any, b: any) => {
       const valA = a[orderBy];
       const valB = b[orderBy];
 
@@ -320,6 +453,66 @@ export default function EcomTable<T>({
           {numSelected > 0 && selectedAction}
         </Toolbar>
       )}
+
+      {/* SEARCH BAR */}
+      <Collapse in={isSearchOpen}>
+        <Box sx={{ p: 2, display: "flex", alignItems: "center", gap: 2, borderBottom: "1px solid", borderColor: "divider", bgcolor: (theme) => theme.palette.mode === "dark" ? "grey.900" : "grey.50" }}>
+          <TextField
+            inputRef={searchInputRef}
+            size="small"
+            placeholder="Search in table..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            fullWidth
+            slotProps={{
+              input: {
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon color="action" />
+                  </InputAdornment>
+                ),
+                endAdornment: (
+                  <InputAdornment position="end">
+                    {searchQuery && (
+                      <IconButton size="small" onClick={() => setSearchQuery("")} sx={{ mr: 1 }}>
+                        <CloseIcon fontSize="small" />
+                      </IconButton>
+                    )}
+                  </InputAdornment>
+                )
+              }
+            }}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderRadius: '25px',
+                bgcolor: (theme) => theme.palette.mode === "dark" ? "rgba(0,0,0,0.2)" : "rgba(0,0,0,0.02)",
+              }
+            }}
+          />
+          <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, minWidth: "120px" }}>
+            <Typography variant="body2" sx={{ whiteSpace: "nowrap", fontWeight: 600, color: "primary.main", mr: 1 }}>
+              {searchQuery ? `${totalMatches > 0 ? activeMatchIndex + 1 : 0} of ${totalMatches}` : "Find"}
+            </Typography>
+            <Tooltip title="Previous Match (Shift+Enter)">
+              <span>
+                <IconButton size="small" onClick={handlePrevMatch} disabled={totalMatches === 0}>
+                  <KeyboardArrowUpIcon fontSize="small" />
+                </IconButton>
+              </span>
+            </Tooltip>
+            <Tooltip title="Next Match (Enter)">
+              <span>
+                <IconButton size="small" onClick={handleNextMatch} disabled={totalMatches === 0}>
+                  <KeyboardArrowDownIcon fontSize="small" />
+                </IconButton>
+              </span>
+            </Tooltip>
+          </Box>
+          <IconButton onClick={() => { setIsSearchOpen(false); setSearchQuery(""); }}>
+            <CloseIcon />
+          </IconButton>
+        </Box>
+      </Collapse>
       <TableContainer sx={{ overflowX: "auto", maxHeight: 500 }}>
         <Table stickyHeader size={dense ? "small" : "medium"}>
           <TableHead>
@@ -329,13 +522,13 @@ export default function EcomTable<T>({
                 position: "sticky",
                 top: 0,
                 zIndex: 4,
- 
+
               }}>
                 {(hasRowDetails || hasGroups) && (
                   <TableCell
                     rowSpan={2}
                     sx={{
-                      
+
                       textAlign: "center",
                       borderRight: "2px solid rgba(224, 224, 224, 1)",
                       zIndex: 3
@@ -382,7 +575,7 @@ export default function EcomTable<T>({
                           colSpan={colSpan}
                           align="center"
                           sx={{
-                            
+
                             fontWeight: "bold",
                             borderBottom: "2px solid rgba(224, 224, 224, 0.8)",
                             borderLeft: borderLeft,
@@ -403,7 +596,7 @@ export default function EcomTable<T>({
                           rowSpan={2}
                           align={col.headerAlign || "center"}
                           sx={{
-                           
+
                             borderLeft: borderLeft,
                             fontWeight: "bold"
                           }}
@@ -432,12 +625,12 @@ export default function EcomTable<T>({
               position: "sticky",
               top: 51,
               zIndex: 3,
-              
+
             } : {
               position: "sticky",
               top: 0,
               zIndex: 2,
-            
+
             }}>
               {!columns.some(c => c.groupLabel) && (
                 <>
@@ -459,7 +652,7 @@ export default function EcomTable<T>({
                     </TableCell>
                   )}
                   {enableSelection && (
-                    <TableCell padding="checkbox" sx={{  zIndex: 2 }}>
+                    <TableCell padding="checkbox" sx={{ zIndex: 2 }}>
                       <Checkbox
                         color="primary"
                         indeterminate={selected.length > 0 && selected.length < rows.length}
@@ -612,7 +805,7 @@ export default function EcomTable<T>({
                               c.render(dataRow)
                             ) : (
                               <Tooltip title={(dataRow as any)[c.id] || ""}>
-                                <span>{(dataRow as any)[c.id] || "—"}</span>
+                                <span>{highlightText((dataRow as any)[c.id], searchQuery)}</span>
                               </Tooltip>
                             )}
                           </TableCell>
