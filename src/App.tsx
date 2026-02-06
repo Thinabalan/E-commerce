@@ -13,6 +13,7 @@ import SellProductForm from "./pages/sellproductform/SellProductForm";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import { useAuth } from "./context/AuthContext";
 import { useUI } from "./context/UIContext";
+import ProductGrid from "./Rough/ProductGrid";
 
 
 function App() {
@@ -57,6 +58,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/products" element={<ProductsPage />} />
+            <Route path="/productgrid" element={<ProductGrid />} />            
             <Route
               path="/producttable"
               element={
