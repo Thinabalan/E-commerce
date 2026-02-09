@@ -20,7 +20,6 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { useErrorBoundary } from "react-error-boundary";
 
 const RegistrationList = () => {
   const {
@@ -39,10 +38,9 @@ const RegistrationList = () => {
   } = useRegistrationHandlers();
   const [isFullViewOpen, setIsFullViewOpen] = useState(false);
   const navigate = useNavigate();
-  const { showBoundary } = useErrorBoundary();
 
   useEffect(() => {
-    getRegistrationsList().catch(showBoundary);
+    getRegistrationsList();
   }, []);
 
   const flattenedRows = useMemo(() => {

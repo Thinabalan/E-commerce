@@ -13,12 +13,10 @@ export const useRegistrationHandlers = () => {
 
     const handleDelete = async () => {
         if (!deleteId) return;
-        try {
-            await deleteRegistration(deleteId);
+        const success = await deleteRegistration(deleteId);
+        if (success) {
             showSnackbar("Registration deleted successfully", "success");
             setDeleteId(null);
-        } catch (error: any) {
-            showSnackbar(error.message, "error");
         }
     };
 

@@ -15,23 +15,33 @@ const ERROR_MESSAGES: Record<number, string> = {
     400: "We couldn't process this request. Please check your information.",
     401: "Your session has expired. Please log in again.",
     403: "You don't have permission to perform this action.",
-    404: "This item is no longer available. It might have been deleted or moved.",
+    404: "We couldn’t complete your request. Please try again.",
     500: "Our servers are having some trouble. We're working on it!",
 };
 
 api.interceptors.response.use(
     (response) => response,
     (error) => {
-        let message = "Something went wrong. Please try again later.";
-
-        if (error.response) {
-            message = ERROR_MESSAGES[error.response.status] || error.response.data?.message || message;
-        } else if (error.request) {
-           message = "We’re having trouble connecting right now. Please try again shortly.";
-        } else {
-            message = error.message;
+        // SERVER DOWN / NO RESPONSE
+        if (!error.response) {
+            (error as any).isServerDown = true;
+            (error as any).customMessage = "Unable to connect to server. Please check your internet or try again later.";
+            return Promise.reject(error);
         }
-        return Promise.reject(new Error(message));
+
+        const status = error.response.status;
+
+        // RESOURCE NOT FOUND (404)
+        if (status === 404) {
+            (error as any).isNotFound = true;
+            (error as any).customMessage = ERROR_MESSAGES[404];
+            return Promise.reject(error);
+        }
+
+        // MAPPED MESSAGES (400, 401, 403, 500)
+        (error as any).customMessage = ERROR_MESSAGES[status] || error.response.data?.message || "Something went wrong. Please try again.";
+
+        return Promise.reject(error);
     }
 );
 

@@ -31,15 +31,14 @@ export const useFormHandlers = () => {
 
     // Data Fetching
     const fetchRegistrationData = useCallback(async (regId: string) => {
-        try {
-            const data = await getRegistrationById(regId);
+        const data = await getRegistrationById(regId);
+        if (data) {
             reset(data);
             setExpanded({ 0: true, 1: true });
-        } catch (error: any) {
-            showSnackbar(error.message, "error");
+        } else {
             navigate("/registrations");
         }
-    }, [getRegistrationById, reset, navigate, showSnackbar]);
+    }, [getRegistrationById, reset, navigate]);
 
     // Validation Error Handling
     const handleFormError = (errors: any) => {
@@ -52,29 +51,32 @@ export const useFormHandlers = () => {
 
     // Form Submission
     const onSubmit = async (data: RegistrationForm) => {
-        try {
-            const processedData = {
-                ...data,
-                businesses: data.businesses.map((business) => ({
-                    ...business,
-                    products: business.products.map((product) => ({
-                        ...product,
-                        isSaved: true,
-                    })),
+        const processedData = {
+            ...data,
+            businesses: data.businesses.map((business) => ({
+                ...business,
+                products: business.products.map((product) => ({
+                    ...product,
+                    isSaved: true,
                 })),
-            };
+            })),
+        };
 
-            if (isEditMode && id) {
-                await updateRegistration(id, processedData);
+        let response;
+        if (isEditMode && id) {
+            response = await updateRegistration(id, processedData);
+            if (response) {
                 showSnackbar("Form updated successfully", "success");
-            } else {
-                await addRegistration(processedData);
+            }
+        } else {
+            response = await addRegistration(processedData);
+            if (response) {
                 showSnackbar("Form submitted successfully", "success");
                 reset();
             }
+        }
+        if (response) {
             navigate("/registrations");
-        } catch (error: any) {
-            showSnackbar(error.message, "error");
         }
     };
 

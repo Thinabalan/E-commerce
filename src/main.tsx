@@ -8,7 +8,7 @@ import { AuthProvider } from './context/AuthContext';
 import { UIProvider } from './context/UIContext';
 
 import { ErrorBoundary } from 'react-error-boundary';
-import ErrorFallback from './components/errorfallback/ErrorFallback';
+import ErrorFallback from './components/error/ErrorFallback';
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <>
