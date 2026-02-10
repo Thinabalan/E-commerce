@@ -1,7 +1,8 @@
-import { Box, Typography, Button, Paper } from "@mui/material";
+import { Box, Typography, Paper } from "@mui/material";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import type { FallbackProps } from "react-error-boundary";
+import EcomButton from "../newcomponents/EcomButton";
 
 const ErrorFallback = ({ error, resetErrorBoundary }: FallbackProps) => {
     const message =
@@ -17,16 +18,18 @@ const ErrorFallback = ({ error, resetErrorBoundary }: FallbackProps) => {
                 justifyContent: "center",
                 minHeight: "100vh",
                 textAlign: "center",
+                p: 3
             }}
         >
             <Paper
                 elevation={3}
                 sx={{
-                    p: 4,
+                    p: 5,
                     maxWidth: 400,
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "center",
+                    borderRadius: 4,
                     gap: 2,
                 }}
             >
@@ -37,13 +40,12 @@ const ErrorFallback = ({ error, resetErrorBoundary }: FallbackProps) => {
                     <Typography variant="body1" color="text.secondary" >
                         {message || "An unexpected error occurred."}
                     </Typography>
-                    <Button
+                    <EcomButton
                         variant="contained"
                         startIcon={<RefreshIcon />}
                         onClick={resetErrorBoundary}
-                    >
-                        Try Again
-                    </Button>
+                        label="Try Again"
+                    />
             </Paper>
         </Box>
     );

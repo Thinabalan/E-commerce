@@ -1,4 +1,4 @@
-import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
+import { Routes, Route, useNavigate, useLocation, Navigate } from "react-router-dom";
 import { useState } from "react";
 import { Box } from "@mui/material";
 import Footer from './layouts/Footer'
@@ -14,6 +14,7 @@ import ProtectedRoute from "./components/auth/ProtectedRoute";
 import { useAuth } from "./context/AuthContext";
 import { useUI } from "./context/UIContext";
 import ProductGrid from "./Rough/ProductGrid";
+import NotFound from "./pages/error/NotFound";
 
 
 function App() {
@@ -34,6 +35,10 @@ function App() {
       showSnackbar("Login to access Become a seller", "error")
     }
   };
+
+  if (location.pathname === '/404') {
+    return <NotFound />;
+  }
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
@@ -58,7 +63,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/products" element={<ProductsPage />} />
-            <Route path="/productgrid" element={<ProductGrid />} />            
+            <Route path="/productgrid" element={<ProductGrid />} />
             <Route
               path="/producttable"
               element={
@@ -83,6 +88,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route path="*" element={<Navigate to="/404" replace />} />
           </Routes>
           <Footer />
         </Box>
