@@ -314,11 +314,7 @@ export default function ProductsPage() {
             <Grid container spacing={3}>
               {filteredProducts.map((prod) => (
                 <Grid size={{ xs: 6, sm: 6, md: 4 }} key={prod.id}>
-                  <EcomCard
-                    name={prod.productName}
-                    price={prod.price}
-                    image={prod.image}
-                  />
+                  <EcomCard product={prod} />
                 </Grid>
               ))}
             </Grid>

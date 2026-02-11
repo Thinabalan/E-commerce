@@ -85,11 +85,7 @@ export default function Home() {
         <Grid container spacing={4}>
           {topPicks.map((prod: Product) => (
             <Grid size={{ xs: 6, sm: 6, md: 3 }} key={prod.id}>
-              <EcomCard
-                name={prod.productName}
-                price={prod.price}
-                image={prod.image}
-              />
+              <EcomCard product={prod} />
             </Grid>
           ))}
         </Grid>
@@ -104,11 +100,7 @@ export default function Home() {
         <Grid container spacing={4}>
           {latestTrends.map((prod: Product) => (
             <Grid size={{ xs: 6, sm: 6, md: 3 }} key={prod.id}>
-              <EcomCard
-                name={prod.productName}
-                price={prod.price}
-                image={prod.image}
-              />
+              <EcomCard product={prod} />
             </Grid>
           ))}
 

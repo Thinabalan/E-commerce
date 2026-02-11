@@ -1,14 +1,49 @@
 import { Card, CardContent, CardMedia, Typography, Box, IconButton } from "@mui/material";
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import { useDispatch, useSelector } from "react-redux";
+import { useLocation, useNavigate } from "react-router-dom";
+import { Favorite, FavoriteBorder } from "@mui/icons-material";
+import { addFavouriteAsync, removeFavouriteAsync } from "../../redux/slices/favouritesSlice";
+import type { RootState, AppDispatch } from "../../redux/store";
+import type { Product } from "../../types/ProductTypes";
+import { useAuth } from "../../context/AuthContext";
+import { useUI } from "../../context/UIContext";
 import EcomButton from "./EcomButton";
 
 interface EcomCardProps {
-    name: string;
-    price: number;
-    image: string;
+    product: Product;
 }
 
-const EcomCard = ({ name, price, image }: EcomCardProps) => {
+const EcomCard = ({ product }: EcomCardProps) => {
+    const { productName: name, price, image, id } = product;
+    const dispatch = useDispatch<AppDispatch>();
+    const navigate = useNavigate();
+    const location = useLocation();
+    const { isAuthenticated, user } = useAuth();
+    const { showSnackbar } = useUI();
+
+    const favourites = useSelector((state: RootState) => state.favourites.items);
+    const favEntry = favourites.find(item => String(item.productId) === String(id));
+    const isFavourite = !!favEntry;
+
+    const handleFavouriteClick = () => {
+        if (!isAuthenticated) {
+            showSnackbar("Login to continue", "error");
+            navigate(location.pathname, { state: { showAuth: true } });
+            return;
+        }
+
+        if (isFavourite && favEntry) {
+            dispatch(removeFavouriteAsync(favEntry.id));
+        } else {
+            if (!user) return;
+            dispatch(addFavouriteAsync({
+                userId: user.id,
+                productId: id
+            }));
+
+        }
+    };
+
     return (
         <Card
             sx={{
@@ -49,15 +84,16 @@ const EcomCard = ({ name, price, image }: EcomCardProps) => {
                 <Box sx={{ mt: 'auto', display: 'flex', alignItems: 'center', gap: 1 }}>
                     <IconButton
                         size="small"
+                        onClick={handleFavouriteClick}
                         sx={{
                             border: '1px solid',
                             borderColor: 'divider',
                             borderRadius: '8px',
-                            color: "red",
+                            color: isFavourite ? "red" : "inherit",
                             flexShrink: 0
                         }}
                     >
-                        <FavoriteBorderIcon fontSize="small" />
+                        {isFavourite ? <Favorite fontSize="small" /> : <FavoriteBorder fontSize="small" />}
                     </IconButton>
                     <EcomButton
                         variant="contained"
@@ -68,8 +104,8 @@ const EcomCard = ({ name, price, image }: EcomCardProps) => {
                             textTransform: 'none',
                             fontWeight: 600,
                             whiteSpace: 'nowrap',
-                            px: 1,       
-                            fontSize: { xs: '0.75rem', sm: '0.875rem' } 
+                            px: 1,
+                            fontSize: { xs: '0.75rem', sm: '0.875rem' }
                         }}
                     />
                 </Box>

@@ -10,18 +10,23 @@ import { UIProvider } from './context/UIContext';
 import { ErrorBoundary } from 'react-error-boundary';
 import ErrorFallback from './components/error/ErrorFallback';
 
+import { Provider } from 'react-redux';
+import { store } from './redux/store';
+
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <>
     <ErrorBoundary FallbackComponent={ErrorFallback}>
-      <BrowserRouter>
-        <AuthProvider>
-          <MuiThemeProvider>
-            <UIProvider>
-              <App />
-            </UIProvider>
-          </MuiThemeProvider>
-        </AuthProvider>
-      </BrowserRouter>
+      <Provider store={store}>
+        <BrowserRouter>
+          <AuthProvider>
+            <MuiThemeProvider>
+              <UIProvider>
+                <App />
+              </UIProvider>
+            </MuiThemeProvider>
+          </AuthProvider>
+        </BrowserRouter>
+      </Provider>
     </ErrorBoundary>
   </>
 );

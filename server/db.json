@@ -1,6 +1,5 @@
 {
   "users": [
-
     {
       "id": "07e9",
       "name": "abc",
@@ -2296,6 +2295,23 @@
       ],
       "submittedAt": "2026-02-01T11:57:27.243Z",
       "updatedAt": "2026-02-01T12:09:36.051Z"
+    }
+  ],
+  "favourites": [
+    {
+      "id": "0554",
+      "userId": "6af6",
+      "productId": "2"
+    },
+    {
+      "id": "0a28",
+      "userId": "6af6",
+      "productId": "4"
+    },
+    {
+      "id": "6bbc",
+      "userId": "caf1",
+      "productId": "6"
     }
   ]
 }

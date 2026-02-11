@@ -1,6 +1,10 @@
 import { Routes, Route, useNavigate, useLocation, Navigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import { Box } from "@mui/material";
+import { fetchFavourites, clearFavourites } from "./redux/slices/favouritesSlice";
+import type { AppDispatch } from "./redux/store";
+
 import Footer from './layouts/Footer'
 import Header from './layouts/Header'
 import Sidebar from "./layouts/Sidebar";
@@ -15,17 +19,28 @@ import { useAuth } from "./context/AuthContext";
 import { useUI } from "./context/UIContext";
 import ProductGrid from "./Rough/ProductGrid";
 import NotFound from "./pages/error/NotFound";
-
+import Favourites from "./pages/favourites/Favourites";
 
 function App() {
 
   const navigate = useNavigate();
   const location = useLocation();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated , user} = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [showSellModal, setShowSellModal] = useState(false);
   const { showSnackbar } = useUI();
+  const dispatch = useDispatch<AppDispatch>();
+
+  useEffect(() => {
+    if (isAuthenticated && user?.id) {
+      dispatch(fetchFavourites(user.id));
+    } else {
+      dispatch(clearFavourites());
+    }
+  }, [isAuthenticated, user?.id, dispatch]);
+
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+
 
   const handleSellClick = () => {
     if (isAuthenticated) {
@@ -63,6 +78,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/products" element={<ProductsPage />} />
+            <Route path="/favourites" element={<Favourites />} />
             <Route path="/productgrid" element={<ProductGrid />} />
             <Route
               path="/producttable"
