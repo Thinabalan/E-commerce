@@ -1,5 +1,5 @@
 export const ERROR_MESSAGES = {
-  
+
   required: "is required",
   // Name
   nameInvalid: "Name must contain only letters",
@@ -7,6 +7,14 @@ export const ERROR_MESSAGES = {
 
   // Email
   emailInvalid: "Enter a valid email address",
+
+  //Password
+  passwordMin: "Password must be at least 8 characters.",
+  passwordLowercase: "Password must contain a lowercase letter.",
+  passwordUppercase: "Password must contain an uppercase letter.",
+  passwordNumber: "Password must contain a number.",
+  passwordSpecial: "Password must contain a special character (@$!%*?&).",
+  passwordSpace:"Password must not contain spaces",
 
   // Phone
   phoneInvalid: "Phone number must be exactly 10 digits",
@@ -16,15 +24,15 @@ export const ERROR_MESSAGES = {
   priceTooLong: "Price value is too long",
   stockInvalid: "Stock must be a number",
   stockTooLong: "Stock value is too long",
-  
+
   // Positive
-  positive:"must be positive",
+  positive: "must be positive",
 
   imageUrlInvalid: "Enter a valid image URL",
 
   // Pincode
   pincodeInvalid: "Pincode must be 6 digits",
- 
+
   // Warehouse
   warehouseMin: "At least one warehouse is required",
 
@@ -33,9 +41,6 @@ export const ERROR_MESSAGES = {
 
   // Business
   businessMin: "At least one business is required",
-
-  // Password
-  passwordMin: "Password must be at least 6 characters",
 };
 
 export const requiredMsg = (label: string) =>

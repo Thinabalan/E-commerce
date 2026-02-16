@@ -24,7 +24,7 @@
     {
       "id": "caf1",
       "name": "admin",
-      "email": "a@g.c",
+      "email": "admin@gmail.com",
       "password": "000000",
       "role": "admin"
     },
@@ -41,6 +41,13 @@
       "email": "s@g.c",
       "password": "222222",
       "role": "seller"
+    },
+    {
+      "id": "0607",
+      "name": "Suba",
+      "email": "suba@gmail.com",
+      "password": "Suba@161",
+      "role": "buyer"
     }
   ],
   "categories": [
