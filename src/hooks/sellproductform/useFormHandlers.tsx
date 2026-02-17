@@ -85,8 +85,11 @@ export function useFormHandlers({
   /* RESET CURRENT STEP */
   const handleReset = () => {
     stepFields[activeStep].forEach((field) => {
+      const defaultValue = editData ? editData[field] : sellProductDefaultValues[field];
       resetField(field, {
-        defaultValue: sellProductDefaultValues[field],
+        defaultValue,
+        keepDirty: false,
+        keepTouched: false,
       });
     });
 

@@ -56,7 +56,7 @@ const SellProductForm = ({ open, onClose, editData }: SellProductFormProps) => {
   const {
     handleSubmit,
     reset,
-    formState: { isValid },
+    formState: { isValid, dirtyFields, isDirty },
   } = productform;
 
   // Reset form when editData changes or modal opens
@@ -200,6 +200,7 @@ const SellProductForm = ({ open, onClose, editData }: SellProductFormProps) => {
                     label="Save"
                     variant="contained"
                     color="success"
+                    disabled={!isDirty || loading}
                     onClick={async () => {
                       const ok = await canSaveCurrentStep();
                       if (!ok) return;
@@ -225,7 +226,7 @@ const SellProductForm = ({ open, onClose, editData }: SellProductFormProps) => {
                   type="submit"
                   variant="contained"
                   color="success"
-                  disabled={!isValid || loading}
+                  disabled={!isValid || loading || (!!editData && !isDirty)}
                   form="sellProductForm"
                 />
               )}
@@ -233,6 +234,7 @@ const SellProductForm = ({ open, onClose, editData }: SellProductFormProps) => {
               <EcomButton
                 label="Reset"
                 variant="outlined"
+                disabled={!STEP_FIELDS[activeStep].some(field => dirtyFields[field])}
                 onClick={() => showDialog({
                   title: "Reset Form?",
                   description: "All entered data for this step will be cleared.",
