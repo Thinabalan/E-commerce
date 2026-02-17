@@ -25,6 +25,7 @@ export const useRegistration = () => {
                 showSnackbar,
                 fallbackMessage: "Failed to register",
             });
+            return null;
         } finally {
             setIsLoading(false);
         }
@@ -62,6 +63,7 @@ export const useRegistration = () => {
                 showSnackbar,
                 fallbackMessage: "Failed to fetch registration details",
             });
+            return null;
         } finally {
             setIsLoading(false);
         }
@@ -79,6 +81,7 @@ export const useRegistration = () => {
                 showSnackbar,
                 fallbackMessage: "Failed to update registration",
             });
+            return null;
         } finally {
             setIsLoading(false);
         }
@@ -97,6 +100,7 @@ export const useRegistration = () => {
                 showSnackbar,
                 fallbackMessage: "Failed to delete registration",
             });
+            return false;
         } finally {
             setIsLoading(false);
         }

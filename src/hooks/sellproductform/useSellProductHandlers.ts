@@ -20,7 +20,7 @@ interface UseSellProductHandlersProps {
     selectedIds: (string | number)[];
     activeTab: "active" | "inactive" | "draft" | "all" | "groupby";
     getProducts: () => Promise<Product[]>;
-    deleteProduct: (id: string | number) => Promise<void>;
+    deleteProduct: (id: string | number) => Promise<boolean>;
     toggleProductStatus: (id: string | number, status: "active" | "inactive") => Promise<any>;
     Filters: ProductFilters; // Default filters
 }
@@ -44,11 +44,9 @@ export const useSellProductHandlers = ({
     const { showSnackbar } = useUI();
 
     const loadProducts = async () => {
-        try {
-            const apiProducts = await getProducts();
+        const apiProducts = await getProducts();
+        if (apiProducts) {
             setRows(apiProducts);
-        } catch (error) {
-            console.error("Failed to load products:", error);
         }
     };
 
@@ -69,18 +67,30 @@ export const useSellProductHandlers = ({
             const name = product?.productName || "Product";
 
             if (confirmDialog.status === "draft") {
-                await deleteProduct(confirmDialog.id);
-                showSnackbar(`Product "${name}" deleted successfully`, "success");
+                const success = await deleteProduct(confirmDialog.id);
+                if (success) {
+                    showSnackbar(`Product "${name}" deleted successfully`, "success");
+                    setConfirmDialog(null);
+                    setSelectedIds([]);
+                    loadProducts();
+                }
             } else if (confirmDialog.status === "active") {
-                await toggleProductStatus(confirmDialog.id, confirmDialog.status);
-                showSnackbar(`Product "${name}" deactivated successfully`, "success");
+                const success = await toggleProductStatus(confirmDialog.id, confirmDialog.status);
+                if (success) {
+                    showSnackbar(`Product "${name}" deactivated successfully`, "success");
+                    setConfirmDialog(null);
+                    setSelectedIds([]);
+                    loadProducts();
+                }
             } else {
-                await toggleProductStatus(confirmDialog.id, confirmDialog.status);
-                showSnackbar(`Product "${name}" activated successfully`, "success");
+                const success = await toggleProductStatus(confirmDialog.id, confirmDialog.status);
+                if (success) {
+                    showSnackbar(`Product "${name}" activated successfully`, "success");
+                    setConfirmDialog(null);
+                    setSelectedIds([]);
+                    loadProducts();
+                }
             }
-            setConfirmDialog(null);
-            setSelectedIds([]);
-            loadProducts();
         }
     };
 
@@ -92,22 +102,33 @@ export const useSellProductHandlers = ({
 
     const confirmBulkAction = async () => {
         const count = selectedIds.length;
+        let success = true;
+
         if (activeTab === "draft") {
             for (const id of selectedIds) {
-                await deleteProduct(id);
+                const res = await deleteProduct(id);
+                if (!res) success = false;
             }
-            showSnackbar(`${count} drafts deleted successfully`, "success");
+            if (success) {
+                showSnackbar(`${count} drafts deleted successfully`, "success");
+            }
         } else {
             const targetStatus = activeTab === "active" ? "active" : "inactive";
             const actionLabel = activeTab === "active" ? "deactivated" : "activated";
             for (const id of selectedIds) {
-                await toggleProductStatus(id, targetStatus);
+                const res = await toggleProductStatus(id, targetStatus);
+                if (!res) success = false;
             }
-            showSnackbar(`${count} products ${actionLabel} successfully`, "success");
+            if (success) {
+                showSnackbar(`${count} products ${actionLabel} successfully`, "success");
+            }
         }
-        setSelectedIds([]);
-        setConfirmDialog(null);
-        loadProducts();
+
+        if (success) {
+            setSelectedIds([]);
+            setConfirmDialog(null);
+            loadProducts();
+        }
     };
 
     const handleConfirm = async () => {

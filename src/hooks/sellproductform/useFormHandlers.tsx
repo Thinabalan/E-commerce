@@ -109,24 +109,19 @@ export function useFormHandlers({
 
   /* SAVE DRAFT */
   const handleSave = async (data: SellProduct) => {
-    try {
-      const now = new Date().toISOString();
-      const draftData: CreateProduct = {
-        ...data,
-        status: "draft",
-        rating: 0,
-        updatedAt: now,
-        image: data.image || ""
-      };
+    const now = new Date().toISOString();
+    const draftData: CreateProduct = {
+      ...data,
+      status: "draft",
+      rating: 0,
+      updatedAt: now,
+      image: data.image || ""
+    };
 
-      if (editData?.id) {
-        await updateProduct(editData.id, draftData);
-      } else {
-        await addProduct(draftData);
-      }
-      console.log("Draft saved:", draftData);
-    } catch (error) {
-      console.error("Failed to save draft", error);
+    if (editData?.id) {
+      await updateProduct(editData.id, draftData);
+    } else {
+      await addProduct(draftData);
     }
   };
 
@@ -137,35 +132,37 @@ export function useFormHandlers({
   ) => {
     setLoading(true);
 
-    try {
-      const now = new Date().toISOString();
+    const now = new Date().toISOString();
+    let response;
 
-      if (editData?.id) {
-        const updateData: Partial<Product> = { ...data, updatedAt: now, status: "active" as const };
-        if (!editData.createdAt) {
-          updateData.createdAt = now;
-        }
-        await updateProduct(editData.id, updateData);
+    if (editData?.id) {
+      const updateData: Partial<Product> = { ...data, updatedAt: now, status: "active" as const };
+      if (!editData.createdAt) {
+        updateData.createdAt = now;
+      }
+      response = await updateProduct(editData.id, updateData);
+      if (response) {
         showSnackbar("Product updated successfully!", "success");
-      } else {
-        const newData: CreateProduct = {
-          ...data,
-          status: "active" as const,
-          rating: 0,
-          createdAt: now,
-          updatedAt: now,
-          image: data.image || "",
-        };
-        await addProduct(newData);
+      }
+    } else {
+      const newData: CreateProduct = {
+        ...data,
+        status: "active" as const,
+        rating: 0,
+        createdAt: now,
+        updatedAt: now,
+        image: data.image || "",
+      };
+      response = await addProduct(newData);
+      if (response) {
         showSnackbar("Product submitted successfully!", "success");
       }
-      onClose();
-    } catch (error) {
-      console.error("Submission error:", error);
-      showSnackbar("Failed to submit product. Please try again.", "error");
-    } finally {
-      setLoading(false);
     }
+
+    if (response) {
+      onClose();
+    }
+    setLoading(false);
   };
 
   return {
