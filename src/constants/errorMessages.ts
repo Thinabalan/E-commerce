@@ -31,6 +31,8 @@ export const ERROR_MESSAGES = {
 
   brandNameInvalid:"Brand name may include only letters, numbers, spaces, and the characters & ' -",
 
+  descriptionInvalid:"Description may include letters, numbers, spaces, and common punctuation only",
+
   upiInvalid:"Enter a valid UPI ID (e.g., name@bank)",
 
   accountHolderNameInvalid:"Account holder name may include only letters, spaces, dot, and apostrophe",

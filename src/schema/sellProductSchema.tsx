@@ -68,19 +68,20 @@ export const sellProductSchema: yup.ObjectSchema<SellProduct> = yup.object({
 
     city: yup
         .string()
-        // .trim()
-        // .matches(VALIDATION_REGEX.city, ERROR_MESSAGES.cityInvalid)
-        // .min(5, ERROR_MESSAGES.minLength("City", 5))
-        // .max(50, ERROR_MESSAGES.maxLength("City", 50))
-        .optional(),
+        .trim()
+        .transform((value) => (value === "" ? undefined : value))
+        .optional()
+        .matches(VALIDATION_REGEX.city, ERROR_MESSAGES.cityInvalid)
+        .min(5, ERROR_MESSAGES.minLength("City", 5))
+        .max(50, ERROR_MESSAGES.maxLength("City", 50)),
 
     address: yup
         .string()
-        // .trim()
-        // .transform((value) => (value === "" ? null : value))
-        // .min(10, ERROR_MESSAGES.minLength("Address", 10))
-        // .max(100, ERROR_MESSAGES.maxLength("Address", 100))
-        .optional(),
+        .trim()
+        .transform((value) => (value === "" ? undefined : value))
+        .optional()
+        .min(10, ERROR_MESSAGES.minLength("Address", 10))
+        .max(100, ERROR_MESSAGES.maxLength("Address", 100)),
 
     // PRODUCT INFO
     productName: yup
@@ -128,11 +129,19 @@ export const sellProductSchema: yup.ObjectSchema<SellProduct> = yup.object({
         .of(yup.string().required())
         .min(1, "At least one feature must be selected"),
 
-    highlights: yup.string()
-        .max(200, ERROR_MESSAGES.maxLength("Highlights", 200))
-        .optional(),
-    description: yup.string()
+    highlights: yup
+        .string()
+        .trim()
+        .optional()
+        .transform((value) => (value === "" ? undefined : value))
+        .min(10, ERROR_MESSAGES.minLength("Highlights", 10))
+        .max(200, ERROR_MESSAGES.maxLength("Highlights", 200)),
+
+    description: yup
+        .string()
+        .trim()
         .required(requiredMsg("Description"))
+        .matches(VALIDATION_REGEX.description, ERROR_MESSAGES.descriptionInvalid)
         .min(10, ERROR_MESSAGES.minLength("Description", 10))
         .max(1000, ERROR_MESSAGES.maxLength("Description", 1000)),
 
@@ -178,7 +187,6 @@ export const sellProductSchema: yup.ObjectSchema<SellProduct> = yup.object({
         is: "bank",
         then: (schema) => schema
             .trim()
-
             .required(requiredMsg("IFSC code"))
             .matches(VALIDATION_REGEX.ifscCode, ERROR_MESSAGES.ifscCodeInvalid),
         otherwise: (schema) => schema.optional(),

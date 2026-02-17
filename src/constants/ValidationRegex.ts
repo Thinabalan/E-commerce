@@ -8,6 +8,7 @@ export const VALIDATION_REGEX = {
   phone: /^\d+$/,
   productName: /^[A-Za-z0-9][A-Za-z0-9\s\-'",.&()/]*[A-Za-z0-9)]$/,
   brandName:/^[A-Za-z0-9]+(?:[ '&-][A-Za-z0-9]+)*$/,
+  description:/^(?!.*([.,!?-])\1{2})[A-Za-z0-9\s.,'"\-()/:;!?&%+#]*$/,
   upi:/^[A-Za-z0-9._-]+@[A-Za-z0-9]+$/,
   accountHolderName:/^[A-Za-z]+(?:[ .'][A-Za-z]+)*$/,
   accountNumber:/^\d{9,18}$/,
