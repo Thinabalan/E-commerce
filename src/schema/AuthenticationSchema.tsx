@@ -23,7 +23,8 @@ export const signupSchema: yup.ObjectSchema<SignupForm> = yup.object({
         .trim()
         .required(requiredMsg("Name"))
         .matches(VALIDATION_REGEX.name, ERROR_MESSAGES.nameInvalid)
-        .max(30, ERROR_MESSAGES.nameTooLong),
+        .min(3, ERROR_MESSAGES.minLength("Name", 3))
+        .max(30, ERROR_MESSAGES.maxLength("Name", 30)),
     email: yup
         .string()
         .trim()
@@ -33,8 +34,9 @@ export const signupSchema: yup.ObjectSchema<SignupForm> = yup.object({
     password: yup
         .string()
         .required(requiredMsg("Password"))
-        .min(8, ERROR_MESSAGES.passwordMin)
-        .matches(/^\S*$/,ERROR_MESSAGES.passwordSpace)
+        .min(8, ERROR_MESSAGES.minLength("Password", 8))
+        .max(20,ERROR_MESSAGES.maxLength("Password",20))
+        .matches(/^\S*$/, ERROR_MESSAGES.passwordSpace)
         .matches(/[a-z]/, ERROR_MESSAGES.passwordLowercase)
         .matches(/[A-Z]/, ERROR_MESSAGES.passwordUppercase)
         .matches(/\d/, ERROR_MESSAGES.passwordNumber)

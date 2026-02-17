@@ -10,11 +10,14 @@ export const RegistrationFormSchema: yup.ObjectSchema<RegistrationForm> = yup.ob
       .trim()
       .required(requiredMsg("Name"))
       .matches(VALIDATION_REGEX.name, ERROR_MESSAGES.nameInvalid)
-      .max(30, ERROR_MESSAGES.nameTooLong),
+      .min(3, ERROR_MESSAGES.minLength("Name", 3))
+      .max(30, ERROR_MESSAGES.maxLength("Name", 30)),
     email: yup
       .string()
-      .email(ERROR_MESSAGES.emailInvalid)
-      .required(requiredMsg("Email")),
+      .trim()
+      .lowercase()
+      .required(requiredMsg("Email"))
+      .matches(VALIDATION_REGEX.email, ERROR_MESSAGES.emailInvalid),
     warehouses: yup
       .array()
       .of(
@@ -23,14 +26,19 @@ export const RegistrationFormSchema: yup.ObjectSchema<RegistrationForm> = yup.ob
             .string()
             .trim()
             .required(requiredMsg("Warehouse Name"))
-            .matches(VALIDATION_REGEX.name, ERROR_MESSAGES.nameInvalid)
-            .max(30, ERROR_MESSAGES.nameTooLong),
+            .matches(VALIDATION_REGEX.companyName, ERROR_MESSAGES.warehouseNameInvalid)
+            .min(3, ERROR_MESSAGES.minLength("Warehouse Name", 3))
+            .max(30, ERROR_MESSAGES.maxLength("Warehouse Name", 30)),
           city: yup
             .string()
             .trim()
-            .required(requiredMsg("City")),
+            .required(requiredMsg("City"))
+            .matches(VALIDATION_REGEX.city, ERROR_MESSAGES.cityInvalid)
+            .min(5, ERROR_MESSAGES.minLength("City", 5))
+            .max(50, ERROR_MESSAGES.maxLength("City", 50)),
           pincode: yup
             .string()
+            .trim()
             .required(requiredMsg("Pincode"))
             .matches(VALIDATION_REGEX.pincode, ERROR_MESSAGES.pincodeInvalid),
           upload: yup.mixed().optional().notRequired(),
@@ -49,11 +57,15 @@ export const RegistrationFormSchema: yup.ObjectSchema<RegistrationForm> = yup.ob
           .string()
           .trim()
           .required(requiredMsg("Business Name"))
-          .max(30, ERROR_MESSAGES.nameTooLong),
+          .matches(VALIDATION_REGEX.companyName, ERROR_MESSAGES.businessNameInvalid)
+          .min(3, ERROR_MESSAGES.minLength("Business Name", 3))
+          .max(30, ERROR_MESSAGES.maxLength("Business Name", 30)),
         businessEmail: yup
           .string()
-          .email(ERROR_MESSAGES.emailInvalid)
-          .required(requiredMsg("Email")),
+          .trim()
+          .lowercase()
+          .required(requiredMsg("Email"))
+          .matches(VALIDATION_REGEX.email, ERROR_MESSAGES.emailInvalid),
         products: yup
           .array()
           .of(
@@ -62,12 +74,14 @@ export const RegistrationFormSchema: yup.ObjectSchema<RegistrationForm> = yup.ob
                 .string()
                 .trim()
                 .required(requiredMsg("Product Name"))
-                .max(30, ERROR_MESSAGES.nameTooLong),
+                .matches(VALIDATION_REGEX.productName, ERROR_MESSAGES.productNameInvalid)
+                .min(3, ERROR_MESSAGES.minLength("Product Name", 3))
+                .max(30, ERROR_MESSAGES.maxLength("Product Name", 30)),
               price: yup
                 .string()
                 .required(requiredMsg("Price"))
                 .matches(VALIDATION_REGEX.price, ERROR_MESSAGES.priceInvalid)
-                .max(7, ERROR_MESSAGES.priceTooLong)
+                .max(7, ERROR_MESSAGES.maxLength("Price", 7))
                 .test("positive", positive("Price"), (value) => {
                   if (!value) return false;
                   const numericValue = Number(value.replace(/,/g, ""));
@@ -77,7 +91,7 @@ export const RegistrationFormSchema: yup.ObjectSchema<RegistrationForm> = yup.ob
                 .string()
                 .required(requiredMsg("Stock"))
                 .matches(VALIDATION_REGEX.stock, ERROR_MESSAGES.stockInvalid)
-                .max(7,ERROR_MESSAGES.stockInvalid)
+                .max(7, ERROR_MESSAGES.maxLength("Stock", 7))
                 .test("positive", positive("Stock"), (value) => {
                   if (!value) return false;
                   const numericValue = Number(value.replace(/,/g, ""));
@@ -88,7 +102,8 @@ export const RegistrationFormSchema: yup.ObjectSchema<RegistrationForm> = yup.ob
                 .trim()
                 .required(requiredMsg("Category"))
                 .matches(VALIDATION_REGEX.name, ERROR_MESSAGES.nameInvalid)
-                .max(30, ERROR_MESSAGES.nameTooLong),
+                .min(3, ERROR_MESSAGES.minLength("Category", 3))
+                .max(30, ERROR_MESSAGES.maxLength("Category", 30)),
             })
           )
           .required()
