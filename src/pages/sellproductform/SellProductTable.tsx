@@ -448,10 +448,10 @@ const SellProductTable = () => {
                 ? "Delete"
                 : "Reactivate"
             : activeTab === "active"
-              ? "Deactivate All"
+              ? "Deactivate"
               : activeTab === "inactive"
-                ? "Reactivate All"
-                : "Delete All"
+                ? "Reactivate"
+                : "Delete"
         }
         onClose={() => setConfirmDialog(null)}
         onConfirm={handleConfirm}
