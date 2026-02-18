@@ -6,6 +6,10 @@ import {
   Container,
   IconButton,
   Tooltip,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
 } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -20,6 +24,12 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import DownloadIcon from "@mui/icons-material/Download";
+import FileDownloadIcon from "@mui/icons-material/FileDownload";
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+import TableChartIcon from '@mui/icons-material/TableChart';
+import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
+import { exportData, exportRegistrationDetails, type ExportFormat } from "../../utils/export";
 
 const RegistrationList = () => {
   const {
@@ -37,6 +47,9 @@ const RegistrationList = () => {
     setPreviewData,
   } = useRegistrationHandlers();
   const [isFullViewOpen, setIsFullViewOpen] = useState(false);
+  const [exportAnchor, setExportAnchor] = useState<null | HTMLElement>(null);
+  const [rowExportAnchor, setRowExportAnchor] = useState<null | HTMLElement>(null);
+  const [activeExportRow, setActiveExportRow] = useState<any>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -98,10 +111,78 @@ const RegistrationList = () => {
               <DeleteIcon fontSize="small" />
             </IconButton>
           </Tooltip>
+          <Tooltip title="Download">
+            <IconButton
+              size="small"
+              color="secondary"
+              onClick={(e) => {
+                e.stopPropagation();
+                setRowExportAnchor(e.currentTarget);
+                setActiveExportRow(row);
+              }}
+            >
+              <DownloadIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
         </Box>
       ),
     },
   ];
+
+  const handleRowExport = (format: ExportFormat) => {
+    if (activeExportRow) {
+      exportRegistrationDetails(activeExportRow, format);
+    }
+    setRowExportAnchor(null);
+    setActiveExportRow(null);
+  };
+
+  const handleExportClick = (event: React.MouseEvent<HTMLElement>) => {
+    setExportAnchor(event.currentTarget);
+  };
+
+  const handleExportClose = () => {
+    setExportAnchor(null);
+  };
+
+  const handleExport = (format: ExportFormat) => {
+    // Export all registrations currently in the table
+    exportData(flattenedRows, columns.filter(c => c.id !== 'actions'), format, "Registrations_List");
+    handleExportClose();
+  };
+
+  const exportMenu = (
+    <>
+      <Tooltip title="Export Options">
+        <IconButton onClick={handleExportClick} color="primary" sx={{ boxShadow: 1, bgcolor: 'background.paper', '&:hover': { bgcolor: 'grey.100' } }}>
+          <FileDownloadIcon />
+        </IconButton>
+      </Tooltip>
+      <Menu
+        anchorEl={exportAnchor}
+        open={Boolean(exportAnchor)}
+        onClose={handleExportClose}
+        slotProps={{
+          paper:{
+          elevation: 3,
+          sx: { mt: 1.5, minWidth: 180 }}
+        }}
+      >
+        <MenuItem onClick={() => handleExport('CSV')}>
+          <ListItemIcon><ReceiptLongIcon fontSize="small" /></ListItemIcon>
+          <ListItemText primary="Export as CSV" />
+        </MenuItem>
+        <MenuItem onClick={() => handleExport('EXCEL')}>
+          <ListItemIcon><TableChartIcon fontSize="small" /></ListItemIcon>
+          <ListItemText primary="Export as Excel" />
+        </MenuItem>
+        <MenuItem onClick={() => handleExport('PDF')}>
+          <ListItemIcon><PictureAsPdfIcon fontSize="small" /></ListItemIcon>
+          <ListItemText primary="Export as PDF" />
+        </MenuItem>
+      </Menu>
+    </>
+  );
 
 
   const tableContent = (
@@ -110,6 +191,7 @@ const RegistrationList = () => {
       columns={columns}
       enableFind={true}
       emptyMessage="No registrations found."
+      extraActions={exportMenu}
       renderRowDetails={(row) => (
         <Box
           p={3}
@@ -326,6 +408,27 @@ const RegistrationList = () => {
         cancelText="Cancel"
         loading={isLoading}
       />
+
+      {/* Row Export Menu */}
+      <Menu
+        anchorEl={rowExportAnchor}
+        open={Boolean(rowExportAnchor)}
+        onClose={() => setRowExportAnchor(null)}
+        slotProps={{ paper:{elevation: 3, sx: { mt: 1, minWidth: 150 } }}}
+      >
+        <MenuItem onClick={() => handleRowExport('CSV')}>
+          <ListItemIcon><ReceiptLongIcon fontSize="small" /></ListItemIcon>
+          <ListItemText primary="Export CSV" />
+        </MenuItem>
+        <MenuItem onClick={() => handleRowExport('EXCEL')}>
+          <ListItemIcon><TableChartIcon fontSize="small" /></ListItemIcon>
+          <ListItemText primary="Export Excel" />
+        </MenuItem>
+        <MenuItem onClick={() => handleRowExport('PDF')}>
+          <ListItemIcon><PictureAsPdfIcon fontSize="small" /></ListItemIcon>
+          <ListItemText primary="Export PDF" />
+        </MenuItem>
+      </Menu>
     </Box>
   );
 };

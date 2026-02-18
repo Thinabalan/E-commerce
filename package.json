@@ -21,12 +21,15 @@
     "@reduxjs/toolkit": "^2.11.2",
     "axios": "^1.13.2",
     "json-server": "^1.0.0-beta.3",
+    "jspdf": "^4.1.0",
+    "jspdf-autotable": "^5.0.7",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-error-boundary": "^6.1.0",
     "react-hook-form": "^7.69.0",
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.10.1",
+    "xlsx": "^0.18.5",
     "yup": "^1.7.1"
   },
   "devDependencies": {

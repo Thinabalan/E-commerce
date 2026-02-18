@@ -146,6 +146,7 @@ interface TableProps<T> {
   disablePagination?: boolean;
   disableSorting?: boolean;
   enableFind?: boolean;
+  extraActions?: React.ReactNode;
 }
 
 export default function EcomTable<T>({
@@ -165,6 +166,7 @@ export default function EcomTable<T>({
   disablePagination = false,
   disableSorting = false,
   enableFind = false,
+  extraActions,
 }: TableProps<T>) {
   const [orderBy, setOrderBy] = useState<keyof T | "">("");
   const [order, setOrder] = useState<Order>("asc");
@@ -433,7 +435,7 @@ export default function EcomTable<T>({
 
   return (
     <Paper sx={{ width: "100%", overflow: "hidden", boxShadow: 3, borderRadius: 2 }}>
-      {enableSelection && selected.length > 0 && (
+      {(extraActions || (enableSelection && selected.length > 0)) && (
         <Toolbar
           sx={{
             pl: { sm: 2 },
@@ -451,6 +453,7 @@ export default function EcomTable<T>({
           )}
 
           {numSelected > 0 && selectedAction}
+          {!numSelected && extraActions}
         </Toolbar>
       )}
 
