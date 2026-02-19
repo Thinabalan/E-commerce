@@ -5,6 +5,13 @@ import {
   Typography,
   Tooltip,
   Chip,
+  Checkbox,
+  FormControlLabel,
+  FormGroup,
+  Divider,
+  DialogContent,
+  DialogActions,
+  Button,
 } from "@mui/material";
 import { useForm } from "react-hook-form";
 import EditIcon from "@mui/icons-material/Edit";
@@ -26,7 +33,7 @@ import { useSellProductHandlers, type ConfirmDialogState } from "../../hooks/sel
 import { dateRange } from "../../utils/dateRange";
 import type { ProductFilters } from "../../types/ProductTypes";
 import { Filters } from "./data/sellProductDefaults";
-import { exportData } from "../../utils/export";
+import { exportMultiSheetData, exportMultiTablePDF } from "../../utils/export";
 import type { ExportFormat } from "../../utils/export";
 import EcomExportMenu from "../../components/newcomponents/EcomExportMenu";
 
@@ -44,6 +51,16 @@ const SellProductTable = () => {
   const [selectedIds, setSelectedIds] = useState<(string | number)[]>([]);
   const [dense, setDense] = useState(false);
   const [isFullViewOpen, setIsFullViewOpen] = useState(false);
+
+  /* EXPORT DIALOG STATE */
+  const [exportDialogOpen, setExportDialogOpen] = useState(false);
+  const [exportFormat, setExportFormat] = useState<ExportFormat>("EXCEL");
+  const [exportTabs, setExportTabs] = useState({
+    all: true,
+    active: true,
+    inactive: true,
+    draft: true
+  });
 
   const methods = useForm<ProductFilters>({
     defaultValues: Filters,
@@ -282,16 +299,38 @@ const SellProductTable = () => {
   ];
 
   const handleExport = (format: ExportFormat) => {
-    const tabName = activeTab.charAt(0).toUpperCase() + activeTab.slice(1);
-    const filename = `Products_${tabName}_List`;
-    const exportRows = activeTab === "groupby" ? searchFilteredRows : filteredRows;
+    setExportFormat(format);
+    setExportDialogOpen(true);
+  };
 
-    exportData(
-      exportRows,
-      columns.filter((c) => c.id !== "id") as any[],
-      format,
-      filename
-    );
+  const executeMultiExport = () => {
+    const categories = [];
+    const cols = columns.filter((c) => c.id !== "id");
+
+    if (exportTabs.all) {
+      categories.push({ name: "All Products", title: "All Products", data: searchFilteredRows, columns: cols as any });
+    }
+    if (exportTabs.active) {
+      const activeRows = searchFilteredRows.filter(p => p.status === "active" || (!p.status && p.category));
+      categories.push({ name: "Active", title: "Active Products", data: activeRows, columns: cols as any });
+    }
+    if (exportTabs.inactive) {
+      const inactiveRows = searchFilteredRows.filter(p => p.status === "inactive");
+      categories.push({ name: "Inactive", title: "Inactive Products", data: inactiveRows, columns: cols as any });
+    }
+    if (exportTabs.draft) {
+      const draftRows = searchFilteredRows.filter(p => p.status === "draft");
+      categories.push({ name: "Drafts", title: "Draft Products", data: draftRows, columns: cols as any });
+    }
+
+    if (categories.length > 0) {
+      if (exportFormat === "EXCEL") {
+        exportMultiSheetData(categories, "Inventory_Report");
+      } else {
+        exportMultiTablePDF(categories, "Inventory_Report");
+      }
+    }
+    setExportDialogOpen(false);
   };
 
   const tableContent = (
@@ -326,7 +365,6 @@ const SellProductTable = () => {
         onDenseChange={setDense}
         disablePagination={activeTab === "groupby"}
         disableSorting={activeTab === "groupby"}
-        extraActions={<EcomExportMenu onExport={handleExport} />}
         renderRowDetails={activeTab === "all" ? (row) => (
           <Box p={3} sx={{ backgroundColor: "rgba(0, 0, 0, 0.02)", borderTop: "1px solid rgba(0,0,0,0.05)", m: 0 }}>
             <Typography variant="subtitle2" color="primary" gutterBottom fontWeight="bold">
@@ -361,14 +399,11 @@ const SellProductTable = () => {
       {/* HEADER */}
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={3} sx={{ pt: { xs: '60px', md: '7px' } }}>
         <Box display="flex" alignItems="center" gap={2}>
-          <Typography variant="h5" fontWeight="bold" color="primary">
-            Manage Inventory
+          <Typography variant="h6" fontWeight="bold" >
+            Product Filters
+
           </Typography>
-          <Tooltip title="Open Full Screen">
-            <IconButton onClick={() => setIsFullViewOpen(true)} color="primary" size="small">
-              <OpenInFullIcon />
-            </IconButton>
-          </Tooltip>
+
         </Box>
 
         <EcomButton
@@ -393,6 +428,20 @@ const SellProductTable = () => {
       />
 
       {/* TABS & TABLE */}
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+        <Box display="flex" alignItems="center" gap={1}>
+          <Typography variant="h6" fontWeight="bold">
+            Product Inventory
+
+          </Typography>
+          <Tooltip title="Open Full Screen">
+            <IconButton onClick={() => setIsFullViewOpen(true)} color="primary" size="small">
+              <OpenInFullIcon />
+            </IconButton>
+          </Tooltip>
+        </Box>
+        <EcomExportMenu onExport={handleExport} />
+      </Box>
       {tableContent}
 
       <EcomDialog
@@ -417,6 +466,85 @@ const SellProductTable = () => {
         }}
         editData={editData}
       />
+
+      <EcomDialog
+        open={exportDialogOpen}
+        onClose={() => setExportDialogOpen(false)}
+        title={`Export as ${exportFormat}`}
+      >
+        <DialogContent sx={{ p: 3 }}>
+          <Typography variant="body2" color="textSecondary" mb={2}>
+            Select the categories to include in the {exportFormat === "EXCEL" ? "Excel report (as separate sheets)" : "PDF report (as separate sections)"}.
+          </Typography>
+          <FormGroup>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={exportTabs.all && exportTabs.active && exportTabs.inactive && exportTabs.draft}
+                  indeterminate={
+                    (exportTabs.all || exportTabs.active || exportTabs.inactive || exportTabs.draft) &&
+                    !(exportTabs.all && exportTabs.active && exportTabs.inactive && exportTabs.draft)
+                  }
+                  onChange={(e) => {
+                    const val = e.target.checked;
+                    setExportTabs({ all: val, active: val, inactive: val, draft: val });
+                  }}
+                />
+              }
+              label={<Typography fontWeight="bold">Select All</Typography>}
+            />
+            <Divider sx={{ my: 1 }} />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={exportTabs.all}
+                  onChange={(e) => setExportTabs({ ...exportTabs, all: e.target.checked })}
+                />
+              }
+              label="All Products"
+            />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={exportTabs.active}
+                  onChange={(e) => setExportTabs({ ...exportTabs, active: e.target.checked })}
+                />
+              }
+              label="Active Products"
+            />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={exportTabs.inactive}
+                  onChange={(e) => setExportTabs({ ...exportTabs, inactive: e.target.checked })}
+                />
+              }
+              label="Inactive Products"
+            />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={exportTabs.draft}
+                  onChange={(e) => setExportTabs({ ...exportTabs, draft: e.target.checked })}
+                />
+              }
+              label="Drafts"
+            />
+          </FormGroup>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button onClick={() => setExportDialogOpen(false)} color="inherit">
+            Cancel
+          </Button>
+          <Button
+            onClick={executeMultiExport}
+            variant="contained"
+            color="success"
+          >
+            Generate {exportFormat}
+          </Button>
+        </DialogActions>
+      </EcomDialog>
 
       <EcomDialog
         open={Boolean(confirmDialog)}

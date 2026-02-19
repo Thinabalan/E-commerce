@@ -2,7 +2,7 @@ import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
-export type ExportFormat = 'CSV' | 'EXCEL' | 'PDF';
+export type ExportFormat = 'EXCEL' | 'PDF';
 
 /* Common export utility for simple table data.*/
 export const exportData = <T>(
@@ -22,9 +22,6 @@ export const exportData = <T>(
     );
 
     switch (format) {
-        case 'CSV':
-            downloadCSV(headers, rows, `${filename}.csv`);
-            break;
         case 'EXCEL':
             downloadExcel(data, columns, `${filename}.xlsx`);
             break;
@@ -42,8 +39,6 @@ export const exportRegistrationDetails = (registration: any, format: ExportForma
         renderDetailedPDF(registration, filename);
     } else if (format === 'EXCEL') {
         renderDetailedExcel(registration, filename);
-    } else {
-        renderDetailedCSV(registration, filename);
     }
 };
 
@@ -153,43 +148,9 @@ const renderDetailedExcel = (reg: any, filename: string) => {
     XLSX.writeFile(workbook, `${filename}.xlsx`);
 };
 
-// CSV Detailed Layout (Flattened)
-const renderDetailedCSV = (reg: any, filename: string) => {
-    const rows = [
-        ["SECTION", "Details"],
-        ["SELLER", `Name: ${reg.seller.name} | Email: ${reg.seller.email}`],
-        ["SUBMITTED", reg.submittedAt],
-        [],
-        ["WAREHOUSES"],
-        ["Name", "City", "Pincode", "Document"],
-        ...reg.seller.warehouses.map((w: any) => [w.warehouseName, w.city, w.pincode, w.upload]),
-        [],
-        ["BUSINESSES & PRODUCTS"],
-        ["Business Name", "Product Name", "Category", "Price", "Stock"],
-        ...reg.businesses.flatMap((biz: any) =>
-            biz.products.map((p: any) => [biz.businessName, p.productName, p.category, p.price, p.stock])
-        )
-    ];
 
-    const content = rows.map(r => r.map((c: any) => `"${String(c || "").replace(/"/g, '""')}"`).join(",")).join("\n");
-    const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `${filename}.csv`;
-    link.click();
-};
 
-// Private Helpers
-const downloadCSV = (headers: string[], rows: string[][], filename: string) => {
-    const csvRows = [
-        headers.map(h => `"${h.replace(/"/g, '""')}"`).join(","),
-        ...rows.map(r => r.map(cell => `"${cell.replace(/"/g, '""')}"`).join(","))
-    ];
-    const content = csvRows.join("\n");
-    const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
-    triggerDownload(blob, filename);
-};
+
 
 const downloadExcel = (data: any[], columns: any[], filename: string) => {
     const excelData = data.map(item => {
@@ -205,6 +166,110 @@ const downloadExcel = (data: any[], columns: any[], filename: string) => {
     XLSX.utils.book_append_sheet(workbook, worksheet, "Data");
     XLSX.writeFile(workbook, filename);
 };
+
+/* Export multiple data sets into one Excel file with multiple sheets.*/
+export const exportMultiSheetData = (
+    sheets: { name: string; data: any[]; columns: { id: any; label: string }[] }[],
+    filename: string = "multi-sheet-export"
+) => {
+    const workbook = XLSX.utils.book_new();
+
+    sheets.forEach(sheet => {
+        const excelData = sheet.data.map(item => {
+            const row: any = {};
+            sheet.columns.forEach((col: any) => {
+                row[col.label] = (item as any)[col.id];
+            });
+            return row;
+        });
+
+        const worksheet = XLSX.utils.json_to_sheet(excelData);
+        XLSX.utils.book_append_sheet(workbook, worksheet, sheet.name);
+    });
+
+    XLSX.writeFile(workbook, `${filename}.xlsx`);
+};
+
+/* Export multiple data sets into one PDF file with multiple sections. */
+export const exportMultiTablePDF = (
+    sections: { title: string; data: any[]; columns: { id: any; label: string }[] }[],
+    filename: string = "multi-section-report"
+) => {
+    const doc = new jsPDF('l', 'mm', 'a4');
+    const downloadDate = new Date().toLocaleString();
+    let startY = 28;
+
+    sections.forEach((section, index) => {
+        if (index > 0) {
+            doc.addPage();
+            startY = 28;
+        }
+
+        const headers = section.columns.map(col => col.label);
+        const rows = section.data.map(row =>
+            section.columns.map(col => {
+                const val = (row as any)[col.id];
+                return val == null || String(val).trim() === "" ? "-" : String(val);
+            })
+        );
+
+        // Section Title
+        doc.setFontSize(14);
+        doc.setTextColor(25, 118, 210);
+        doc.setFont("helvetica", "bold");
+        doc.text(section.title, 14, index === 0 ? 15 : 15);
+
+        if (index === 0) {
+            doc.setFontSize(10);
+            doc.setTextColor(100);
+            doc.setFont("helvetica", "normal");
+            doc.text(`Download Date: ${downloadDate}`, 14, 22);
+        }
+
+        autoTable(doc, {
+            head: [headers],
+            body: rows,
+            startY: startY,
+            theme: 'grid',
+            styles: {
+                fontSize: 8,
+                cellPadding: 3,
+                valign: 'middle',
+                lineWidth: 0.1,
+                lineColor: [200, 200, 200]
+            },
+            headStyles: {
+                fillColor: [25, 118, 210],
+                textColor: [255, 255, 255],
+                fontStyle: 'bold',
+                halign: 'center'
+            },
+            alternateRowStyles: {
+                fillColor: [245, 248, 255]
+            },
+            margin: { top: 28, bottom: 20 },
+        });
+    });
+
+    const totalPages = (doc as any).internal.getNumberOfPages();
+    for (let i = 1; i <= totalPages; i++) {
+        doc.setPage(i);
+        doc.setFontSize(9);
+        doc.setTextColor(150);
+        const pageSize = doc.internal.pageSize;
+        const pageHeight = pageSize.height ? pageSize.height : pageSize.getHeight();
+        const pageWidth = pageSize.width ? pageSize.width : pageSize.getWidth();
+        doc.text(
+            `Page ${i} of ${totalPages}`,
+            pageWidth - 14,
+            pageHeight - 10,
+            { align: 'right' }
+        );
+    }
+
+    doc.save(`${filename}.pdf`);
+};
+
 
 const downloadPDF = (headers: string[], rows: string[][], filename: string) => {
     const doc = new jsPDF('l', 'mm', 'a4');
@@ -268,13 +333,3 @@ const downloadPDF = (headers: string[], rows: string[][], filename: string) => {
     doc.save(filename);
 };
 
-const triggerDownload = (blob: Blob, filename: string) => {
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-};

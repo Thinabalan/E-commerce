@@ -10,7 +10,6 @@ import {
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import TableChartIcon from "@mui/icons-material/TableChart";
-import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
 import type { ExportFormat } from "../../utils/export";
 
 interface EcomExportMenuProps {
@@ -63,12 +62,7 @@ const EcomExportMenu = ({
                     },
                 }}
             >
-                <MenuItem onClick={() => handleExport("CSV")}>
-                    <ListItemIcon>
-                        <ReceiptLongIcon fontSize="small" />
-                    </ListItemIcon>
-                    <ListItemText primary="Export as CSV" />
-                </MenuItem>
+
                 <MenuItem onClick={() => handleExport("EXCEL")}>
                     <ListItemIcon>
                         <TableChartIcon fontSize="small" />

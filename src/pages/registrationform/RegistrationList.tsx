@@ -27,7 +27,6 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import DownloadIcon from "@mui/icons-material/Download";
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import TableChartIcon from '@mui/icons-material/TableChart';
-import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
 import { exportData, exportRegistrationDetails, type ExportFormat } from "../../utils/export";
 import EcomExportMenu from "../../components/newcomponents/EcomExportMenu";
 
@@ -294,10 +293,7 @@ const RegistrationList = () => {
         onClose={() => setRowExportAnchor(null)}
         slotProps={{ paper: { elevation: 3, sx: { mt: 1, minWidth: 150 } } }}
       >
-        <MenuItem onClick={() => handleRowExport('CSV')}>
-          <ListItemIcon><ReceiptLongIcon fontSize="small" /></ListItemIcon>
-          <ListItemText primary="Export CSV" />
-        </MenuItem>
+
         <MenuItem onClick={() => handleRowExport('EXCEL')}>
           <ListItemIcon><TableChartIcon fontSize="small" /></ListItemIcon>
           <ListItemText primary="Export Excel" />
