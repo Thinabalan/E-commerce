@@ -25,11 +25,11 @@ import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import DownloadIcon from "@mui/icons-material/Download";
-import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import TableChartIcon from '@mui/icons-material/TableChart';
 import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
 import { exportData, exportRegistrationDetails, type ExportFormat } from "../../utils/export";
+import EcomExportMenu from "../../components/newcomponents/EcomExportMenu";
 
 const RegistrationList = () => {
   const {
@@ -46,10 +46,11 @@ const RegistrationList = () => {
     previewData,
     setPreviewData,
   } = useRegistrationHandlers();
+
   const [isFullViewOpen, setIsFullViewOpen] = useState(false);
-  const [exportAnchor, setExportAnchor] = useState<null | HTMLElement>(null);
   const [rowExportAnchor, setRowExportAnchor] = useState<null | HTMLElement>(null);
   const [activeExportRow, setActiveExportRow] = useState<any>(null);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -85,29 +86,17 @@ const RegistrationList = () => {
       render: (row) => (
         <Box display="flex" justifyContent="center" gap={1}>
           <Tooltip title="Preview">
-            <IconButton
-              size="small"
-              color="info"
-              onClick={handlePreview(row)}
-            >
+            <IconButton size="small" color="info" onClick={handlePreview(row)}>
               <VisibilityIcon fontSize="small" />
             </IconButton>
           </Tooltip>
           <Tooltip title="Edit">
-            <IconButton
-              size="small"
-              color="primary"
-              onClick={handleEdit(row)}
-            >
+            <IconButton size="small" color="primary" onClick={handleEdit(row)}>
               <EditIcon fontSize="small" />
             </IconButton>
           </Tooltip>
           <Tooltip title="Delete">
-            <IconButton
-              size="small"
-              color="error"
-              onClick={handleDeleteClick(row.id)}
-            >
+            <IconButton size="small" color="error" onClick={handleDeleteClick(row.id)}>
               <DeleteIcon fontSize="small" />
             </IconButton>
           </Tooltip>
@@ -129,6 +118,71 @@ const RegistrationList = () => {
     },
   ];
 
+  const renderRowDetails = (row: any) => (
+    <Box
+      p={3}
+      sx={{
+        backgroundColor: "rgba(0, 0, 0, 0.02)",
+        borderTop: "1px solid rgba(0,0,0,0.05)",
+      }}
+    >
+      <Typography variant="subtitle2" color="primary" gutterBottom fontWeight="bold">
+        Detailed Registration Info
+      </Typography>
+
+      <Box display="grid" gridTemplateColumns={{ xs: "1fr", md: "1fr 1fr 1fr" }} gap={3}>
+        {/* Seller Info */}
+        <Box>
+          <Typography variant="subtitle2" fontWeight="bold" mb={1} color="text.secondary">
+            Seller Information
+          </Typography>
+          <Box sx={{ p: 1, bgcolor: "#fff", borderRadius: 1, border: "1px solid #f0f0f0" }}>
+            <Typography variant="body2" fontWeight="bold">NAME: {row.seller.name}</Typography>
+            <Typography variant="caption" color="text.secondary" display="block">EMAIL: {row.seller.email}</Typography>
+          </Box>
+        </Box>
+
+        {/* Warehouses */}
+        <Box>
+          <Typography variant="subtitle2" fontWeight="bold" mb={1} color="text.secondary">
+            Warehouses ({row.seller.warehouses.length})
+          </Typography>
+          {row.seller.warehouses.map((w: any, i: number) => (
+            <Box key={i} mb={1} sx={{ p: 1, bgcolor: "#fff", borderRadius: 1, border: "1px solid #f0f0f0" }}>
+              <Typography variant="body2" fontWeight="bold">WAREHOUSE: {w.warehouseName}</Typography>
+              <Typography variant="caption" color="text.secondary" display="block">CITY: {w.city} | PIN: {w.pincode}</Typography>
+              {w.upload && (
+                <Typography variant="caption" display="block" color="primary.main">File: {w.upload}</Typography>
+              )}
+            </Box>
+          ))}
+        </Box>
+
+        {/* Businesses */}
+        <Box>
+          <Typography variant="subtitle2" fontWeight="bold" mb={1} color="text.secondary">
+            Businesses ({row.businesses.length})
+          </Typography>
+          {row.businesses.map((b: any, i: number) => (
+            <Box key={i} mb={2} sx={{ p: 1, bgcolor: "#fff", borderRadius: 1, border: "1px solid #f0f0f0" }}>
+              <Typography variant="body2" fontWeight="bold">BUSINESS: {b.businessName}</Typography>
+              <Typography variant="caption" color="text.secondary" display="block">EMAIL: {b.businessEmail}</Typography>
+              <Divider sx={{ my: 0.5 }} />
+              <Typography variant="caption" fontWeight="bold">Products:</Typography>
+              <Box component="ul" sx={{ m: 0, pl: 2 }}>
+                {b.products.map((p: any, j: number) => (
+                  <Typography key={j} component="li" variant="caption">
+                    {p.productName} ({p.category}) - ₹{p.price}
+                  </Typography>
+                ))}
+              </Box>
+            </Box>
+          ))}
+        </Box>
+      </Box>
+    </Box>
+  );
+
   const handleRowExport = (format: ExportFormat) => {
     if (activeExportRow) {
       exportRegistrationDetails(activeExportRow, format);
@@ -137,53 +191,9 @@ const RegistrationList = () => {
     setActiveExportRow(null);
   };
 
-  const handleExportClick = (event: React.MouseEvent<HTMLElement>) => {
-    setExportAnchor(event.currentTarget);
-  };
-
-  const handleExportClose = () => {
-    setExportAnchor(null);
-  };
-
   const handleExport = (format: ExportFormat) => {
-    // Export all registrations currently in the table
     exportData(flattenedRows, columns.filter(c => c.id !== 'actions'), format, "Registrations_List");
-    handleExportClose();
   };
-
-  const exportMenu = (
-    <>
-      <Tooltip title="Export Options">
-        <IconButton onClick={handleExportClick} color="primary" sx={{ boxShadow: 1, bgcolor: 'background.paper', '&:hover': { bgcolor: 'grey.100' } }}>
-          <FileDownloadIcon />
-        </IconButton>
-      </Tooltip>
-      <Menu
-        anchorEl={exportAnchor}
-        open={Boolean(exportAnchor)}
-        onClose={handleExportClose}
-        slotProps={{
-          paper:{
-          elevation: 3,
-          sx: { mt: 1.5, minWidth: 180 }}
-        }}
-      >
-        <MenuItem onClick={() => handleExport('CSV')}>
-          <ListItemIcon><ReceiptLongIcon fontSize="small" /></ListItemIcon>
-          <ListItemText primary="Export as CSV" />
-        </MenuItem>
-        <MenuItem onClick={() => handleExport('EXCEL')}>
-          <ListItemIcon><TableChartIcon fontSize="small" /></ListItemIcon>
-          <ListItemText primary="Export as Excel" />
-        </MenuItem>
-        <MenuItem onClick={() => handleExport('PDF')}>
-          <ListItemIcon><PictureAsPdfIcon fontSize="small" /></ListItemIcon>
-          <ListItemText primary="Export as PDF" />
-        </MenuItem>
-      </Menu>
-    </>
-  );
-
 
   const tableContent = (
     <EcomTable
@@ -191,119 +201,8 @@ const RegistrationList = () => {
       columns={columns}
       enableFind={true}
       emptyMessage="No registrations found."
-      extraActions={exportMenu}
-      renderRowDetails={(row) => (
-        <Box
-          p={3}
-          sx={{
-            backgroundColor: "rgba(0, 0, 0, 0.02)",
-            borderTop: "1px solid rgba(0,0,0,0.05)",
-          }}
-        >
-          <Typography variant="subtitle2" color="primary" gutterBottom fontWeight="bold">
-            Detailed Registration Info
-          </Typography>
-
-          <Box display="grid" gridTemplateColumns={{ xs: "1fr", md: "1fr 1fr 1fr" }} gap={3}>
-            {/* Seller Info */}
-            <Box>
-              <Typography variant="subtitle2" fontWeight="bold" mb={1} color="text.secondary">
-                Seller Information
-              </Typography>
-              <Box
-                sx={{
-                  p: 1,
-                  bgcolor: "#fff",
-                  borderRadius: 1,
-                  border: "1px solid #f0f0f0",
-                }}
-              >
-                <Typography variant="body2" fontWeight="bold">
-                  NAME: {row.seller.name}
-                </Typography>
-                <Typography variant="caption" color="text.secondary" display="block">
-                  EMAIL: {row.seller.email}
-                </Typography>
-              </Box>
-            </Box>
-
-            {/* Warehouses */}
-            <Box>
-              <Typography variant="subtitle2" fontWeight="bold" mb={1} color="text.secondary">
-                Warehouses ({row.seller.warehouses.length})
-              </Typography>
-
-              {row.seller.warehouses.map((w: any, i: number) => (
-                <Box
-                  key={i}
-                  mb={1}
-                  sx={{
-                    p: 1,
-                    bgcolor: "#fff",
-                    borderRadius: 1,
-                    border: "1px solid #f0f0f0",
-                  }}
-                >
-                  <Typography variant="body2" fontWeight="bold">
-                    WAREHOUSE NAME: {w.warehouseName}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary" display="block">
-                    CITY: {w.city}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary" display="block">
-                    PINCODE: {w.pincode}
-                  </Typography>
-                  {w.upload && (
-                    <Typography variant="caption" display="block" color="primary.main">
-                      File: {w.upload}
-                    </Typography>
-                  )}
-                </Box>
-              ))}
-            </Box>
-
-            {/* Businesses */}
-            <Box>
-              <Typography variant="subtitle2" fontWeight="bold" mb={1} color="text.secondary">
-                Businesses ({row.businesses.length})
-              </Typography>
-
-              {row.businesses.map((b: any, i: number) => (
-                <Box
-                  key={i}
-                  mb={2}
-                  sx={{
-                    p: 1,
-                    bgcolor: "#fff",
-                    borderRadius: 1,
-                    border: "1px solid #f0f0f0",
-                  }}
-                >
-                  <Typography variant="body2" fontWeight="bold">
-                    BUSINESS NAME: {b.businessName}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary" display="block">
-                    EMAIL: {b.businessEmail}
-                  </Typography>
-
-                  <Divider sx={{ my: 0.5 }} />
-
-                  <Typography variant="caption" fontWeight="bold">
-                    Products:
-                  </Typography>
-                  <Box component="ul" sx={{ m: 0, pl: 2 }}>
-                    {b.products.map((p: any, j: number) => (
-                      <Typography key={j} component="li" variant="caption">
-                        {p.productName} ({p.category}) - ₹{p.price} | Stock: {p.stock}
-                      </Typography>
-                    ))}
-                  </Box>
-                </Box>
-              ))}
-            </Box>
-          </Box>
-        </Box>
-      )}
+      extraActions={<EcomExportMenu onExport={handleExport} />}
+      renderRowDetails={renderRowDetails}
     />
   );
 
@@ -327,15 +226,10 @@ const RegistrationList = () => {
           </Tooltip>
           <Box mb={4} textAlign="center">
             <Box display="flex" alignItems="center" justifyContent="center" gap={2} sx={{ position: "relative" }}>
-              <Typography
-                variant="h5"
-                fontWeight={600}
-                color="primary.main"
-                sx={{ display: "flex", alignItems: "center", gap: 1 }}
-              >
+              <Typography variant="h5" fontWeight={600} color="primary.main">
                 Registrations List
                 <Tooltip title="Open Full Screen">
-                  <IconButton onClick={() => setIsFullViewOpen(true)} color="primary" size="small">
+                  <IconButton onClick={() => setIsFullViewOpen(true)} color="primary" size="small" sx={{ ml: 1 }}>
                     <OpenInFullIcon />
                   </IconButton>
                 </Tooltip>
@@ -348,12 +242,10 @@ const RegistrationList = () => {
                 sx={{ position: { md: "absolute" }, right: { md: 0 } }}
               />
             </Box>
-
             <Typography variant="body1" color="text.secondary">
               Review and manage all submitted business registration forms.
             </Typography>
           </Box>
-
           {tableContent}
         </Paper>
       </Container>
@@ -363,11 +255,7 @@ const RegistrationList = () => {
         open={isFullViewOpen}
         onClose={() => setIsFullViewOpen(false)}
         title="Registrations Full View"
-        headerSx={{
-          bgcolor: "primary.main",
-          color: "primary.contrastText",
-          boxShadow: 5,
-        }}
+        headerSx={{ bgcolor: "primary.main", color: "primary.contrastText", boxShadow: 5 }}
       >
         <Box sx={{ p: 4 }}>
           {tableContent}
@@ -381,19 +269,10 @@ const RegistrationList = () => {
         open={Boolean(previewData)}
         onClose={() => setPreviewData(null)}
         title="Registration Preview"
-        headerSx={{
-          bgcolor: "grey.800",
-          color: "common.white",
-          boxShadow: 3,
-        }}
-
+        headerSx={{ bgcolor: "grey.800", color: "common.white", boxShadow: 3 }}
       >
         <Box sx={{ p: previewData ? 0 : 4 }}>
-          {previewData && (
-            <Box sx={{ "& .MuiBox-root": { borderTop: "none" } }}>
-              {tableContent.props.renderRowDetails(previewData)}
-            </Box>
-          )}
+          {previewData && renderRowDetails(previewData)}
         </Box>
       </EcomDialog>
 
@@ -405,7 +284,6 @@ const RegistrationList = () => {
         title="Confirm Delete"
         description="Are you sure you want to delete this registration? This action cannot be undone."
         confirmText="Delete"
-        cancelText="Cancel"
         loading={isLoading}
       />
 
@@ -414,7 +292,7 @@ const RegistrationList = () => {
         anchorEl={rowExportAnchor}
         open={Boolean(rowExportAnchor)}
         onClose={() => setRowExportAnchor(null)}
-        slotProps={{ paper:{elevation: 3, sx: { mt: 1, minWidth: 150 } }}}
+        slotProps={{ paper: { elevation: 3, sx: { mt: 1, minWidth: 150 } } }}
       >
         <MenuItem onClick={() => handleRowExport('CSV')}>
           <ListItemIcon><ReceiptLongIcon fontSize="small" /></ListItemIcon>

@@ -1,10 +1,10 @@
 import { useEffect, useState, useMemo } from "react";
 import {
-
   IconButton,
   Box,
   Typography,
   Tooltip,
+  Chip,
 } from "@mui/material";
 import { useForm } from "react-hook-form";
 import EditIcon from "@mui/icons-material/Edit";
@@ -12,15 +12,13 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import RestoreIcon from "@mui/icons-material/Restore";
 import AddIcon from "@mui/icons-material/Add";
 import OpenInFullIcon from "@mui/icons-material/OpenInFull";
-import { Chip } from "@mui/material";
 
 import useProduct from "../../hooks/useProduct";
 import SellProductForm from "./SellProductForm";
 import EcomDialog from "../../components/newcomponents/EcomDialog";
 import EcomButton from "../../components/newcomponents/EcomButton";
 import type { Product } from "../../types/ProductTypes";
-import type { Column } from "../../components/newcomponents/EcomTable";
-import EcomTable from "../../components/newcomponents/EcomTable";
+import EcomTable, { type Column } from "../../components/newcomponents/EcomTable";
 import EcomTab from "../../components/newcomponents/EcomTab";
 import { formatDate } from "../../utils/formatDate";
 import SellProductFilter from "./SellProductFilter";
@@ -28,13 +26,15 @@ import { useSellProductHandlers, type ConfirmDialogState } from "../../hooks/sel
 import { dateRange } from "../../utils/dateRange";
 import type { ProductFilters } from "../../types/ProductTypes";
 import { Filters } from "./data/sellProductDefaults";
+import { exportData } from "../../utils/export";
+import type { ExportFormat } from "../../utils/export";
+import EcomExportMenu from "../../components/newcomponents/EcomExportMenu";
 
 const SellProductTable = () => {
   const { getProducts, toggleProductStatus, deleteProduct } = useProduct();
 
   const [rows, setRows] = useState<Product[]>([]);
-  const [appliedFilters, setAppliedFilters] =
-    useState<ProductFilters>(Filters);
+  const [appliedFilters, setAppliedFilters] = useState<ProductFilters>(Filters);
 
   const [openForm, setOpenForm] = useState(false);
   const [editData, setEditData] = useState<Product | null>(null);
@@ -140,9 +140,7 @@ const SellProductTable = () => {
   }, [searchFilteredRows, activeTab]);
 
   const groupedTableRows = useMemo(() => {
-    if (activeTab !== "groupby") {
-      return filteredRows;
-    }
+    if (activeTab !== "groupby") return filteredRows;
 
     const map = new Map<string, Product[]>();
     filteredRows.forEach((row) => {
@@ -283,6 +281,19 @@ const SellProductTable = () => {
     },
   ];
 
+  const handleExport = (format: ExportFormat) => {
+    const tabName = activeTab.charAt(0).toUpperCase() + activeTab.slice(1);
+    const filename = `Products_${tabName}_List`;
+    const exportRows = activeTab === "groupby" ? searchFilteredRows : filteredRows;
+
+    exportData(
+      exportRows,
+      columns.filter((c) => c.id !== "id") as any[],
+      format,
+      filename
+    );
+  };
+
   const tableContent = (
     <>
       <Box mt={2}>
@@ -315,6 +326,7 @@ const SellProductTable = () => {
         onDenseChange={setDense}
         disablePagination={activeTab === "groupby"}
         disableSorting={activeTab === "groupby"}
+        extraActions={<EcomExportMenu onExport={handleExport} />}
         renderRowDetails={activeTab === "all" ? (row) => (
           <Box p={3} sx={{ backgroundColor: "rgba(0, 0, 0, 0.02)", borderTop: "1px solid rgba(0,0,0,0.05)", m: 0 }}>
             <Typography variant="subtitle2" color="primary" gutterBottom fontWeight="bold">
@@ -367,9 +379,7 @@ const SellProductTable = () => {
             setEditData(null);
             setOpenForm(true);
           }}
-          sx={{
-            width: { xs: '190px', md: '140px' }
-          }}
+          sx={{ width: { xs: '190px', md: '140px' } }}
         />
       </Box>
 
@@ -390,11 +400,7 @@ const SellProductTable = () => {
         open={isFullViewOpen}
         onClose={() => setIsFullViewOpen(false)}
         title="Inventory Full View"
-        headerSx={{
-          bgcolor: "primary.main",
-          color: "primary.contrastText",
-          boxShadow: 5,
-        }}
+        headerSx={{ bgcolor: "primary.main", color: "primary.contrastText", boxShadow: 5 }}
       >
         <Box p={3}>
           {tableContent}
@@ -455,10 +461,9 @@ const SellProductTable = () => {
         }
         onClose={() => setConfirmDialog(null)}
         onConfirm={handleConfirm}
-
       />
     </Box>
   );
-}
+};
 
 export default SellProductTable;

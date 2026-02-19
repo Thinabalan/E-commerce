@@ -149,9 +149,6 @@ const renderDetailedExcel = (reg: any, filename: string) => {
 
     const worksheet = XLSX.utils.aoa_to_sheet(reportData);
 
-    // Add some basic styling (optional but helpful if library supports it, 
-    // though base 'xlsx' is limited in styling without 'xlsx-js-style')
-
     XLSX.utils.book_append_sheet(workbook, worksheet, "Registration Report");
     XLSX.writeFile(workbook, `${filename}.xlsx`);
 };
@@ -184,7 +181,6 @@ const renderDetailedCSV = (reg: any, filename: string) => {
 };
 
 // Private Helpers
-
 const downloadCSV = (headers: string[], rows: string[][], filename: string) => {
     const csvRows = [
         headers.map(h => `"${h.replace(/"/g, '""')}"`).join(","),
@@ -212,14 +208,63 @@ const downloadExcel = (data: any[], columns: any[], filename: string) => {
 
 const downloadPDF = (headers: string[], rows: string[][], filename: string) => {
     const doc = new jsPDF('l', 'mm', 'a4');
-    doc.text("Exported Data", 14, 15);
+    const title = filename.replace(/_/g, ' ').replace(/\.pdf$/, '');
+    const downloadDate = new Date().toLocaleString();
+
+    // Header
+    doc.setFontSize(16);
+    doc.setTextColor(25, 118, 210);
+    doc.text(title, 14, 15);
+
+    doc.setFontSize(10);
+    doc.setTextColor(100);
+    doc.text(`Download Date: ${downloadDate}`, 14, 22);
+    const formattedRows = rows.map(row =>
+        row.map(cell =>
+            cell == null || String(cell).trim() === ""
+                ? "-"
+                : String(cell)
+        )
+    );
     autoTable(doc, {
         head: [headers],
-        body: rows,
-        startY: 20,
-        styles: { fontSize: 8, cellPadding: 2 },
-        headStyles: { fillColor: [25, 118, 210], textColor: [255, 255, 255] },
+        body: formattedRows,
+        startY: 28,
+        theme: 'grid',
+        styles: {
+            fontSize: 8,
+            cellPadding: 3,
+            valign: 'middle',
+            lineWidth: 0.1,
+            lineColor: [200, 200, 200]
+        },
+        headStyles: {
+            fillColor: [25, 118, 210],
+            textColor: [255, 255, 255],
+            fontStyle: 'bold',
+            halign: 'center'
+        },
+        alternateRowStyles: {
+            fillColor: [245, 248, 255]
+        },
+        margin: { top: 28, bottom: 20 },
     });
+
+    const totalPages = (doc as any).internal.getNumberOfPages();
+    for (let i = 1; i <= totalPages; i++) {
+        doc.setPage(i);
+        doc.setFontSize(9);
+        doc.setTextColor(150);
+        const pageSize = doc.internal.pageSize;
+        const pageHeight = pageSize.height ? pageSize.height : pageSize.getHeight();
+        const pageWidth = pageSize.width ? pageSize.width : pageSize.getWidth();
+        doc.text(
+            `Page ${i} of ${totalPages}`,
+            pageWidth - 14,
+            pageHeight - 10,
+            { align: 'right' }
+        );
+    }
     doc.save(filename);
 };
 
