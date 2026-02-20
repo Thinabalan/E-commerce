@@ -17,12 +17,14 @@ interface EcomCheckboxProps {
   name: string;
   label: string;
   options: Option[];
+  row?: boolean;
 }
 
 const EcomCheckbox = ({
   name,
   label,
   options,
+  row = true,
 }: EcomCheckboxProps) => {
   const { control } = useFormContext();
 
@@ -44,7 +46,7 @@ const EcomCheckbox = ({
         return (
           <FormControl error={Boolean(fieldState.error)} component="fieldset">
             <FormLabel>{label}</FormLabel>
-            <FormGroup row>
+            <FormGroup row={row}>
               {options.map((opt) => (
                 <FormControlLabel
                   key={opt.value}

@@ -12,7 +12,7 @@ import {
   DialogContent,
   DialogActions,
 } from "@mui/material";
-import { useForm } from "react-hook-form";
+import { useForm, FormProvider } from "react-hook-form";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import RestoreIcon from "@mui/icons-material/Restore";
@@ -33,6 +33,7 @@ import { dateRange } from "../../utils/dateRange";
 import type { ProductFilters } from "../../types/ProductTypes";
 import { Filters } from "./data/sellProductDefaults";
 import { exportExcel, exportPDF, type ExportFormat } from "../../utils/export";
+import EcomCheckbox from "../../components/newcomponents/EcomCheckbox";
 import EcomExportMenu from "../../components/newcomponents/EcomExportMenu";
 
 const SellProductTable = () => {
@@ -53,12 +54,20 @@ const SellProductTable = () => {
   /* EXPORT DIALOG STATE */
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
   const [exportFormat, setExportFormat] = useState<ExportFormat>("EXCEL");
-  const [exportTabs, setExportTabs] = useState({
-    all: true,
-    active: true,
-    inactive: true,
-    draft: true
+
+  const exportMethods = useForm({
+    defaultValues: {
+      categories: ["all", "active", "inactive", "draft"]
+    }
   });
+
+  const selectedExportTabs = exportMethods.watch("categories") || [];
+  const isAllSelected = selectedExportTabs.length === 4;
+  const isIndeterminate = selectedExportTabs.length > 0 && selectedExportTabs.length < 4;
+
+  const handleSelectAllExport = (checked: boolean) => {
+    exportMethods.setValue("categories", checked ? ["all", "active", "inactive", "draft"] : []);
+  };
 
   const methods = useForm<ProductFilters>({
     defaultValues: Filters,
@@ -305,20 +314,22 @@ const SellProductTable = () => {
     const categories = [];
     const cols = columns.filter((c) => c.id !== "id");
     const colsWithoutStatus = cols.filter(c => c.id !== "status");
-    if (exportTabs.all) {
-      categories.push({ name: "All Products", title: "All Products", data: searchFilteredRows, columns: cols});
+    const { categories: activeTabs } = exportMethods.getValues();
+
+    if (activeTabs.includes("all")) {
+      categories.push({ name: "All Products", title: "All Products", data: searchFilteredRows, columns: cols });
     }
-    if (exportTabs.active) {
+    if (activeTabs.includes("active")) {
       const activeRows = searchFilteredRows.filter(p => p.status === "active" || (!p.status && p.category));
-      categories.push({ name: "Active", title: "Active Products", data: activeRows, columns: colsWithoutStatus});
+      categories.push({ name: "Active", title: "Active Products", data: activeRows, columns: colsWithoutStatus });
     }
-    if (exportTabs.inactive) {
+    if (activeTabs.includes("inactive")) {
       const inactiveRows = searchFilteredRows.filter(p => p.status === "inactive");
-      categories.push({ name: "Inactive", title: "Inactive Products", data: inactiveRows, columns: colsWithoutStatus});
+      categories.push({ name: "Inactive", title: "Inactive Products", data: inactiveRows, columns: colsWithoutStatus });
     }
-    if (exportTabs.draft) {
+    if (activeTabs.includes("draft")) {
       const draftRows = searchFilteredRows.filter(p => p.status === "draft");
-      categories.push({ name: "Drafts", title: "Draft Products", data: draftRows, columns: colsWithoutStatus});
+      categories.push({ name: "Drafts", title: "Draft Products", data: draftRows, columns: colsWithoutStatus });
     }
 
     if (categories.length > 0) {
@@ -473,61 +484,32 @@ const SellProductTable = () => {
           <Typography variant="body2" color="textSecondary" mb={2}>
             Select the categories to include in the {exportFormat === "EXCEL" ? "Excel report (as separate sheets)" : "PDF report (as separate sections)"}.
           </Typography>
-          <FormGroup>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={exportTabs.all && exportTabs.active && exportTabs.inactive && exportTabs.draft}
-                  indeterminate={
-                    (exportTabs.all || exportTabs.active || exportTabs.inactive || exportTabs.draft) &&
-                    !(exportTabs.all && exportTabs.active && exportTabs.inactive && exportTabs.draft)
-                  }
-                  onChange={(e) => {
-                    const val = e.target.checked;
-                    setExportTabs({ all: val, active: val, inactive: val, draft: val });
-                  }}
-                />
-              }
-              label={<Typography fontWeight="bold">Select All</Typography>}
-            />
-            <Divider sx={{ my: 1 }} />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={exportTabs.all}
-                  onChange={(e) => setExportTabs({ ...exportTabs, all: e.target.checked })}
-                />
-              }
-              label="All Products"
-            />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={exportTabs.active}
-                  onChange={(e) => setExportTabs({ ...exportTabs, active: e.target.checked })}
-                />
-              }
-              label="Active Products"
-            />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={exportTabs.inactive}
-                  onChange={(e) => setExportTabs({ ...exportTabs, inactive: e.target.checked })}
-                />
-              }
-              label="Inactive Products"
-            />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={exportTabs.draft}
-                  onChange={(e) => setExportTabs({ ...exportTabs, draft: e.target.checked })}
-                />
-              }
-              label="Drafts"
-            />
-          </FormGroup>
+          <FormProvider {...exportMethods}>
+            <FormGroup>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={isAllSelected}
+                    indeterminate={isIndeterminate}
+                    onChange={(e) => handleSelectAllExport(e.target.checked)}
+                  />
+                }
+                label={<Typography fontWeight="bold">Select All</Typography>}
+              />
+              <Divider sx={{ my: 1 }} />
+              <EcomCheckbox
+                name="categories"
+                label=""
+                row={false}
+                options={[
+                  { label: "All Products", value: "all" },
+                  { label: "Active Products", value: "active" },
+                  { label: "Inactive Products", value: "inactive" },
+                  { label: "Drafts", value: "draft" },
+                ]}
+              />
+            </FormGroup>
+          </FormProvider>
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 2 }}>
           <EcomButton label="Cancel" onClick={() => setExportDialogOpen(false)} color="inherit" />
