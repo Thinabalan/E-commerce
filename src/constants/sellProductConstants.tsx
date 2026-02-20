@@ -51,4 +51,24 @@ export const CREATED_AT_RANGE = [
   { label: "Last 30 Days", value: "last30" },
   { label: "This Month", value: "thisMonth" },
   { label: "Last Month", value: "lastMonth" },
-]
+];
+
+export const EXPORT_TABS = [
+  { label: "All Products", value: "all" },
+  { label: "Active Products", value: "active" },
+  { label: "Inactive Products", value: "inactive" },
+  { label: "Drafts", value: "draft" },
+];
+
+export const EXPORTABLE_COLUMNS = [
+    { label: "Seller Name", value: "sellerName" },
+    { label: "Email", value: "email" },
+    { label: "Phone", value: "phone" },
+    { label: "Product Name", value: "productName" },
+    { label: "Category", value: "category" },
+    { label: "Brand", value: "brand" },
+    { label: "Price", value: "price" },
+    { label: "Stock", value: "stock" },
+    { label: "Created At", value: "createdAt" },
+    { label: "Status", value: "status" },
+  ];

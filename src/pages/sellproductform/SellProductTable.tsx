@@ -23,6 +23,7 @@ import useProduct from "../../hooks/useProduct";
 import SellProductForm from "./SellProductForm";
 import EcomDialog from "../../components/newcomponents/EcomDialog";
 import EcomButton from "../../components/newcomponents/EcomButton";
+import { useUI } from "../../context/UIContext";
 import type { Product } from "../../types/ProductTypes";
 import EcomTable, { type Column } from "../../components/newcomponents/EcomTable";
 import EcomTab from "../../components/newcomponents/EcomTab";
@@ -35,6 +36,7 @@ import { Filters } from "./data/sellProductDefaults";
 import { exportExcel, exportPDF, type ExportFormat } from "../../utils/export";
 import EcomCheckbox from "../../components/newcomponents/EcomCheckbox";
 import EcomExportMenu from "../../components/newcomponents/EcomExportMenu";
+import { EXPORT_TABS, EXPORTABLE_COLUMNS } from "../../constants/sellProductConstants";
 
 const SellProductTable = () => {
   const { getProducts, toggleProductStatus, deleteProduct } = useProduct();
@@ -47,6 +49,7 @@ const SellProductTable = () => {
   /* DIALOG STATE */
   const [confirmDialog, setConfirmDialog] = useState<ConfirmDialogState | null>(null);
   const [activeTab, setActiveTab] = useState<"active" | "inactive" | "draft" | "all" | "groupby">("all");
+  const { showSnackbar } = useUI();
   const [selectedIds, setSelectedIds] = useState<(string | number)[]>([]);
   const [dense, setDense] = useState(false);
   const [isFullViewOpen, setIsFullViewOpen] = useState(false);
@@ -57,16 +60,25 @@ const SellProductTable = () => {
 
   const exportMethods = useForm({
     defaultValues: {
-      categories: ["all", "active", "inactive", "draft"]
+      categories: EXPORT_TABS.map(tab => tab.value),
+      columns: EXPORTABLE_COLUMNS.map(col => col.value)
     }
   });
 
   const selectedExportTabs = exportMethods.watch("categories") || [];
-  const isAllSelected = selectedExportTabs.length === 4;
-  const isIndeterminate = selectedExportTabs.length > 0 && selectedExportTabs.length < 4;
+  const isAllTabsSelected = selectedExportTabs.length === EXPORT_TABS.length;
+  const isTabsIndeterminate = selectedExportTabs.length > 0 && selectedExportTabs.length < EXPORT_TABS.length;
+
+  const selectedExportColumns = exportMethods.watch("columns") || [];
+  const isAllColumnsSelected = selectedExportColumns.length === EXPORTABLE_COLUMNS.length;
+  const isColumnsIndeterminate = selectedExportColumns.length > 0 && selectedExportColumns.length < EXPORTABLE_COLUMNS.length;
 
   const handleSelectAllExport = (checked: boolean) => {
-    exportMethods.setValue("categories", checked ? ["all", "active", "inactive", "draft"] : []);
+    exportMethods.setValue("categories", checked ? EXPORT_TABS.map(tab => tab.value) : []);
+  };
+
+  const handleSelectAllColumns = (checked: boolean) => {
+    exportMethods.setValue("columns", checked ? EXPORTABLE_COLUMNS.map(col => col.value) : []);
   };
 
   const methods = useForm<ProductFilters>({
@@ -312,24 +324,31 @@ const SellProductTable = () => {
 
   const executeMultiExport = () => {
     const categories = [];
-    const cols = columns.filter((c) => c.id !== "id");
-    const colsWithoutStatus = cols.filter(c => c.id !== "status");
-    const { categories: activeTabs } = exportMethods.getValues();
+    const { categories: activeTabs, columns: selectedCols } = exportMethods.getValues();
+
+    if (activeTabs.length === 0 || selectedCols.length === 0) {
+      showSnackbar("Please select at least one category and one column to export.", "error");
+      return;
+    }
+
+    // Filter columns based on selection
+    const availableCols = columns.filter((c) => c.id !== "id");
+    const filteredCols = availableCols.filter(c => selectedCols.includes(c.id as string));
 
     if (activeTabs.includes("all")) {
-      categories.push({ name: "All Products", title: "All Products", data: searchFilteredRows, columns: cols });
+      categories.push({ name: "All Products", title: "All Products", data: searchFilteredRows, columns: filteredCols });
     }
     if (activeTabs.includes("active")) {
       const activeRows = searchFilteredRows.filter(p => p.status === "active" || (!p.status && p.category));
-      categories.push({ name: "Active", title: "Active Products", data: activeRows, columns: colsWithoutStatus });
+      categories.push({ name: "Active", title: "Active Products", data: activeRows, columns: filteredCols });
     }
     if (activeTabs.includes("inactive")) {
       const inactiveRows = searchFilteredRows.filter(p => p.status === "inactive");
-      categories.push({ name: "Inactive", title: "Inactive Products", data: inactiveRows, columns: colsWithoutStatus });
+      categories.push({ name: "Inactive", title: "Inactive Products", data: inactiveRows, columns: filteredCols });
     }
     if (activeTabs.includes("draft")) {
       const draftRows = searchFilteredRows.filter(p => p.status === "draft");
-      categories.push({ name: "Drafts", title: "Draft Products", data: draftRows, columns: colsWithoutStatus });
+      categories.push({ name: "Drafts", title: "Draft Products", data: draftRows, columns: filteredCols });
     }
 
     if (categories.length > 0) {
@@ -485,30 +504,57 @@ const SellProductTable = () => {
             Select the categories to include in the {exportFormat === "EXCEL" ? "Excel report (as separate sheets)" : "PDF report (as separate sections)"}.
           </Typography>
           <FormProvider {...exportMethods}>
-            <FormGroup>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={isAllSelected}
-                    indeterminate={isIndeterminate}
-                    onChange={(e) => handleSelectAllExport(e.target.checked)}
+            <Box display="grid" gridTemplateColumns={{ xs: "1fr", md: "1fr 1fr" }} gap={4}>
+              <Box>
+                <Typography variant="subtitle1" fontWeight="bold" mb={1} color="primary">
+                  1. Select Categories
+                </Typography>
+                <FormGroup>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={isAllTabsSelected}
+                        indeterminate={isTabsIndeterminate}
+                        onChange={(e) => handleSelectAllExport(e.target.checked)}
+                      />
+                    }
+                    label={<Typography fontWeight="bold">Select All Categories</Typography>}
                   />
-                }
-                label={<Typography fontWeight="bold">Select All</Typography>}
-              />
-              <Divider sx={{ my: 1 }} />
-              <EcomCheckbox
-                name="categories"
-                label=""
-                row={false}
-                options={[
-                  { label: "All Products", value: "all" },
-                  { label: "Active Products", value: "active" },
-                  { label: "Inactive Products", value: "inactive" },
-                  { label: "Drafts", value: "draft" },
-                ]}
-              />
-            </FormGroup>
+                  <Divider sx={{ my: 1 }} />
+                  <EcomCheckbox
+                    name="categories"
+                    label=""
+                    row={false}
+                    options={EXPORT_TABS}
+                  />
+                </FormGroup>
+              </Box>
+
+              <Box>
+                <Typography variant="subtitle1" fontWeight="bold" mb={1} color="primary">
+                  2. Select Columns
+                </Typography>
+                <FormGroup>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={isAllColumnsSelected}
+                        indeterminate={isColumnsIndeterminate}
+                        onChange={(e) => handleSelectAllColumns(e.target.checked)}
+                      />
+                    }
+                    label={<Typography fontWeight="bold">Select All Columns</Typography>}
+                  />
+                  <Divider sx={{ my: 1 }} />
+                  <EcomCheckbox
+                    name="columns"
+                    label=""
+                    row={false}
+                    options={EXPORTABLE_COLUMNS}
+                  />
+                </FormGroup>
+              </Box>
+            </Box>
           </FormProvider>
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 2 }}>
