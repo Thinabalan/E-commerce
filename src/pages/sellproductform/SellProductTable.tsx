@@ -11,7 +11,6 @@ import {
   Divider,
   DialogContent,
   DialogActions,
-  Button,
 } from "@mui/material";
 import { useForm } from "react-hook-form";
 import EditIcon from "@mui/icons-material/Edit";
@@ -33,8 +32,7 @@ import { useSellProductHandlers, type ConfirmDialogState } from "../../hooks/sel
 import { dateRange } from "../../utils/dateRange";
 import type { ProductFilters } from "../../types/ProductTypes";
 import { Filters } from "./data/sellProductDefaults";
-import { exportMultiSheetData, exportMultiTablePDF } from "../../utils/export";
-import type { ExportFormat } from "../../utils/export";
+import { exportExcel, exportPDF, type ExportFormat } from "../../utils/export";
 import EcomExportMenu from "../../components/newcomponents/EcomExportMenu";
 
 const SellProductTable = () => {
@@ -306,28 +304,28 @@ const SellProductTable = () => {
   const executeMultiExport = () => {
     const categories = [];
     const cols = columns.filter((c) => c.id !== "id");
-
+    const colsWithoutStatus = cols.filter(c => c.id !== "status");
     if (exportTabs.all) {
-      categories.push({ name: "All Products", title: "All Products", data: searchFilteredRows, columns: cols as any });
+      categories.push({ name: "All Products", title: "All Products", data: searchFilteredRows, columns: cols});
     }
     if (exportTabs.active) {
       const activeRows = searchFilteredRows.filter(p => p.status === "active" || (!p.status && p.category));
-      categories.push({ name: "Active", title: "Active Products", data: activeRows, columns: cols as any });
+      categories.push({ name: "Active", title: "Active Products", data: activeRows, columns: colsWithoutStatus});
     }
     if (exportTabs.inactive) {
       const inactiveRows = searchFilteredRows.filter(p => p.status === "inactive");
-      categories.push({ name: "Inactive", title: "Inactive Products", data: inactiveRows, columns: cols as any });
+      categories.push({ name: "Inactive", title: "Inactive Products", data: inactiveRows, columns: colsWithoutStatus});
     }
     if (exportTabs.draft) {
       const draftRows = searchFilteredRows.filter(p => p.status === "draft");
-      categories.push({ name: "Drafts", title: "Draft Products", data: draftRows, columns: cols as any });
+      categories.push({ name: "Drafts", title: "Draft Products", data: draftRows, columns: colsWithoutStatus});
     }
 
     if (categories.length > 0) {
       if (exportFormat === "EXCEL") {
-        exportMultiSheetData(categories, "Inventory_Report");
+        exportExcel(categories, "Inventory_Report");
       } else {
-        exportMultiTablePDF(categories, "Inventory_Report");
+        exportPDF(categories, "Inventory_Report");
       }
     }
     setExportDialogOpen(false);
@@ -401,7 +399,6 @@ const SellProductTable = () => {
         <Box display="flex" alignItems="center" gap={2}>
           <Typography variant="h6" fontWeight="bold" >
             Product Filters
-
           </Typography>
 
         </Box>
@@ -533,16 +530,13 @@ const SellProductTable = () => {
           </FormGroup>
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 2 }}>
-          <Button onClick={() => setExportDialogOpen(false)} color="inherit">
-            Cancel
-          </Button>
-          <Button
+          <EcomButton label="Cancel" onClick={() => setExportDialogOpen(false)} color="inherit" />
+          <EcomButton
+            label={`Generate ${exportFormat}`}
             onClick={executeMultiExport}
             variant="contained"
             color="success"
-          >
-            Generate {exportFormat}
-          </Button>
+          />
         </DialogActions>
       </EcomDialog>
 

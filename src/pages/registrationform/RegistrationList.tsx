@@ -27,7 +27,8 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import DownloadIcon from "@mui/icons-material/Download";
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import TableChartIcon from '@mui/icons-material/TableChart';
-import { exportData, exportRegistrationDetails, type ExportFormat } from "../../utils/export";
+import { exportData, type ExportFormat } from "../../utils/export";
+import { exportRegistrationDetails } from "./RegistrationListExport";
 import EcomExportMenu from "../../components/newcomponents/EcomExportMenu";
 
 const RegistrationList = () => {
