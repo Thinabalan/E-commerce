@@ -7,9 +7,9 @@ interface StockStatusChartProps {
 }
 
 const StockStatusChart = ({ products }: StockStatusChartProps) => {
-    const inStock = products.filter(p => (p.stock ?? 0) > 10).length;
-    const lowStock = products.filter(p => (p.stock ?? 0) > 0 && (p.stock ?? 0) <= 10).length;
-    const outOfStock = products.filter(p => (p.stock ?? 0) === 0).length;
+    const inStock = products.filter(p => Number(p.stock ?? 0) > 10).length;
+    const lowStock = products.filter(p => Number(p.stock ?? 0) > 0 && (p.stock ?? 0) <= 10).length;
+    const outOfStock = products.filter(p => Number(p.stock ?? 0) === 0).length;
 
     const data = [
         { id: 0, value: inStock, label: "In Stock" },

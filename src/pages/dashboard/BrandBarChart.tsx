@@ -18,7 +18,7 @@ const BrandBarChart = ({ products }: BrandBarChartProps) => {
     const values = Object.values(brandCounts);
 
     return (
-        <EcomChartContainer title="Top Products by brands" isEmpty={products.length === 0}>
+        <EcomChartContainer title="Products per brand" isEmpty={products.length === 0}>
             <BarChart
                 xAxis={[{ scaleType: 'band', data: labels }]}
                 series={[{ data: values, label: 'Products per Brand' }]}

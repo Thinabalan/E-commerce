@@ -18,7 +18,7 @@ const ProductLineChart = ({ products }: ProductLineChartProps) => {
     });
 
     return (
-        <EcomChartContainer title="Top Products by Month" isEmpty={products.length === 0}>
+        <EcomChartContainer title="Products Added by Month" isEmpty={products.length === 0}>
             <LineChart
                 xAxis={[{ scaleType: 'point', data: Object.keys(monthlyCounts) }]}
                 series={[
