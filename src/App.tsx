@@ -20,12 +20,13 @@ import { useUI } from "./context/UIContext";
 import ProductGrid from "./Rough/ProductGrid";
 import NotFound from "./pages/error/NotFound";
 import Favourites from "./pages/favourites/Favourites";
+import ProductDashboard from "./pages/dashboard/ProductDashboard";
 
 function App() {
 
   const navigate = useNavigate();
   const location = useLocation();
-  const { isAuthenticated , user} = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [showSellModal, setShowSellModal] = useState(false);
   const { showSnackbar } = useUI();
@@ -104,6 +105,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route path="/dashboard" element={<ProductDashboard />} />
             <Route path="*" element={<Navigate to="/404" replace />} />
           </Routes>
           <Footer />
