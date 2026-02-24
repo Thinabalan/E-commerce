@@ -6,9 +6,10 @@ interface ChartContainerProps {
     children: ReactNode;
     height?: number | string;
     isEmpty?: boolean;
+    headerAction?: React.ReactNode;
 }
 
-const EcomChartContainer = ({ title, children, height = 450, isEmpty = false }: ChartContainerProps) => {
+const EcomChartContainer = ({ title, children, height = 450, isEmpty = false, headerAction }: ChartContainerProps) => {
     return (
         <Paper
             sx={{
@@ -24,9 +25,21 @@ const EcomChartContainer = ({ title, children, height = 450, isEmpty = false }: 
                 border: '1px solid rgba(255, 255, 255, 0.3)',
             }}
         >
-            <Typography variant="h6" sx={{ fontWeight: 700, color: '#1a1a1a', mb: 1 }}>
-                {title}
-            </Typography>
+            <Box
+                sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                }}
+            >
+                <Typography
+                    variant="h6"
+                    sx={{ fontWeight: 700, color: '#1a1a1a' }}
+                >
+                    {title}
+                </Typography>
+                {headerAction}
+            </Box>
             <Box sx={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', flexGrow: 1, alignItems: 'center' }}>
                 {isEmpty ? (
                     <Typography variant="body1" color="textSecondary" sx={{ fontWeight: 500 }}>
