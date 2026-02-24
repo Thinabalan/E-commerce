@@ -1,14 +1,17 @@
 import React from "react";
-import { PieChart } from "@mui/x-charts/PieChart";
 import { Box, Typography, Slider } from "@mui/material";
 import type { Product } from "../../types/ProductTypes";
-import EcomChartContainer from "../../components/newcomponents/EcomChartContainer";
+import EcomPieChart from "../../components/newcomponents/EcomPieChart";
+import { useNavigate } from "react-router-dom";
 
 interface CategoryPieChartProps {
     products: Product[];
 }
 
 const CategoryPieChart = ({ products }: CategoryPieChartProps) => {
+
+    const navigate = useNavigate();
+
     const [topLimit, setTopLimit] = React.useState(5);
 
     // Count categories
@@ -35,14 +38,6 @@ const CategoryPieChart = ({ products }: CategoryPieChartProps) => {
         ...(othersValue > 0 ? [{ label: "Others", value: othersValue }] : []),
     ];
 
-    // const COLORS = [
-    //     "#4CAF50",
-    //     "#2196F3",
-    //     "#FF9800",
-    //     "#9C27B0",
-    //     "#00BCD4",
-    // ];
-
     const data = finalData.map((item, index) => ({
         id: index,
         value: item.value,
@@ -62,9 +57,9 @@ const CategoryPieChart = ({ products }: CategoryPieChartProps) => {
     };
 
     return (
-        <EcomChartContainer
+        <EcomPieChart
             title="Product Distribution by Category"
-            isEmpty={products.length === 0}
+            data={data}
             headerAction={
                 <Box sx={{ width: 200 }}>
                     <Typography variant="body2" sx={{ mb: 1 }}>
@@ -75,25 +70,15 @@ const CategoryPieChart = ({ products }: CategoryPieChartProps) => {
                         onChange={handleTopLimitChange}
                         valueLabelDisplay="auto"
                         min={1}
-                        max={Object.keys(categoryCounts).length}
+                        max={Object.keys(categoryCounts).length || 1}
                     />
                 </Box>
             }
-        >
-            <PieChart
-                series={[
-                    {
-                        data,
-                        highlightScope: { fade: 'global', highlight: 'item' },
-                        faded: { innerRadius: 30, additionalRadius: -30, color: 'gray' },
-                        innerRadius: 30,
-                        paddingAngle: 5,
-                        cornerRadius: 5,
-                    },
-                ]}
-                height={300}
-            />
-        </EcomChartContainer>
+            onSliceClick={(item) => {
+                if (item.label === "Others") return;
+                navigate(`/products?category=${encodeURIComponent(item.label)}`);
+            }}
+        />
     );
 };
 

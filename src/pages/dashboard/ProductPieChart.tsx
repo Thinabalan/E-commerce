@@ -1,6 +1,5 @@
-import { PieChart } from "@mui/x-charts/PieChart";
 import type { Product } from "../../types/ProductTypes";
-import EcomChartContainer from "../../components/newcomponents/EcomChartContainer";
+import EcomPieChart from "../../components/newcomponents/EcomPieChart";
 
 interface ProductPieChartProps {
     products: Product[];
@@ -29,14 +28,6 @@ const ProductPieChart = ({ products }: ProductPieChartProps) => {
         ...(othersValue > 0 ? [{ label: "Others", value: othersValue }] : []),
     ];
 
-    // const COLORS = [
-    //     "#4CAF50", // green
-    //     "#2196F3", // blue
-    //     "#FF9800", // orange
-    //     "#9C27B0", // purple
-    //     "#00BCD4", // cyan
-    // ];
-
     const data = finalData.map((item, index) => ({
         id: index,
         value: item.value,
@@ -48,24 +39,13 @@ const ProductPieChart = ({ products }: ProductPieChartProps) => {
     }));
 
     return (
-        <EcomChartContainer
+        <EcomPieChart
             title="Top Products by Stock"
-            isEmpty={products.length === 0}
-        >
-            <PieChart
-                series={[
-                    {
-                        data,
-                        highlightScope: { fade: 'global', highlight: 'item' },
-                        faded: { innerRadius: 30, additionalRadius: -30, color: 'gray' },
-                        innerRadius: 40,
-                        paddingAngle: 5,
-                        cornerRadius: 5,
-                    },
-                ]}
-                height={300}
-            />
-        </EcomChartContainer>
+            data={data}
+            innerRadius={0}
+            paddingAngle={0}
+            cornerRadius={0}
+        />
     );
 };
 
