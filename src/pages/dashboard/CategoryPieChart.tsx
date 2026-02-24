@@ -10,14 +10,45 @@ const CategoryPieChart = ({ products }: CategoryPieChartProps) => {
     // Process data for the pie chart
     const categoryCounts: Record<string, number> = {};
     products.forEach(product => {
-        const category = product.category || 'Uncategorized';
+        const category = product.category || "Uncategorized";
         categoryCounts[category] = (categoryCounts[category] || 0) + 1;
     });
 
-    const data = Object.entries(categoryCounts).map(([label, value], index) => ({
+    const sortedCategories = Object.entries(categoryCounts)
+        .map(([label, value]) => ({ label, value }))
+        .sort((a, b) => b.value - a.value);
+
+    const TOP_LIMIT = 5;
+
+    const topCategories = sortedCategories.slice(0, TOP_LIMIT);
+    const remainingCategories = sortedCategories.slice(TOP_LIMIT);
+
+    const othersValue = remainingCategories.reduce(
+        (sum, item) => sum + item.value,
+        0
+    );
+
+    const finalData = [
+        ...topCategories,
+        ...(othersValue > 0 ? [{ label: "Others", value: othersValue }] : [])
+    ];
+
+    const COLORS = [
+        "#4CAF50", // green
+        "#2196F3", // blue
+        "#FF9800", // orange
+        "#9C27B0", // purple
+        "#00BCD4", // cyan
+    ];
+
+    const data = finalData.map((item, index) => ({
         id: index,
-        value,
-        label,
+        value: item.value,
+        label: item.label,
+        color:
+            item.label === "Others"
+                ? "#BDBDBD" // grey 
+                : COLORS[index % COLORS.length],
     }));
 
     return (
