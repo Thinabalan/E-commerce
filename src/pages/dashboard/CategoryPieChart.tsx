@@ -1,15 +1,19 @@
-import { PieChart } from '@mui/x-charts/PieChart';
-import type { Product } from '../../types/ProductTypes';
-import EcomChartContainer from '../../components/newcomponents/EcomChartContainer';
+import React from "react";
+import { PieChart } from "@mui/x-charts/PieChart";
+import { Box, Typography, Slider } from "@mui/material";
+import type { Product } from "../../types/ProductTypes";
+import EcomChartContainer from "../../components/newcomponents/EcomChartContainer";
 
 interface CategoryPieChartProps {
     products: Product[];
 }
 
 const CategoryPieChart = ({ products }: CategoryPieChartProps) => {
-    // Process data for the pie chart
+    const [topLimit, setTopLimit] = React.useState(5);
+
+    // Count categories
     const categoryCounts: Record<string, number> = {};
-    products.forEach(product => {
+    products.forEach((product) => {
         const category = product.category || "Uncategorized";
         categoryCounts[category] = (categoryCounts[category] || 0) + 1;
     });
@@ -18,10 +22,8 @@ const CategoryPieChart = ({ products }: CategoryPieChartProps) => {
         .map(([label, value]) => ({ label, value }))
         .sort((a, b) => b.value - a.value);
 
-    const TOP_LIMIT = 5;
-
-    const topCategories = sortedCategories.slice(0, TOP_LIMIT);
-    const remainingCategories = sortedCategories.slice(TOP_LIMIT);
+    const topCategories = sortedCategories.slice(0, topLimit);
+    const remainingCategories = sortedCategories.slice(topLimit);
 
     const othersValue = remainingCategories.reduce(
         (sum, item) => sum + item.value,
@@ -30,16 +32,16 @@ const CategoryPieChart = ({ products }: CategoryPieChartProps) => {
 
     const finalData = [
         ...topCategories,
-        ...(othersValue > 0 ? [{ label: "Others", value: othersValue }] : [])
+        ...(othersValue > 0 ? [{ label: "Others", value: othersValue }] : []),
     ];
 
-    const COLORS = [
-        "#4CAF50", // green
-        "#2196F3", // blue
-        "#FF9800", // orange
-        "#9C27B0", // purple
-        "#00BCD4", // cyan
-    ];
+    // const COLORS = [
+    //     "#4CAF50",
+    //     "#2196F3",
+    //     "#FF9800",
+    //     "#9C27B0",
+    //     "#00BCD4",
+    // ];
 
     const data = finalData.map((item, index) => ({
         id: index,
@@ -47,12 +49,37 @@ const CategoryPieChart = ({ products }: CategoryPieChartProps) => {
         label: item.label,
         color:
             item.label === "Others"
-                ? "#BDBDBD" // grey 
-                : COLORS[index % COLORS.length],
+                ? "#BDBDBD" // grey
+                : `hsl(${(index * 360) / finalData.length}, 65%, 55%)`,
     }));
 
+    const handleTopLimitChange = (
+        _event: Event,
+        newValue: number | number[]
+    ) => {
+        if (typeof newValue !== "number") return;
+        setTopLimit(newValue);
+    };
+
     return (
-        <EcomChartContainer title="Product Distribution by Category" isEmpty={products.length === 0}>
+        <EcomChartContainer
+            title="Product Distribution by Category"
+            isEmpty={products.length === 0}
+            headerAction={
+                <Box sx={{ width: 200 }}>
+                    <Typography variant="body2" sx={{ mb: 1 }}>
+                        Top Categories: {topLimit}
+                    </Typography>
+                    <Slider
+                        value={topLimit}
+                        onChange={handleTopLimitChange}
+                        valueLabelDisplay="auto"
+                        min={1}
+                        max={Object.keys(categoryCounts).length}
+                    />
+                </Box>
+            }
+        >
             <PieChart
                 series={[
                     {
