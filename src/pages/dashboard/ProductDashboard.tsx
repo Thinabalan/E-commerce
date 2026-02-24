@@ -48,7 +48,7 @@ const ProductDashboard = () => {
     ];
 
     return (
-        <Container maxWidth="lg" sx={{ py: 4 }}>
+        <Container maxWidth="lg" sx={{p:2, mt: { xs: '50px', md: '10px' }}} >
             <Box sx={{ mb: 2 }}>
                 <Typography variant="h5" component="h1" sx={{ fontWeight: 800, color: '#1a1a1a', mb: 0.5 }}>
                     Product Insights

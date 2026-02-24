@@ -21,6 +21,7 @@ import TableChartIcon from "@mui/icons-material/TableChart";
 import AppRegistrationIcon from '@mui/icons-material/AppRegistration';
 import SummarizeIcon from '@mui/icons-material/Summarize';
 import FavoriteIcon from "@mui/icons-material/Favorite";
+import DashboardIcon from '@mui/icons-material/Dashboard';
 import type { UserRole } from "../types/AuthenticationTypes";
 
 interface SidebarProps {
@@ -38,6 +39,7 @@ export default function Sidebar({ open, onSellClick, onClose }: SidebarProps & {
     const location = useLocation();
 
     const allMenuItems = [
+        { text: "Dashboard", icon: <DashboardIcon/>, path: "/dashboard", roles: ['admin'] },
         { text: "Home", icon: <HomeIcon />, path: "/", roles: ['admin', 'seller', 'buyer'] },
         { text: "All Products", icon: <Inventory2Icon />, path: "/products", roles: ['admin', 'seller', 'buyer'] },
         { text: "Become a Seller", icon: <StoreIcon />, onClick: onSellClick, roles: ['admin', 'buyer'] },
