@@ -18,10 +18,10 @@ const StockBarChart = ({ products }: StockBarChartProps) => {
     return (
         <EcomChartContainer title="Top Products by Stock Level" isEmpty={products.length === 0}>
             <BarChart
-                xAxis={[{ scaleType: 'band', data: xLabels }]}
+                xAxis={[{ scaleType: 'band', data: xLabels, label: "Products" }]}
+                yAxis={[{ label: "Stock Count" }]}
                 series={[{ data: stockData, label: 'Stock Quantity', color: '#3f51b5' }]}
                 height={300}
-                margin={{ top: 20, bottom: 50, left: 40, right: 10 }}
                 borderRadius={8}
             />
         </EcomChartContainer>

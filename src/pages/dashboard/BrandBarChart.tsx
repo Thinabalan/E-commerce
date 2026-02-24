@@ -20,7 +20,8 @@ const BrandBarChart = ({ products }: BrandBarChartProps) => {
     return (
         <EcomChartContainer title="Products per brand" isEmpty={products.length === 0}>
             <BarChart
-                xAxis={[{ scaleType: 'band', data: labels }]}
+                xAxis={[{ scaleType: 'band', data: labels, label: "Brands" }]}
+                yAxis={[{ label: "Product Count" }]}
                 series={[{ data: values, label: 'Products per Brand' }]}
                 height={300}
             />
