@@ -7,23 +7,34 @@ interface BrandBarChartProps {
 }
 
 const BrandBarChart = ({ products }: BrandBarChartProps) => {
-    const brandCounts: Record<string, number> = {};
+    // 1. Find all unique brands
+    const brands = Array.from(new Set(products.map(p => p.brand || "Unknown")));
 
-    products.forEach(product => {
-        const brand = product.brand || "Unknown";
-        brandCounts[brand] = (brandCounts[brand] || 0) + 1;
-    });
+    // 2. Define statuses and colors
+    const statuses = [
+        { label: 'Active', value: 'active', color: '#2e9433' },
+        { label: 'Inactive', value: 'inactive', color: '#c62828' },
+        { label: 'Draft', value: 'draft', color: '#ef6c00' }
+    ];
 
-    const labels = Object.keys(brandCounts);
-    const values = Object.values(brandCounts);
+    // 3. Prepare series data
+    const series = statuses.map(status => ({
+        label: status.label,
+        data: brands.map(brand =>
+            products.filter(p => (p.brand || "Unknown") === brand && p.status === status.value).length
+        ),
+        stack: 'brandStatus', // Shared ID enables stacking
+        color: status.color
+    }));
 
     return (
-        <EcomChartContainer title="Products per brand" isEmpty={products.length === 0}>
+        <EcomChartContainer title="Brand Inventory by Status" isEmpty={products.length === 0}>
             <BarChart
-                xAxis={[{ scaleType: 'band', data: labels, label: "Brands" }]}
+                xAxis={[{ scaleType: 'band', data: brands, label: "Brands" }]}
                 yAxis={[{ label: "Product Count" }]}
-                series={[{ data: values, label: 'Products per Brand' }]}
+                series={series}
                 height={300}
+                borderRadius={2}
             />
         </EcomChartContainer>
     );
