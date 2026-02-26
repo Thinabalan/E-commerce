@@ -20,6 +20,7 @@ interface EcomPieChartProps {
     arcLabel?: (item: any) => string;
     onSliceClick?: (item: any) => void;
     headerAction?: ReactNode;
+    enableDownload?: boolean;
 }
 
 const EcomPieChart = ({
@@ -33,12 +34,14 @@ const EcomPieChart = ({
     arcLabel,
     onSliceClick,
     headerAction,
+    enableDownload = true,
 }: EcomPieChartProps) => {
     return (
         <EcomChartContainer
             title={title}
             isEmpty={isEmpty}
             headerAction={headerAction}
+            enableDownload={enableDownload}
         >
             <PieChart
                 series={[
