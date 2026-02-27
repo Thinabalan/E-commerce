@@ -54,7 +54,7 @@ const Signup = ({ onSwitchLogin }: SignupProps) => {
       if (onSwitchLogin) {
         onSwitchLogin();
       } else {
-        setTimeout(() => navigate("/login"), 1500);
+        setTimeout(() => navigate("/login"));
       }
 
     } catch (error) {
