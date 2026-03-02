@@ -1,4 +1,8 @@
 import { vi } from "vitest";
+import { render, screen, waitFor } from "@testing-library/react";
+import Signup from "./Signup";
+import userEvent from "@testing-library/user-event";
+import { AllProviders } from "../../test-utils";
 
 const mockGetUsers = vi.fn();
 const mockCreateUser = vi.fn();
@@ -26,27 +30,8 @@ vi.mock("react-router-dom", async () => {
   };
 });
 
-import { render, screen, waitFor } from "@testing-library/react";
-import { BrowserRouter } from "react-router-dom";
-import Signup from "./Signup";
-import { AuthProvider } from "../../context/AuthContext";
-import { MuiThemeProvider } from "../../context/MuiThemeProvider";
-import { ErrorBoundary } from "react-error-boundary";
-import ErrorFallback from "../../components/error/ErrorFallback";
-import userEvent from "@testing-library/user-event";
-
 const renderForm = () => {
-  return render(
-    <ErrorBoundary FallbackComponent={ErrorFallback}>
-      <BrowserRouter>
-        <AuthProvider>
-          <MuiThemeProvider>
-            <Signup />
-          </MuiThemeProvider>
-        </AuthProvider>
-      </BrowserRouter>
-    </ErrorBoundary>
-  );
+  return render(<Signup />, { wrapper: AllProviders });
 };
 
 it("renders form without crashing", () => {

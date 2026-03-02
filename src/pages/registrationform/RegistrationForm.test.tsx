@@ -1,4 +1,8 @@
 import { vi } from "vitest";
+import { render, screen } from "@testing-library/react";
+import RegistrationForm from "./RegistrationForm";
+import userEvent from "@testing-library/user-event";
+import { AllProviders } from "../../test-utils";
 
 const mockUseFormHandlers = vi.fn();
 
@@ -14,27 +18,8 @@ vi.mock("../../context/UIContext", () => ({
     }),
 }));
 
-import { render, screen } from "@testing-library/react";
-import { BrowserRouter } from "react-router-dom";
-import RegistrationForm from "./RegistrationForm";
-import { AuthProvider } from "../../context/AuthContext";
-import { MuiThemeProvider } from "../../context/MuiThemeProvider";
-import { ErrorBoundary } from "react-error-boundary";
-import ErrorFallback from "../../components/error/ErrorFallback";
-import userEvent from "@testing-library/user-event";
-
 const renderForm = () => {
-    return render(
-        <ErrorBoundary FallbackComponent={ErrorFallback}>
-            <BrowserRouter>
-                <AuthProvider>
-                    <MuiThemeProvider>
-                        <RegistrationForm />
-                    </MuiThemeProvider>
-                </AuthProvider>
-            </BrowserRouter>
-        </ErrorBoundary>
-    );
+  return render(<RegistrationForm />, { wrapper: AllProviders });
 };
 
 const createMock = (overrides = {}) => ({
