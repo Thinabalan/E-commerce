@@ -8,6 +8,15 @@ const mockGetValues = vi.fn();
 const mockSetValue = vi.fn();
 const mockReset = vi.fn();
 
+const mockWarehouseAppend = vi.fn();
+const mockWarehouseRemove = vi.fn();
+
+const mockBusinessAppend = vi.fn();
+const mockBusinessRemove = vi.fn();
+
+const mockProductAppend = vi.fn();
+const mockProductRemove = vi.fn();
+
 vi.mock("react-hook-form", () => ({
     useFormContext: () => ({
         control: {},
@@ -16,11 +25,33 @@ vi.mock("react-hook-form", () => ({
         setValue: mockSetValue,
         reset: mockReset,
     }),
-    useFieldArray: () => ({
-        fields: [],
-        append: vi.fn(),
-        remove: vi.fn(),
-    }),
+    useFieldArray: ({ name }: any) => {
+        if (name === "seller.warehouses") {
+            return {
+                fields: [],
+                append: mockWarehouseAppend,
+                remove: mockWarehouseRemove,
+            };
+        }
+
+        if (name === "businesses") {
+            return {
+                fields: [],
+                append: mockBusinessAppend,
+                remove: mockBusinessRemove,
+            };
+        }
+
+        if (name.includes("products")) {
+            return {
+                fields: [],
+                append: mockProductAppend,
+                remove: mockProductRemove,
+            };
+        }
+
+        return { fields: [], append: vi.fn(), remove: vi.fn() };
+    },
 }));
 
 const mockAdd = vi.fn();
@@ -87,7 +118,7 @@ const mockPayload: RegistrationForm = {
 };
 
 beforeEach(() => {
-    vi.clearAllMocks();   
+    vi.clearAllMocks();
     mockUseParams.mockReturnValue({});
 });
 
@@ -139,14 +170,203 @@ it("calls updateRegistration in edit mode", async () => {
 });
 
 it("does not navigate if addRegistration fails", async () => {
-  mockAdd.mockResolvedValue(null);
+    mockAdd.mockResolvedValue(null);
 
-  const { result } = renderHook(() => useFormHandlers());
+    const { result } = renderHook(() => useFormHandlers());
 
-  await act(async () => {
-    await result.current.onSubmit(mockPayload);
-  });
+    await act(async () => {
+        await result.current.onSubmit(mockPayload);
+    });
 
-  expect(mockNavigate).not.toHaveBeenCalled();
-  expect(mockSnackbar).not.toHaveBeenCalled();
+    expect(mockNavigate).not.toHaveBeenCalled();
+    expect(mockSnackbar).not.toHaveBeenCalled();
 });
+
+it("fetchRegistrationData resets form when data exists", async () => {
+    mockGet.mockResolvedValue({ seller: {}, businesses: [] });
+
+    const { result } = renderHook(() => useFormHandlers());
+
+    await act(async () => {
+        await result.current.fetchRegistrationData("123");
+    });
+
+    expect(mockReset).toHaveBeenCalledWith({
+        seller: {},
+        businesses: [],
+    });
+});
+
+it("navigates if no data found", async () => {
+    mockGet.mockResolvedValue(null);
+
+    const { result } = renderHook(() => useFormHandlers());
+
+    await act(async () => {
+        await result.current.fetchRegistrationData("123");
+    });
+
+    expect(mockNavigate).toHaveBeenCalledWith("/registrations");
+});
+
+it("opens business panel only", () => {
+    const { result } = renderHook(() => useFormHandlers());
+
+    act(() => {
+        result.current.handleFormError({ businesses: true });
+    });
+
+    expect(result.current.expanded[1]).toBe(true);
+});
+
+it("opens both panels when both errors exist", () => {
+    const { result } = renderHook(() => useFormHandlers());
+
+    act(() => {
+        result.current.handleFormError({
+            seller: true,
+            businesses: true,
+        });
+    });
+
+    expect(result.current.expanded[0]).toBe(true);
+    expect(result.current.expanded[1]).toBe(true);
+});
+
+// WAREHOUSE
+// Append (Valid)
+it("appends warehouse with correct default structure", async () => {
+    mockGetValues.mockReturnValue([]);
+    mockTrigger.mockResolvedValue(true);
+
+    const { result } = renderHook(() => useFormHandlers());
+
+    await act(async () => {
+        await result.current.addWarehouse();
+    });
+
+    expect(mockWarehouseAppend).toHaveBeenCalledWith({
+        warehouseName: "",
+        city: "",
+        pincode: "",
+        upload: null,
+        isSaved: false,
+    });
+});
+
+// Append (Invalid)
+it("does not append warehouse if last warehouse invalid", async () => {
+    mockGetValues.mockReturnValue([{}]); // one existing
+    mockTrigger.mockResolvedValue(false); // validation fails
+
+    const { result } = renderHook(() => useFormHandlers());
+
+    await act(async () => {
+        await result.current.addWarehouse();
+    });
+
+    expect(mockWarehouseAppend).not.toHaveBeenCalled();
+});
+
+// Remove
+it("removes warehouse", () => {
+    const { result } = renderHook(() => useFormHandlers());
+
+    act(() => {
+        result.current.removeWarehouse(1);
+    });
+
+    expect(mockWarehouseRemove).toHaveBeenCalledWith(1);
+});
+
+// Limit Reached
+it("shows warning when warehouse limit reached", async () => {
+    mockGetValues.mockReturnValue([{}, {}, {}]);
+
+    const { result } = renderHook(() => useFormHandlers());
+
+    await act(async () => {
+        await result.current.addWarehouse();
+    });
+
+    expect(mockSnackbar).toHaveBeenCalled();
+});
+
+// Save Warehouse
+it("sets warehouse isSaved true when valid", async () => {
+    mockTrigger.mockResolvedValue(true);
+
+    const { result } = renderHook(() => useFormHandlers());
+
+    await act(async () => {
+        await result.current.saveWarehouse(0);
+    });
+
+    expect(mockSetValue).toHaveBeenCalledWith(
+        "seller.warehouses.0.isSaved",
+        true
+    );
+});
+
+// Edit Warehouse
+it("sets warehouse isSaved false when editing", () => {
+    const { result } = renderHook(() => useFormHandlers());
+
+    act(() => {
+        result.current.editWarehouse(0);
+    });
+
+    expect(mockSetValue).toHaveBeenCalledWith(
+        "seller.warehouses.0.isSaved",
+        false
+    );
+});
+
+// BUSINESS
+it("shows warning when business limit reached", async () => {
+    mockGetValues.mockReturnValue([{}, {}, {}]);
+
+    const { result } = renderHook(() => useFormHandlers());
+
+    await act(async () => {
+        await result.current.addBusiness();
+    });
+
+    expect(mockSnackbar).toHaveBeenCalled();
+});
+
+// PRODUCT
+// Save Product
+it("sets product isSaved true when valid", async () => {
+    mockTrigger.mockResolvedValue(true);
+
+    const { result } = renderHook(() => useFormHandlers());
+
+    const handlers = result.current.getProductHandlers(0);
+
+    await act(async () => {
+        await handlers.saveProduct(0);
+    });
+
+    expect(mockSetValue).toHaveBeenCalledWith(
+        "businesses.0.products.0.isSaved",
+        true
+    );
+});
+
+// Edit Product
+it("sets product isSaved false when editing", () => {
+    const { result } = renderHook(() => useFormHandlers());
+
+    const handlers = result.current.getProductHandlers(0);
+
+    act(() => {
+        handlers.editProduct(0);
+    });
+
+    expect(mockSetValue).toHaveBeenCalledWith(
+        "businesses.0.products.0.isSaved",
+        false
+    );
+});
+
