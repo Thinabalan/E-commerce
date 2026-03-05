@@ -8,7 +8,7 @@ import { useRegistration } from "./useRegistration";
 
 export const useFormHandlers = () => {
     const { control, trigger, getValues, setValue, reset } = useFormContext<RegistrationForm>();
-    const { showSnackbar } = useUI();
+    const { showSnackbar, showDialog } = useUI();
     const navigate = useNavigate();
     const { id } = useParams();
     const { addRegistration, getRegistrationById, updateRegistration } = useRegistration();
@@ -78,6 +78,18 @@ export const useFormHandlers = () => {
         if (response) {
             navigate("/registrations");
         }
+    };
+
+    const handleReset = () => {
+        showDialog({
+            title: "Reset Form?",
+            description: "Are you sure you want to clear the form?",
+            confirmText: "Reset",
+            onConfirm: () => {
+                reset();
+                showSnackbar("Form reset successfully", "info");
+            },
+        });
     };
 
     // Warehouse Handlers
@@ -201,6 +213,7 @@ export const useFormHandlers = () => {
         fetchRegistrationData,
         handleFormError,
         onSubmit,
+        handleReset,
         isEditMode,
         id,
         reset,

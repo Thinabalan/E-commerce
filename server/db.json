@@ -2167,7 +2167,7 @@
       "category": "Clothing",
       "brand": "Levi's",
       "image": "",
-      "rating": 4.0,
+      "rating": 4,
       "stock": 0,
       "condition": "new",
       "description": "Casual slim fit cotton shirt",
@@ -2404,7 +2404,7 @@
       "category": "Electronics",
       "brand": "HP",
       "image": "",
-      "rating": 4.0,
+      "rating": 4,
       "stock": 0,
       "condition": "new",
       "description": "All-in-one wireless printer",
@@ -2882,11 +2882,11 @@
       "id": "421d",
       "seller": {
         "name": "dfhf",
-        "email": "hfgh@g.c",
+        "email": "hfgh@gmail.com",
         "warehouses": [
           {
             "warehouseName": "rrtfgh",
-            "city": "vgt",
+            "city": "vgtfd",
             "pincode": "565776",
             "upload": null,
             "isSaved": false
@@ -2897,7 +2897,7 @@
       "businesses": [
         {
           "businessName": "ghj",
-          "businessEmail": "gf@g.c",
+          "businessEmail": "gf@gmail.com",
           "products": [
             {
               "productName": "fghfg",
@@ -2911,7 +2911,7 @@
         }
       ],
       "submittedAt": "2026-02-01T11:57:27.243Z",
-      "updatedAt": "2026-02-01T12:09:36.051Z"
+      "updatedAt": "2026-03-05T00:00:49.657Z"
     }
   ],
   "favourites": [

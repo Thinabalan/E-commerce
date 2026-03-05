@@ -21,8 +21,9 @@ import EcomButton from "../../components/newcomponents/EcomButton";
 import SellerDetails from "./SellerDetails";
 import BusinessDetails from "./BusinessDetails";
 import { useRegistration } from "../../hooks/registrationform/useRegistration";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useUI } from "../../context/UIContext";
+import { useShortcut } from "../../hooks/useShortcut";
 
 function RegistrationFormContent() {
   const navigate = useNavigate();
@@ -37,6 +38,7 @@ function RegistrationFormContent() {
     fetchRegistrationData,
     handleFormError,
     onSubmit,
+    handleReset,
     isEditMode,
     id,
   } = useFormHandlers();
@@ -45,6 +47,16 @@ function RegistrationFormContent() {
 
   const allPanels = [0, 1];
   const isAllExpanded = allPanels.every((id) => expanded[id]);
+  const submitForm = useMemo(
+    () => handleSubmit(onSubmit, handleFormError),
+    [handleSubmit, onSubmit, handleFormError]
+  );
+
+  useShortcut("alt+e", handleToggleAll);
+
+  useShortcut("ctrl+s", submitForm);
+
+  useShortcut("alt+r", handleReset);
 
   useEffect(() => {
     if (isEditMode && id) {
@@ -114,14 +126,7 @@ function RegistrationFormContent() {
                 label="Reset"
                 variant="text"
                 color="inherit"
-                onClick={() => showDialog({
-                  title: "Reset Form?",
-                  description: "Are you sure you want to clear the form?",
-                  confirmText: "Reset",
-                  onConfirm: () => {
-                    reset();
-                  }
-                })}
+                onClick={handleReset}
                 sx={{ px: 3, py: 1, border: 1 }}
               />
               {isEditMode && (
