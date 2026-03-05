@@ -67,12 +67,14 @@ vi.mock("./useRegistration", () => ({
 }));
 
 const mockSnackbar = vi.fn();
+const mockShowDialog = vi.fn();
 const mockNavigate = vi.fn();
 const mockUseParams = vi.fn();
 
 vi.mock("../../context/UIContext", () => ({
     useUI: () => ({
         showSnackbar: mockSnackbar,
+        showDialog: mockShowDialog,
     }),
 }));
 
@@ -167,6 +169,41 @@ it("calls updateRegistration in edit mode", async () => {
         "success"
     );
     expect(mockNavigate).toHaveBeenCalledWith("/registrations");
+});
+
+it("opens reset confirmation dialog", () => {
+    const { result } = renderHook(() => useFormHandlers());
+
+    act(() => {
+        result.current.handleReset();
+    });
+
+    expect(mockShowDialog).toHaveBeenCalledWith({
+        title: "Reset Form?",
+        description: "Are you sure you want to clear the form?",
+        confirmText: "Reset",
+        onConfirm: expect.any(Function),
+    });
+});
+
+it("resets form and shows snackbar when confirmed", () => {
+    const { result } = renderHook(() => useFormHandlers());
+
+    act(() => {
+        result.current.handleReset();
+    });
+
+    const dialogConfig = mockShowDialog.mock.calls[0][0];
+
+    act(() => {
+        dialogConfig.onConfirm();
+    });
+
+    expect(mockReset).toHaveBeenCalled();
+    expect(mockSnackbar).toHaveBeenCalledWith(
+        "Form reset successfully",
+        "info"
+    );
 });
 
 it("does not navigate if addRegistration fails", async () => {
