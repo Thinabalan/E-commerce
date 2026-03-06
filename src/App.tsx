@@ -21,6 +21,8 @@ import ProductGrid from "./Rough/ProductGrid";
 import NotFound from "./pages/error/NotFound";
 import Favourites from "./pages/favourites/Favourites";
 import ProductDashboard from "./pages/dashboard/ProductDashboard";
+import { useHotkeys } from "react-hotkeys-hook";
+import ShortcutManual from "./pages/shortcutkeys/ShortcutManual";
 
 function App() {
 
@@ -31,6 +33,14 @@ function App() {
   const [showSellModal, setShowSellModal] = useState(false);
   const { showSnackbar } = useUI();
   const dispatch = useDispatch<AppDispatch>();
+
+  const [openHelp, setOpenHelp] = useState(false);
+
+  useHotkeys("ctrl+m", (e) => {
+    e.preventDefault();
+    setOpenHelp(true);
+  });
+
 
   useEffect(() => {
     if (isAuthenticated && user?.id) {
@@ -113,6 +123,7 @@ function App() {
       </Box>
 
       <SellProductForm open={showSellModal} onClose={() => setShowSellModal(false)} />
+      <ShortcutManual open={openHelp} onClose={() => setOpenHelp(false)} />
     </Box>
   )
 }

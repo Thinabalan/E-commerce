@@ -23,7 +23,7 @@ import BusinessDetails from "./BusinessDetails";
 import { useRegistration } from "../../hooks/registrationform/useRegistration";
 import { useEffect, useMemo } from "react";
 import { useUI } from "../../context/UIContext";
-import { useShortcut } from "../../hooks/useShortcut";
+import { useShortcuts } from "../../hooks/useShortcut";
 
 function RegistrationFormContent() {
   const navigate = useNavigate();
@@ -52,11 +52,11 @@ function RegistrationFormContent() {
     [handleSubmit, onSubmit, handleFormError]
   );
 
-  useShortcut("alt+e", handleToggleAll);
-
-  useShortcut("ctrl+s", submitForm);
-
-  useShortcut("alt+r", handleReset);
+  useShortcuts({
+    "ctrl+s": submitForm,
+    "alt+r": handleReset,
+    "alt+e": handleToggleAll,
+  });
 
   useEffect(() => {
     if (isEditMode && id) {

@@ -5,7 +5,7 @@ import CategoriesSection from "./CategoriesSection";
 import EcomCard from "../../components/newcomponents/EcomCard";
 import EcomButton from "../../components/newcomponents/EcomButton";
 import useProduct from "../../hooks/useProduct";
-import { useShortcut } from "../../hooks/useShortcut";
+import { useShortcuts } from "../../hooks/useShortcut";
 import type { Product } from "../../types/ProductTypes";
 
 export default function Home() {
@@ -34,7 +34,7 @@ export default function Home() {
     document.getElementById("latest-trends")?.scrollIntoView({ behavior: "smooth" });
   };
 
-  useShortcut("alt+t", scrollToTrends);
+  useShortcuts({"alt+t":scrollToTrends});
 
   return (
     <Box sx={{ pt: { xs: 7, md: 1 }, pb: 8, minHeight: '100vh' }}>
